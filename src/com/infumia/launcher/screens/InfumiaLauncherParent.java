@@ -38,12 +38,14 @@ import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
 public class InfumiaLauncherParent implements Initializable {
+
 
     boolean animating = false;
 
@@ -69,6 +71,9 @@ public class InfumiaLauncherParent implements Initializable {
 
     @FXML
     JFXCheckBox premiumCheckBox;
+
+    @FXML
+    JFXCheckBox remindCheckBox;
 
     @FXML
     Pane passwordPane;
@@ -99,14 +104,17 @@ public class InfumiaLauncherParent implements Initializable {
 
     @FXML
     public void premiumMode() {
+        JFXTextField username = (JFXTextField) InfumiaLauncher.stage.getScene().lookup("#username");
         if (premiumCheckBox.isSelected()) {
             FadeTransition fadeTransition = Animation.fadeIn(Duration.seconds(0.3), passwordPane);
             fadeTransition.setOnFinished(event -> premiumCheckBox.setDisable(false));
             fadeTransition.play();
             premiumCheckBox.setDisable(true);
+            username.setPromptText("E-Posta Adresi");
             Animation.salla(passwordPane);
             passwordPane.setVisible(true);
         }else {
+            username.setPromptText("Kullanıcı Adı");
             FadeTransition fadeTransition = Animation.fadeOut(Duration.seconds(0.5), passwordPane);
             ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(0.04), passwordPane);
             scaleTransition.setFromX(1.0);
@@ -258,6 +266,7 @@ public class InfumiaLauncherParent implements Initializable {
                     InfumiaLauncher.logger.info("Avatar indirildi");
                     Minecraft.image = SwingFXUtils.toFXImage(c, null);
                     InfumiaLauncher.logger.info("Avatar ayarlandi");
+                    if (remindCheckBox.isSelected()) ImageIO.write(c, "png", new File(InfumiaLauncher.photoCacheDir));
                 }catch (Exception ex) {
                     InfumiaLauncher.logger.info("Avatar indirilemedi. Varsayılan avatar kullanılacak.");
                     Minecraft.image = new Image("assets/steve.png");
@@ -352,6 +361,7 @@ public class InfumiaLauncherParent implements Initializable {
                             succText("Lütfen bekleyin.");
                             logstat.requestFocus();
                         });
+                        if (remindCheckBox.isSelected()) saveUserStats(username.getText(), profileName, password.getText());
                         InfumiaLauncher.logger.info("Diğer sahne yükleniyor");
                         goNextScene.start();
                     }else {
@@ -381,11 +391,34 @@ public class InfumiaLauncherParent implements Initializable {
             Minecraft.playerName = username.getText();
             succText("Lütfen bekleyin.");
             logstat.requestFocus();
+            if (remindCheckBox.isSelected()) saveUserStats(username.getText());
             goNextScene.start();
             InfumiaLauncher.logger.info("Kırılmış mod ile diğer sahne yükleniyor");
         }
     }
 
+
+    public void saveUserStats(String email, String username, String password) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("e-mail", email);
+        jsonObject.put("username", username);
+        jsonObject.put("password", Base64.getEncoder().encodeToString(password.getBytes()));
+        try (FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir)) {
+            writer.write(jsonObject.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveUserStats(String username) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("username", username);
+        try (FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir)) {
+            writer.write(jsonObject.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void infoText(String text) {
         Label logstat = (Label) InfumiaLauncher.stage.getScene().lookup("#logstat");

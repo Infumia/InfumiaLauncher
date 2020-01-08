@@ -62,7 +62,7 @@
             </VBox>
          </children>
       </HBox>
-      <Pane fx:id="usernamePane" layoutX="350.0" layoutY="330.0" prefWidth="350.0">
+      <Pane fx:id="usernamePane" layoutX="350.0" layoutY="300.0" prefWidth="350.0">
          <children>
             <ImageView fitHeight="32.0" fitWidth="32.0" nodeOrientation="INHERIT" preserveRatio="true">
                <image>
@@ -79,7 +79,7 @@
             </JFXTextField>
          </children>
       </Pane>
-      <Pane fx:id="passwordPane" layoutX="350.0" layoutY="390.0" visible="false">
+      <Pane fx:id="passwordPane" layoutX="350.0" layoutY="360.0" visible="false">
          <children>
             <ImageView fitHeight="32.0" fitWidth="32.0" nodeOrientation="INHERIT">
                <image>
@@ -96,53 +96,75 @@
             </JFXPasswordField>
          </children>
       </Pane>
-<!--                  <Pane>-->
-<!--                     <children>-->
-<!--                        <JFXCheckBox checkedColor="#f5b51b" layoutX="51.0" text="Beni Hatırla" textFill="#aeaeae">-->
-<!--                           <font>-->
-<!--                              <Font size="15.0" />-->
-<!--                           </font>-->
-<!--                           <cursor>-->
-<!--                              <Cursor fx:constant="HAND" />-->
-<!--                           </cursor>-->
-<!--                        </JFXCheckBox>-->
-<!--                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" focusTraversable="false" layoutX="248.0" text="Şifremi Unuttum" textFill="#aeaeae">-->
-<!--                           <cursor>-->
-<!--                              <Cursor fx:constant="HAND" />-->
-<!--                           </cursor>-->
-<!--                           <font>-->
-<!--                              <Font size="15.0" />-->
-<!--                           </font>-->
-<!--                        </Label>-->
-<!--                     </children>-->
-<!--                     <VBox.margin>-->
-<!--                        <Insets top="20.0" />-->
-<!--                     </VBox.margin>-->
-<!--                  </Pane>-->
-      <JFXButton fx:id="loginBtn" layoutX="458.0" layoutY="452.0" onAction="#onClick" prefHeight="52.0" prefWidth="168.0" ripplerFill="#463204" style="-fx-background-color: rgba(196, 144, 21,1); -fx-background-radius: 5px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.53), 8, 0, 0, 3);" text="Giriş Yap" textFill="WHITE">
-         <font>
-            <Font size="19.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-      </JFXButton>
-      <JFXCheckBox fx:id="premiumCheckBox" checkedColor="#f5b51b" layoutX="479.0" layoutY="519.0" onAction="#premiumMode" text="Premium Mod" textFill="#aeaeae">
-         <font>
-            <Font size="15.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-      </JFXCheckBox>
-      <Label fx:id="about" layoutX="515.0" layoutY="593.0" onMouseClicked="#openAbout" text="Hakkında" textFill="#b9ccfacc">
-         <font>
-            <Font size="17.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-      </Label>
+      <HBox alignment="CENTER" layoutY="430.0" prefWidth="1100.0" spacing="30.0">
+         <children>
+                  <JFXCheckBox fx:id="remindCheckBox" checkedColor="#f5b51b" text="Beni Hatırla" textFill="#aeaeae">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </JFXCheckBox>
+      <!--                  layoutX="479.0" layoutY="519.0"-->
+                  <JFXCheckBox fx:id="premiumCheckBox" checkedColor="#f5b51b" onAction="#premiumMode" text="Premium Mod" textFill="#aeaeae">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </JFXCheckBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutY="480.0" prefWidth="1100.0">
+         <children>
+      <!--                  <Pane>-->
+      <!--                     <children>-->
+      <!--                        <JFXCheckBox checkedColor="#f5b51b" layoutX="51.0" text="Beni Hatırla" textFill="#aeaeae">-->
+      <!--                           <font>-->
+      <!--                              <Font size="15.0" />-->
+      <!--                           </font>-->
+      <!--                           <cursor>-->
+      <!--                              <Cursor fx:constant="HAND" />-->
+      <!--                           </cursor>-->
+      <!--                        </JFXCheckBox>-->
+      <!--                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" focusTraversable="false" layoutX="248.0" text="Şifremi Unuttum" textFill="#aeaeae">-->
+      <!--                           <cursor>-->
+      <!--                              <Cursor fx:constant="HAND" />-->
+      <!--                           </cursor>-->
+      <!--                           <font>-->
+      <!--                              <Font size="15.0" />-->
+      <!--                           </font>-->
+      <!--                        </Label>-->
+      <!--                     </children>-->
+      <!--                     <VBox.margin>-->
+      <!--                        <Insets top="20.0" />-->
+      <!--                     </VBox.margin>-->
+      <!--                  </Pane>-->
+            <JFXButton fx:id="loginBtn" onAction="#onClick" prefHeight="52.0" prefWidth="168.0" ripplerFill="#463204" style="-fx-background-color: rgba(196, 144, 21,1); -fx-background-radius: 5px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.53), 8, 0, 0, 3);" text="Giriş Yap" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutY="593.0" prefWidth="1100.0">
+         <children>
+      
+            <Label fx:id="about" onMouseClicked="#openAbout" text="Hakkında" textFill="#b9ccfacc">
+               <font>
+                  <Font size="17.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Label>
+         </children>
+      </HBox>
       <Pane fx:id="exitScene" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: rgba(0,0,0,0.8);" visible="false" />
       <HBox fx:id="exitPaneBox" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="620.0" prefWidth="1100.0" visible="false">
          <children>

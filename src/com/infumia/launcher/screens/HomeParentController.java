@@ -27,6 +27,7 @@ import javafx.scene.paint.Paint;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
@@ -176,6 +177,8 @@ public class HomeParentController implements Initializable {
                 @Override
                 public void run() {
                     try {
+                        FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir);
+                        writer.write("");
                         Parent secondParent = FXMLLoader.load(getClass().getResource("InfumiaLauncherParent.fxml"));
                         Scene secondScene = new Scene(secondParent);
 
