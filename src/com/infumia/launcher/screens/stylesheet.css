@@ -1,0 +1,41 @@
+.textfields {
+    -fx-text-fill:#ffffff;
+}
+.buttons:hover {
+    -fx-background-color: #42E24F;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: #081B49;
+}
+
+.progress-bar > .track {
+    -fx-background-color: #020918;
+}
+
+.minbtn:hover {
+    -fx-fill: #3F51B5;
+}
+
+.closebtn:hover {
+    -fx-fill: #3F51B5;
+}
+
+.passStrength .increment-arrow-button,
+.passStrength .decrement-arrow-button {
+    -fx-body-color: yellow;
+}
+
+.passStrength .increment-arrow-button:hover,
+.passStrength .decrement-arrow-button:hover {
+    /* interpolate color between yellow and red based on first color brightness */
+    -fx-body-color: ladder(#444, yellow 0%, red 100%);
+}
+
+.passStrength .increment-arrow-button:hover:pressed,
+.passStrength .decrement-arrow-button:hover:pressed,
+.passStrength .increment-arrow-button:pressed,
+.passStrength .decrement-arrow-button:pressed {
+    /* interpolate color between yellow and red based on first color brightness */
+    -fx-body-color: ladder(#AAA, yellow 0%, red 100%);
+}

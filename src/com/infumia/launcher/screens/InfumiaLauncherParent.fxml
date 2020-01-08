@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.InfumiaLauncherParent">
+   <children>
+      <ImageView fitHeight="620.0" fitWidth="1100.0">
+         <image>
+            <Image url="@../../../../assets/wallpaper-2.png" />
+         </image>
+         <viewport>
+            <Rectangle2D />
+         </viewport>
+      </ImageView>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="620.0" layoutX="0.0" layoutY="0.0" opacity="0.88" width="1100.0">
+         <fill>
+            <LinearGradient endY="1.0" startX="0.0" startY="0.0">
+               <stops>
+                  <Stop color="#020918" />
+                  <Stop color="#091f50" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </fill>
+      </Rectangle>
+      <ImageView fx:id="logo" fitHeight="146.0" fitWidth="150.0" layoutX="475.0" layoutY="40.0">
+         <image>
+            <Image url="@../../../../assets/infumia-logo-2x.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="launcher" layoutX="425.0" layoutY="180.0" scaleX="0.8" scaleY="0.8">
+         <image>
+            <Image url="@../../../../assets/launcher.png" />
+         </image>
+      </ImageView>
+      <HBox alignment="CENTER" layoutY="250.0" prefWidth="1100.0">
+         <children>
+            <VBox alignment="CENTER">
+               <children>
+                  <Label fx:id="logstat" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <Pane fx:id="usernamePane" layoutX="350.0" layoutY="330.0" prefWidth="350.0">
+         <children>
+            <ImageView fitHeight="32.0" fitWidth="32.0" nodeOrientation="INHERIT" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../assets/head-3x.png" />
+               </image>
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+            </ImageView>
+            <JFXTextField id="username" focusColor="#dca218" layoutX="50.0" nodeOrientation="LEFT_TO_RIGHT" prefColumnCount="1" prefWidth="305.0" promptText="Kullanıcı Adı" style="-fx-prompt-text-fill: #828282;" styleClass="textfields" unFocusColor="#707070">
+               <font>
+                  <Font name="Segoe UI" size="19.0" />
+               </font>
+            </JFXTextField>
+         </children>
+      </Pane>
+      <Pane fx:id="passwordPane" layoutX="350.0" layoutY="390.0" visible="false">
+         <children>
+            <ImageView fitHeight="32.0" fitWidth="32.0" nodeOrientation="INHERIT">
+               <image>
+                  <Image url="@../../../../assets/lock-3x.png" />
+               </image>
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+            </ImageView>
+            <JFXPasswordField id="password" focusColor="#dca218" layoutX="50.0" prefColumnCount="1" prefWidth="305.0" promptText="Şifre" style="-fx-prompt-text-fill: #828282;" styleClass="textfields" unFocusColor="#707070">
+               <font>
+                  <Font name="Segoe UI" size="19.0" />
+               </font>
+            </JFXPasswordField>
+         </children>
+      </Pane>
+<!--                  <Pane>-->
+<!--                     <children>-->
+<!--                        <JFXCheckBox checkedColor="#f5b51b" layoutX="51.0" text="Beni Hatırla" textFill="#aeaeae">-->
+<!--                           <font>-->
+<!--                              <Font size="15.0" />-->
+<!--                           </font>-->
+<!--                           <cursor>-->
+<!--                              <Cursor fx:constant="HAND" />-->
+<!--                           </cursor>-->
+<!--                        </JFXCheckBox>-->
+<!--                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" focusTraversable="false" layoutX="248.0" text="Şifremi Unuttum" textFill="#aeaeae">-->
+<!--                           <cursor>-->
+<!--                              <Cursor fx:constant="HAND" />-->
+<!--                           </cursor>-->
+<!--                           <font>-->
+<!--                              <Font size="15.0" />-->
+<!--                           </font>-->
+<!--                        </Label>-->
+<!--                     </children>-->
+<!--                     <VBox.margin>-->
+<!--                        <Insets top="20.0" />-->
+<!--                     </VBox.margin>-->
+<!--                  </Pane>-->
+      <JFXButton fx:id="loginBtn" layoutX="458.0" layoutY="452.0" onAction="#onClick" prefHeight="52.0" prefWidth="168.0" ripplerFill="#463204" style="-fx-background-color: rgba(196, 144, 21,1); -fx-background-radius: 5px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.53), 8, 0, 0, 3);" text="Giriş Yap" textFill="WHITE">
+         <font>
+            <Font size="19.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXButton>
+      <JFXCheckBox fx:id="premiumCheckBox" checkedColor="#f5b51b" layoutX="479.0" layoutY="519.0" onAction="#premiumMode" text="Premium Mod" textFill="#aeaeae">
+         <font>
+            <Font size="15.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </JFXCheckBox>
+      <Label fx:id="about" layoutX="515.0" layoutY="593.0" onMouseClicked="#openAbout" text="Hakkında" textFill="#b9ccfacc">
+         <font>
+            <Font size="17.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Label>
+      <Pane fx:id="exitScene" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: rgba(0,0,0,0.8);" visible="false" />
+      <HBox fx:id="exitPaneBox" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="620.0" prefWidth="1100.0" visible="false">
+         <children>
+            <VBox alignment="CENTER" prefHeight="620.0" prefWidth="420.0">
+               <children>
+                  <Pane fx:id="exitPane" prefHeight="300.0" prefWidth="420.0" style="-fx-background-color: #0D1A33; -fx-background-radius: 12px;" visible="false">
+                     <children>
+                        <Pane layoutY="250.0" maxWidth="1.7976931348623157E308" prefHeight="50.0" prefWidth="420.0" style="-fx-background-color: #0A1529; -fx-background-radius: 0px 0px 12px 12px;" />
+                        <Label layoutX="27.0" layoutY="20.0" text="HAKKINDA" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="copyright" layoutX="27.0" layoutY="70.0" textFill="#ebebeb">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="300.0" layoutY="260.0" onMouseClicked="#goBack" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #103693;" text="Tamam" textFill="WHITE">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </JFXButton>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <FontAwesomeIcon id="closebtn" fill="#94b3ff" iconName="CLOSE" layoutX="1076.0" layoutY="22.0" onMouseClicked="#closeApp" size="1.2em" styleClass="closebtn" text="" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></FontAwesomeIcon>
+      <FontAwesomeIcon id="minbtn" fill="#94b3ff" iconName="MINUS" layoutX="1053.0" layoutY="26.0" onMouseClicked="#minApp" size="1.2em" styleClass="minbtn" text="" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="12.0">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></FontAwesomeIcon>
+   </children>
+</AnchorPane>
