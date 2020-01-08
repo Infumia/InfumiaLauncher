@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="65fa1ac6-143f-4ccc-89d2-8569c519d211" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/close-icon-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/close-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/enlarge-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/enlarge.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/head-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/head-3x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/head.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/infumia-logo-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/infumia-logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/launcher-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/lock-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/lock-3x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/lock.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/minimize-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/minimize-3x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/minimize.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/profile-icon-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/profile-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/wallpaper-2-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/wallpaper-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/wallpaper-2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/assets/wallpaper.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/InfumiaLauncher.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/Animation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/FadeInSceneTransition$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/FadeInSceneTransition$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/FadeInSceneTransition$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/FadeInSceneTransition$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/FadeInSceneTransition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/JFXSpinnerAnimation$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/JFXSpinnerAnimation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/MarginAnimation$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/MarginAnimation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/MoveXAnimation$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/MoveXAnimation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/MoveYAnimation$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/MoveYAnimation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/SceneTransition$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/SceneTransition$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/SceneTransition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/ShakeTransition$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/animations/ShakeTransition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/Minecraft.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftAssetsDownloader$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftAssetsDownloader.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftClientDownloader$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftClientDownloader.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftLibrariesDownloader$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftLibrariesDownloader$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftLibrariesDownloader$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftLibrariesDownloader$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftLibrariesDownloader.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftNativesDownloader$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/download/MinecraftNativesDownloader.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/objects/AuthThread.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/objects/Callback.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/FakeParent.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/GLauncherParent.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/HomeParent.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/HomeParentController$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/HomeParentController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/InfumiaHomeParent.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/InfumiaLauncherParent$1$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/InfumiaLauncherParent$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/InfumiaLauncherParent.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/InfumiaLauncherParent.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/screens/stylesheet.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/infumia/launcher/util/JSONUrl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/log4j2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/Authentication$AuthType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/Authentication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/DirectDownloader$DirectDownloadThread.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/DirectDownloader.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/DownloadAdaptor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/DownloadListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/DownloadTask.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/HttpConnector$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/HttpConnector$DefaultTrustManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/HttpConnector.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/util/Base64$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/util/Base64$InputStream.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/util/Base64$OutputStream.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/org/kamranzafar/jddl/util/Base64.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/null/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/null/inputFiles.lst" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1W75cI3PoyiWNVrwoooHBz0lhQ0" />
+  <component name="ProjectViewState">
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="65fa1ac6-143f-4ccc-89d2-8569c519d211" name="Default Changelist" comment="" />
+      <created>1578487870838</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1578487870838</updated>
+      <workItem from="1578487872064" duration="10000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+</project>
