@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.*?>
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #2D3447;" styleClass="parent" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.InfumiaLauncherParent">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202533" height="25.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="600.0" />
+      <FontAwesomeIcon id="#closebtn" fill="WHITE" iconName="CLOSE" layoutX="580.0" layoutY="16.0" onMouseClicked="#closeApp" size="1.3em" stroke="BLACK" styleClass="closebtn">
+         <cursor>
+         <Cursor fx:constant="HAND" />
+      </cursor></FontAwesomeIcon>
+      <FontAwesomeIcon id="#minbtn" fill="WHITE" iconName="MINUS" layoutX="560.0" layoutY="21.0" onMouseClicked="#minApp" size="1.3em" stroke="BLACK" styleClass="minbtn">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </FontAwesomeIcon>
+      <HBox alignment="CENTER" layoutY="25.0" prefHeight="375.0" prefWidth="600.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="375.0" prefWidth="320.0">
+               <children>
+                  <ImageView fitHeight="118.0" fitWidth="184.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../../java/images/logo.png" />
+                     </image>
+                     <VBox.margin>
+                        <Insets bottom="30.0" top="15.0" />
+                     </VBox.margin>
+                  </ImageView>
+                  <Label fx:id="logstat" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER">
+                     <VBox.margin>
+                        <Insets bottom="15.0" top="-5.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
+                  <Pane>
+                     <children>
+                        <ImageView fitHeight="21.0" fitWidth="20.0" layoutX="15.0" layoutY="8.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../../../java/images/icons8-user-male-26.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                        <JFXTextField id="username" focusColor="#2841ff" layoutX="52.0" prefHeight="38.0" prefWidth="268.0" promptText=" Kulllanıcı Adı" styleClass="textfields" unFocusColor="#a1a2ab">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </JFXTextField>
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="0.0" prefWidth="297.0">
+                     <children>
+                        <ImageView fitHeight="31.0" fitWidth="26.0" layoutX="11.0" layoutY="8.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../../../java/images/icons8-lock-64.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                        </ImageView>
+                        <JFXPasswordField id="password" focusColor="#2841ff" layoutX="51.0" prefHeight="38.0" prefWidth="268.0" promptText=" Şifre" styleClass="textfields" unFocusColor="#a1a2ab">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </JFXPasswordField>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="25.0" top="10.0" />
+                     </VBox.margin>
+                  </Pane>
+                  <Pane>
+                     <children>
+                        <JFXButton alignment="CENTER" layoutX="245.0" onAction="#onClick" style="-fx-background-color: #3C58FA;" text="Giriş Yap" textFill="WHITE">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </JFXButton>
+                        <JFXCheckBox layoutX="20.0" layoutY="5.5" text="Beni Hatırla" textFill="#a1a2ab" unCheckedColor="#a1a2ab">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </JFXCheckBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="20.0" top="35.0" />
+                     </VBox.margin>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

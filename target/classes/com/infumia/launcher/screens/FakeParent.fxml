@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1100.0" prefWidth="620.0" style="-fx-background-color: #091F50;" styleClass="parent" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.InfumiaLauncherParent">
+    <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202533" height="25.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="600.0" />
+        <FontAwesomeIcon id="closebtn" fill="#94b3ff" iconName="CLOSE" layoutX="1076.0" layoutY="22.0" onMouseClicked="#closeApp" size="1.2em" styleClass="closebtn" text="" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor></FontAwesomeIcon>
+        <FontAwesomeIcon id="minbtn" fill="#94b3ff" iconName="MINUS" layoutX="1053.0" layoutY="26.0" onMouseClicked="#minApp" size="1.2em" styleClass="minbtn" text="" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="12.0">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor></FontAwesomeIcon>
+    </children>
+</AnchorPane>
+
