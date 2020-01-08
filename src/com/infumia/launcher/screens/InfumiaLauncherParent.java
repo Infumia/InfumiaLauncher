@@ -84,14 +84,17 @@ public class InfumiaLauncherParent implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        if (copyright!= null) copyright.setText(
-                "Versiyon: 1.0.0 (Released) \n" +
-                "Kodlama: Dantero\n" +
-                "Tasarım: Dantero\n\n" +
-                "© 2019 - " + Calendar.getInstance().get(Calendar.YEAR) + " Infumia. Tüm hakları saklıdır.\n" +
-                "Infumia markası adı altında üretilmiştir.\n" +
-                "Bu yazılımın izinsiz ticari veya ticari olmayan amaçla \nkopyalanması, düzenlenmesi ve dağıtılması yasaktır.\n"
-        );
+        if (copyright!= null) {
+            copyright.setTextFill(Paint.valueOf("dcddde"));
+            copyright.setText(
+                    "Versiyon: 1.0.0 (Released) \n" +
+                            "Kodlama: Dantero\n" +
+                            "Tasarım: Dantero\n\n" +
+                            "© 2019 - " + Calendar.getInstance().get(Calendar.YEAR) + " Infumia. Tüm hakları saklıdır.\n" +
+                            "Infumia markası adı altında üretilmiştir.\n" +
+                            "Bu yazılımın izinsiz ticari veya ticari olmayan amaçla \nkopyalanması, düzenlenmesi ve dağıtılması yasaktır.\n"
+            );
+        }
     }
 
     @FXML
@@ -241,42 +244,57 @@ public class InfumiaLauncherParent implements Initializable {
         loginBtn.setStyle(newStyle);
         infoText("Giriş yapılıyor...");
 
+        InfumiaLauncher.logger.info("Giriş yapılıyor");
+
         logstat.requestFocus();
 
         Thread goNextScene = new Thread() {
             @Override
             public void run() {
                 try {
+                    InfumiaLauncher.logger.info("Kullanıcı avatarı indiriliyor");
                     URL url = new URL("https://minotar.net/avatar/" + Minecraft.playerName);
                     BufferedImage c = ImageIO.read(url);
+                    InfumiaLauncher.logger.info("Avatar indirildi");
                     Minecraft.image = SwingFXUtils.toFXImage(c, null);
+                    InfumiaLauncher.logger.info("Avatar ayarlandi");
                 }catch (Exception ex) {
-                    ex.printStackTrace();
+                    InfumiaLauncher.logger.info("Avatar indirilemedi. Varsayılan avatar kullanılacak.");
                     Minecraft.image = new Image("assets/steve.png");
                 }
 
                 try{
+                    InfumiaLauncher.logger.info("Sahne değişimi için hazırlanılıyor");
                     InfumiaLauncher.parent = FXMLLoader.load(getClass().getResource("FakeParent.fxml"), null, new JavaFXBuilderFactory());
                     Scene scene = InfumiaLauncher.stage.getScene();
                     if (scene == null) {
+                        InfumiaLauncher.logger.info("Sahte sahne yüklenemedi. Manuel oluşturuluyor.");
                         scene = new Scene(InfumiaLauncher.parent, 1100, 620);
                         InfumiaLauncher.stage.setScene(scene);
+                        InfumiaLauncher.logger.info("Oluşturuldu ve yüklendi.");
                     }else {
+                        InfumiaLauncher.logger.info("Sahte sahne yüklendi.");
                         InfumiaLauncher.stage.getScene().setRoot(InfumiaLauncher.parent);
                     }
+
 
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
                             try {
+                                InfumiaLauncher.logger.info("Asıl sahne yükleniyor.");
                                 Parent secondParent = FXMLLoader.load(getClass().getResource("InfumiaHomeParent.fxml"));
                                 Scene secondScene = new Scene(secondParent);
 
                                 InfumiaLauncher.stage.setScene(secondScene);
-
+                                InfumiaLauncher.logger.info("Yüklendi.");
+                                InfumiaLauncher.logger.info("Geçiş animasyonu ayarlanıyor");
                                 FadeInSceneTransition sceneTransition = new FadeInSceneTransition(InfumiaLauncher.stage, secondScene, Duration.seconds(0.3));
+                                InfumiaLauncher.logger.info("Ayarlandı");
                                 sceneTransition.play();
+                                InfumiaLauncher.logger.info("Geçiş animasyonu başlatıldı");
                                 sceneTransition.makeStageDrageable();
+                                InfumiaLauncher.logger.info("Ekran sürüklenebilir yapıldı");
                             }catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -284,14 +302,16 @@ public class InfumiaLauncherParent implements Initializable {
                     });
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    InfumiaLauncher.logger.info("Sahne değişimi yapılırken hata oluştu:" + e.toString());
                 }
             }
         };
 
         if (premiumCheckBox.isSelected()) {
             try {
+                InfumiaLauncher.logger.info("Premium hesap bilgileri için hazırlanılıyor");
                 AuthThread authThread = new AuthThread(username.getText(), password.getText(), response -> {
+                    InfumiaLauncher.logger.info("Yanıt geldi: " + response);
                     if (response.equals("-1")) {
                         Platform.runLater(()-> {
                             errorText("Kullanıcı adı veya şifre yanlış.");
@@ -319,6 +339,7 @@ public class InfumiaLauncherParent implements Initializable {
                         });
                         return;
                     }
+                    InfumiaLauncher.logger.info("Hesap onaylandı.");
                     JSONObject jsonObject = new JSONObject(response);
                     String accessToken = (String) jsonObject.get("accessToken");
                     String profileName = (String) jsonObject.getJSONObject("selectedProfile").get("name");
@@ -331,6 +352,7 @@ public class InfumiaLauncherParent implements Initializable {
                             succText("Lütfen bekleyin.");
                             logstat.requestFocus();
                         });
+                        InfumiaLauncher.logger.info("Diğer sahne yükleniyor");
                         goNextScene.start();
                     }else {
                         errorText("Kullanıcı adı veya şifre yanlış.");
@@ -360,6 +382,7 @@ public class InfumiaLauncherParent implements Initializable {
             succText("Lütfen bekleyin.");
             logstat.requestFocus();
             goNextScene.start();
+            InfumiaLauncher.logger.info("Kırılmış mod ile diğer sahne yükleniyor");
         }
     }
 

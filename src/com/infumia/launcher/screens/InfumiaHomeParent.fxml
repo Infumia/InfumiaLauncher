@@ -18,7 +18,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.HomeParentController">
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.HomeParentController">
    <children>
       <ImageView fitHeight="620.0" fitWidth="1100.0">
          <image>
@@ -57,13 +57,16 @@
                      <image>
                         <Image url="@../../../../assets/infumia-logo-2x.png" />
                      </image>
+                     <VBox.margin>
+                        <Insets top="-10.0" />
+                     </VBox.margin>
                   </ImageView>
-                  <ImageView scaleX="0.65" scaleY="0.65">
+                  <ImageView scaleX="0.8" scaleY="0.8">
                      <image>
                         <Image url="@../../../../assets/launcher.png" />
                      </image>
                      <VBox.margin>
-                        <Insets top="15.0" />
+                        <Insets top="-10.0" />
                      </VBox.margin>
                   </ImageView>
                   <ImageView fx:id="avatar" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
@@ -97,7 +100,7 @@
                   </JFXButton>
                   <Label fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#goExitScene" text="Çıkış Yap" textAlignment="CENTER" textFill="#a3bdfb">
                      <font>
-                        <Font size="21.0" />
+                        <Font size="16.0" />
                      </font>
                      <cursor>
                         <Cursor fx:constant="HAND" />

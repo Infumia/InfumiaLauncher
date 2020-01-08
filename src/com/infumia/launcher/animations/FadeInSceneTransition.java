@@ -80,20 +80,16 @@ public class FadeInSceneTransition {
         parent.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (event.getY() <= 70) {
-                    xOffset = event.getSceneX();
-                    yOffset = event.getSceneY();
-                    lasty = event.getY();
-                }
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+                lasty = event.getY();
             }
         });
         parent.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (lasty != -1 && lasty <= 70) {
                     stage.setX(event.getScreenX() - xOffset);
                     stage.setY(event.getScreenY() - yOffset);
-                }
             }
         });
         parent.setOnDragDone((e) -> {

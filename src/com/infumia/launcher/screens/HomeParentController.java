@@ -110,7 +110,8 @@ public class HomeParentController implements Initializable {
         okButton.setVisible(false);
         infoScreenTitle.setText("ÇIKIŞ YAP");
         infoScreenDescription.setText("Çıkış yapmak istediğinize emin misiniz?");
-        infoScreenTitle.setTextFill(Paint.valueOf("ffffff"));
+        infoScreenTitle.setTextFill(Paint.valueOf("ff4c4c"));
+        infoScreenDescription.setTextFill(Paint.valueOf("dcddde"));
         FadeTransition fade = Animation.fadeIn(Duration.seconds(0.3), exitScene);
         fade.play();
         FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);;
@@ -256,7 +257,7 @@ public class HomeParentController implements Initializable {
             animation2.get().play();
 
             Thread thread = new Thread(new MinecraftAssetsDownloader(response -> Platform.runLater(() -> {
-                error("HATA", response);
+                error("HATA", "Sunucuyla bağlantı kurulurken hata oluştu: " + response);
                 MoveYAnimation animation1 = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 620, Duration.seconds(0.3));
                 animation1.play();
                 playButton.setDisable(false);
@@ -273,6 +274,7 @@ public class HomeParentController implements Initializable {
         infoScreenTitle.setText(title);
         infoScreenDescription.setText(description);
         infoScreenTitle.setTextFill(Paint.valueOf("ff4343"));
+        infoScreenDescription.setTextFill(Paint.valueOf("dcddde"));
         exitScene.setVisible(true);
         exitPane.setVisible(true);
         exitPaneBox.setVisible(true);
