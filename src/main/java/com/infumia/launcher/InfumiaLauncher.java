@@ -52,4 +52,8 @@ public class InfumiaLauncher extends Application {
         return infumiaLauncher;
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
 }
