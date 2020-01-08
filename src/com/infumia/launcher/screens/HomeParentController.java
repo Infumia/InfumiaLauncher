@@ -5,6 +5,7 @@ import com.infumia.launcher.animations.Animation;
 import com.infumia.launcher.animations.FadeInSceneTransition;
 import com.infumia.launcher.animations.MoveYAnimation;
 import com.infumia.launcher.download.*;
+import com.infumia.launcher.objects.Callback;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.animation.FadeTransition;
@@ -12,7 +13,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,23 +20,20 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Paint;
 import javafx.util.Duration;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class HomeParentController implements Initializable {
-
 
     File gamedir = new File(System.getenv().get("APPDATA") + "/.infumia/");
     File assestdir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/");
@@ -62,9 +59,6 @@ public class HomeParentController implements Initializable {
     @FXML
     Label playerName;
 
-    @FXML
-    Label exitButton;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if (!gamedir.exists()) gamedir.mkdir();
@@ -89,10 +83,34 @@ public class HomeParentController implements Initializable {
     Pane exitPane;
 
     @FXML
+    Label infoScreenTitle;
+
+    @FXML
+    Label infoScreenDescription;
+
+    @FXML
+    JFXButton verifyExitButton;
+
+    @FXML
+    JFXButton okButton;
+
+    @FXML
+    Label cancelLabel;
+
+    @FXML
+    Label exitButton;
+
+    @FXML
     public void goExitScene() {
         exitScene.setVisible(true);
         exitPane.setVisible(true);
         exitPaneBox.setVisible(true);
+        cancelLabel.setVisible(true);
+        verifyExitButton.setVisible(true);
+        okButton.setVisible(false);
+        infoScreenTitle.setText("ÇIKIŞ YAP");
+        infoScreenDescription.setText("Çıkış yapmak istediğinize emin misiniz?");
+        infoScreenTitle.setTextFill(Paint.valueOf("ffffff"));
         FadeTransition fade = Animation.fadeIn(Duration.seconds(0.3), exitScene);
         fade.play();
         FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);;
@@ -188,9 +206,10 @@ public class HomeParentController implements Initializable {
 
         MoveYAnimation animation = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 610, Duration.seconds(0.3));
         animation.play();
+        AtomicReference<Timeline> animation2 = new AtomicReference<>();
         animation.setOnFinished(event -> {
-            Timeline timeline = new Timeline(
-                    new KeyFrame(Duration.seconds(0.2), ((actionEvent) -> {
+            animation2.set(new Timeline(
+                    new KeyFrame(Duration.millis(1), ((actionEvent) -> {
                         if (InfumiaLauncher.step == 1) {
                             if (MinecraftAssetsDownloader.objects == null) return;
                             double perc = (Double.valueOf(String.valueOf(MinecraftAssetsDownloader.currentfile)) / MinecraftAssetsDownloader.objects.length()) * 25d;
@@ -199,19 +218,22 @@ public class HomeParentController implements Initializable {
                             return;
                         }
                         if (InfumiaLauncher.step == 2) {
-                            percent.setText("%" + new DecimalFormat("##.#").format((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d).replace(",","."));
+                            percent.setText("%" + new DecimalFormat("##.#").format((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d).replace(",", "."));
                             progressbar.setProgress(((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d) / 100d);
                             return;
-                        }if (InfumiaLauncher.step == 3) {
-                            percent.setText("%" + new DecimalFormat("##.#").format((MinecraftNativesDownloader.fileStep / 11d) * 25d + 50d).replace(",","."));
+                        }
+                        if (InfumiaLauncher.step == 3) {
+                            percent.setText("%" + new DecimalFormat("##.#").format((MinecraftNativesDownloader.fileStep / 11d) * 25d + 50d).replace(",", "."));
                             progressbar.setProgress(((Double.valueOf(MinecraftNativesDownloader.fileStep + "") / 11d) * 25d + 50d) / 100d);
 
-                        }if (InfumiaLauncher.step == 4) {
+                        }
+                        if (InfumiaLauncher.step == 4) {
                             if (MinecraftLibrariesDownloader.objects != null) {
                                 percent.setText("%" + new DecimalFormat("##.#").format(((Double.valueOf(MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib) / (MinecraftLibrariesDownloader.totalNativeLib + MinecraftLibrariesDownloader.objects.length())) * 25d) + 75d).replace(",", "."));
                                 progressbar.setProgress((((Double.valueOf(MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib) / (MinecraftLibrariesDownloader.totalNativeLib + MinecraftLibrariesDownloader.objects.length())) * 25d) + 75d) / 100d);
                             }
-                        }if (InfumiaLauncher.step == 5) {
+                        }
+                        if (InfumiaLauncher.step == 5) {
                             percent.setText("%100");
                             progressbar.setProgress(1);
 //                        try {
@@ -229,13 +251,36 @@ public class HomeParentController implements Initializable {
                         }
                     })
                     )
-            );
-            timeline.setCycleCount(Timeline.INDEFINITE);
-            timeline.play();
+            ));
+            animation2.get().setCycleCount(Timeline.INDEFINITE);
+            animation2.get().play();
 
-            Thread thread = new Thread(new MinecraftAssetsDownloader());
+            Thread thread = new Thread(new MinecraftAssetsDownloader(response -> Platform.runLater(() -> {
+                error("HATA", response);
+                MoveYAnimation animation1 = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 620, Duration.seconds(0.3));
+                animation1.play();
+                playButton.setDisable(false);
+                exitButton.setDisable(false);
+            })));
             InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
         });
+    }
+
+    public void error(String title, String description) {
+        cancelLabel.setVisible(false);
+        verifyExitButton.setVisible(false);
+        okButton.setVisible(true);
+        infoScreenTitle.setText(title);
+        infoScreenDescription.setText(description);
+        infoScreenTitle.setTextFill(Paint.valueOf("ff4343"));
+        exitScene.setVisible(true);
+        exitPane.setVisible(true);
+        exitPaneBox.setVisible(true);
+        FadeTransition fade = Animation.fadeIn(Duration.seconds(0.3), exitScene);
+        fade.play();
+        FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);;
+        fade3.play();
+        Animation.salla(exitPane);
     }
 
     @FXML

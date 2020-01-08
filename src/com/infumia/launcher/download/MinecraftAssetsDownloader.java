@@ -1,6 +1,7 @@
 package com.infumia.launcher.download;
 
 import com.infumia.launcher.InfumiaLauncher;
+import com.infumia.launcher.objects.Callback;
 import com.infumia.launcher.util.JSONUrl;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
@@ -12,6 +13,12 @@ import java.net.URL;
 import java.text.DecimalFormat;
 
 public class MinecraftAssetsDownloader implements Runnable {
+
+    Callback errorCallback;
+
+    public MinecraftAssetsDownloader(Callback errorCallback) {
+        this.errorCallback = errorCallback;
+    }
 
     public static int currentfile=0;
 
@@ -51,12 +58,13 @@ public class MinecraftAssetsDownloader implements Runnable {
                 InfumiaLauncher.logger.info("Client indirme islemi baslatiliyor");
                 currentfile = 0;
                 InfumiaLauncher.step++;
-                Thread thread = new Thread(new MinecraftClientDownloader());
+                Thread thread = new Thread(new MinecraftClientDownloader(errorCallback));
                 thread.run();
                 return;
             }
         } catch (IOException e) {
-
+            e.printStackTrace();
+            errorCallback.response(e.toString());
         }
 
 

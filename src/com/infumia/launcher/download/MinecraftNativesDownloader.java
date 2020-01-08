@@ -1,6 +1,7 @@
 package com.infumia.launcher.download;
 
 import com.infumia.launcher.InfumiaLauncher;
+import com.infumia.launcher.objects.Callback;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
@@ -13,6 +14,13 @@ import java.net.URL;
 import java.text.DecimalFormat;
 
 public class MinecraftNativesDownloader {
+
+    Callback errorCallback;
+
+    public MinecraftNativesDownloader(Callback errorCallback) {
+        this.errorCallback = errorCallback;
+    }
+
 
     Thread t;
 
@@ -29,9 +37,10 @@ public class MinecraftNativesDownloader {
             InfumiaLauncher.logger.info("Libraries indirme islemi baslatiliyor");
             InfumiaLauncher.step++;
             try {
-                new MinecraftLibrariesDownloader().run();
+                new MinecraftLibrariesDownloader(errorCallback).run();
             } catch (Exception e) {
                 e.printStackTrace();
+                errorCallback.response(e.toString());
             }
             return;
         }
@@ -44,6 +53,7 @@ public class MinecraftNativesDownloader {
                 run();
             } catch (Exception e) {
                 e.printStackTrace();
+                errorCallback.response(e.toString());
             }
         }
 
@@ -53,40 +63,45 @@ public class MinecraftNativesDownloader {
 
         String url = "https://raw.githubusercontent.com/FurkanDGN/deneme/master/native/" + fileNames[fileStep];
 
-        dd.download(new DownloadTask(new URL(url), new FileOutputStream(nativeFile), new DownloadListener() {
+        try {
+            dd.download(new DownloadTask(new URL(url), new FileOutputStream(nativeFile), new DownloadListener() {
 
-            String fname;
-            double fileSize = 0;
+                String fname;
+                double fileSize = 0;
 
-            @Override
-            public void onStart(String fname, int fsize) {
-                this.fname = fname;
-                fileSize = fsize;
-            }
-
-            @Override
-            public void onUpdate(int bytes, int totalDownloaded) {
-                double t1 = totalDownloaded + 0.0d;
-                double t2 = fileSize + 0.0d;
-                double downloadpercent = (t1 / t2) * 100.0d;
-                System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", ".") + " " + fileStep + "/" + fileNames.length);
-            }
-
-            @Override
-            public void onComplete() {
-                fileStep++;
-                try {
-                    run();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                @Override
+                public void onStart(String fname, int fsize) {
+                    this.fname = fname;
+                    fileSize = fsize;
                 }
-            }
 
-            @Override
-            public void onCancel() {
-            }
-        }));
-        t = new Thread(dd);
-        t.start();
+                @Override
+                public void onUpdate(int bytes, int totalDownloaded) {
+                    double t1 = totalDownloaded + 0.0d;
+                    double t2 = fileSize + 0.0d;
+                    double downloadpercent = (t1 / t2) * 100.0d;
+                    System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", ".") + " " + fileStep + "/" + fileNames.length);
+                }
+
+                @Override
+                public void onComplete() {
+                    fileStep++;
+                    try {
+                        run();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+                }
+            }));
+            t = new Thread(dd);
+            t.start();
+        }catch (Exception e) {
+            e.printStackTrace();
+            errorCallback.response(e.toString());
+        }
     }
 }

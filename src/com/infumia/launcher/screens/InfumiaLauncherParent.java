@@ -249,10 +249,10 @@ public class InfumiaLauncherParent implements Initializable {
                 try {
                     URL url = new URL("https://minotar.net/avatar/" + Minecraft.playerName);
                     BufferedImage c = ImageIO.read(url);
-                    Image image = SwingFXUtils.toFXImage(c, null);
-                    Minecraft.image = image;
+                    Minecraft.image = SwingFXUtils.toFXImage(c, null);
                 }catch (Exception ex) {
                     ex.printStackTrace();
+                    Minecraft.image = new Image("assets/steve.png");
                 }
 
                 try{
@@ -306,9 +306,9 @@ public class InfumiaLauncherParent implements Initializable {
                         return;
                     }
 
-                    if (!response.contains("accessToken")) {
+                    if (!response.contains("accessToken") || !response.contains("selectedProfile")) {
                         Platform.runLater(()-> {
-                            errorText("Sunucu hatası oluştu. Bir süre sonra tekrar deneyin.");
+                            errorText("Bu hesaba ait bir premium hesap bulunamadı.");
                             canSee = true;
                             loginBtn.setDisable(false);
                             premiumCheckBox.setDisable(false);

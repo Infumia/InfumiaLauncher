@@ -115,35 +115,73 @@
          <children>
             <VBox alignment="CENTER" prefHeight="620.0" prefWidth="406.0">
                <children>
-                  <Pane fx:id="exitPane" prefHeight="170.0" prefWidth="400.0" style="-fx-background-color: #0D1A33; -fx-background-radius: 12px;" visible="false">
+                  <Pane fx:id="exitPane" prefWidth="400.0" style="-fx-background-color: #0D1A33; -fx-background-radius: 12px;" visible="false">
                      <children>
-                        <Pane layoutY="120.0" prefHeight="50.0" prefWidth="406.0" style="-fx-background-color: #0A1529; -fx-background-radius: 0px 0px 12px 12px;" />
-                        <Label layoutX="27.0" layoutY="20.0" text="ÇIKIŞ YAP" textFill="WHITE">
-                           <font>
-                              <Font name="System Bold" size="22.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="27.0" layoutY="70.0" text="Çıkış yapmak istediğinize emin misiniz?" textFill="#ebebeb">
-                           <font>
-                              <Font size="15.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="250.0" layoutY="135.5" onMouseClicked="#cancelExit" text="İptal" textFill="WHITE">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Label>
-                        <JFXButton layoutX="300.0" layoutY="130.0" onMouseClicked="#goBack" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #FF4D4D;" text="Çıkış Yap" textFill="WHITE">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor></JFXButton>
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label fx:id="infoScreenTitle" text="ÇIKIŞ YAP" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="22.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="20.0" top="27.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label fx:id="infoScreenDescription" alignment="TOP_LEFT" prefWidth="350.0" text="Çıkış yapmak istediğinize emin misiniz" textFill="#ebebeb" wrapText="true">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="20.0" right="20.0" top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Pane prefHeight="50.0" prefWidth="406.0" style="-fx-background-color: #0A1529; -fx-background-radius: 0px 0px 12px 12px;">
+                                       <children>
+                                          <Label fx:id="cancelLabel" layoutX="250.0" layoutY="16.0" onMouseClicked="#cancelExit" text="İptal" textFill="WHITE">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </Label>
+                                          <JFXButton fx:id="verifyExitButton" layoutX="290.0" layoutY="10.0" onMouseClicked="#goBack" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #FF4D4D;" text="Çıkış Yap" textFill="WHITE">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </JFXButton>
+                                          <JFXButton visible="false" fx:id="okButton" layoutX="290.0" layoutY="10.0" onMouseClicked="#cancelExit" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #103693;" text="Tamam" textFill="WHITE">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </JFXButton>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </Pane>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
                      </children>
                   </Pane>
                </children>
             </VBox>
+            <VBox prefHeight="200.0" prefWidth="0.0" />
          </children>
       </HBox>
       <FontAwesomeIcon id="closebtn" fill="#94b3ff" iconName="CLOSE" layoutX="1076.0" layoutY="22.0" onMouseClicked="#closeApp" size="1.2em" styleClass="closebtn" text="" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0">

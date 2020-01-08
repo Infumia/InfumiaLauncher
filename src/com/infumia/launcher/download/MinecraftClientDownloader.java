@@ -1,6 +1,7 @@
 package com.infumia.launcher.download;
 
 import com.infumia.launcher.InfumiaLauncher;
+import com.infumia.launcher.objects.Callback;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
@@ -11,6 +12,12 @@ import java.net.URL;
 import java.text.DecimalFormat;
 
 public class MinecraftClientDownloader implements Runnable{
+
+    Callback errorCallback;
+
+    public MinecraftClientDownloader(Callback errorCallback) {
+        this.errorCallback = errorCallback;
+    }
 
     public static double downloadPercent = 0;
 
@@ -24,9 +31,10 @@ public class MinecraftClientDownloader implements Runnable{
             InfumiaLauncher.logger.info("Natives indirme islemi baslatiliyor");
             InfumiaLauncher.step++;
             try {
-                new MinecraftNativesDownloader().run();
+                new MinecraftNativesDownloader(errorCallback).run();
             } catch (Exception e) {
                 e.printStackTrace();
+                errorCallback.response(e.toString());
             }
             return;
         }
@@ -66,7 +74,7 @@ public class MinecraftClientDownloader implements Runnable{
                     InfumiaLauncher.logger.info("OpenGL Natives indirme islemi baslatiliyor");
                     InfumiaLauncher.step++;
                     try {
-                        new MinecraftNativesDownloader().run();
+                        new MinecraftNativesDownloader(errorCallback).run();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -80,6 +88,7 @@ public class MinecraftClientDownloader implements Runnable{
             t.start();
         } catch (Exception ex) {
             ex.printStackTrace();
+            errorCallback.response(ex.toString());
         }
     }
 

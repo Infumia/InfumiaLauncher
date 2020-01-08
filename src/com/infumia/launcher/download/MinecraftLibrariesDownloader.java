@@ -1,5 +1,6 @@
 package com.infumia.launcher.download;
 
+import com.infumia.launcher.objects.Callback;
 import com.sun.javafx.PlatformUtil;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
@@ -17,6 +18,13 @@ import java.net.URL;
 import java.text.DecimalFormat;
 
 public class MinecraftLibrariesDownloader {
+
+    Callback errorCallback;
+
+    public MinecraftLibrariesDownloader(Callback errorCallback) {
+        this.errorCallback = errorCallback;
+
+    }
 
     public static int totalNativeLib = 0;
 
@@ -46,6 +54,7 @@ public class MinecraftLibrariesDownloader {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            errorCallback.response(e.toString());
         }
 
         if(currentfilelib == objects.length()){
@@ -75,41 +84,49 @@ public class MinecraftLibrariesDownloader {
             return;
         }
 
-        dd.download(new DownloadTask(new URL(getURL(currentfilelib)), new FileOutputStream(librariesDir + "/" + getLIBName(currentfilelib)), new DownloadListener() {
+        try {
 
-            String fname;
-            double fileSize = 0;
+            dd.download(new DownloadTask(new URL(getURL(currentfilelib)), new FileOutputStream(librariesDir + "/" + getLIBName(currentfilelib)), new DownloadListener() {
 
-            @Override
-            public void onStart(String fname, int fsize) {
-                this.fname = fname;
-                fileSize = fsize;
-            }
+                String fname;
+                double fileSize = 0;
 
-            @Override
-            public void onUpdate(int bytes, int totalDownloaded) {
-                  double t1 = totalDownloaded + 0.0d;
-                  double t2 = fileSize + 0.0d;
-                  double downloadpercent = (t1/t2)*100.0d;
-                  System.out.print("\r" + ">Indiriliyor " + fname  + " %"+new DecimalFormat("##.#").format(downloadpercent).replace(",","."));
-            }
-
-            @Override
-            public void onComplete() {
-                try {
-                    currentfilelib++;
-                    run();
-                }catch (Exception e) {
-                    e.printStackTrace();
+                @Override
+                public void onStart(String fname, int fsize) {
+                    this.fname = fname;
+                    fileSize = fsize;
                 }
-            }
-            @Override
-            public void onCancel() {
 
-            }
-        }));
-        Thread t = new Thread(dd);
-        t.start();
+                @Override
+                public void onUpdate(int bytes, int totalDownloaded) {
+                    double t1 = totalDownloaded + 0.0d;
+                    double t2 = fileSize + 0.0d;
+                    double downloadpercent = (t1 / t2) * 100.0d;
+                    System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", "."));
+                }
+
+                @Override
+                public void onComplete() {
+                    try {
+                        currentfilelib++;
+                        run();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        errorCallback.response(e.toString());
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            }));
+            Thread t = new Thread(dd);
+            t.start();
+        }catch (Exception e) {
+            e.printStackTrace();
+            errorCallback.response(e.toString());
+        }
     }
 
 
@@ -164,6 +181,7 @@ public class MinecraftLibrariesDownloader {
                         runNatives();
                     }catch (Exception e) {
                         e.printStackTrace();
+                        errorCallback.response(e.toString());
                     }
                 }
                 @Override
@@ -225,6 +243,7 @@ public class MinecraftLibrariesDownloader {
                         runNatives();
                     }catch (Exception e) {
                         e.printStackTrace();
+                        errorCallback.response(e.toString());
                     }
                 }
                 @Override
@@ -286,6 +305,7 @@ public class MinecraftLibrariesDownloader {
                         runNatives();
                     }catch (Exception e) {
                         e.printStackTrace();
+                        errorCallback.response(e.toString());
                     }
                 }
                 @Override
