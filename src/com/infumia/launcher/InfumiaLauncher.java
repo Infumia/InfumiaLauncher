@@ -49,58 +49,62 @@ public class InfumiaLauncher extends Application {
 
         File cacheFile = new File(cacheDir);
         InfumiaLauncher.logger.info("Çerezler okunuyor");
-        if (cacheFile.exists()) {
-            FileReader fileInputStream = new FileReader(cacheFile);
-            BufferedReader reader = new BufferedReader(fileInputStream);
-            String line = reader.readLine();
-            if (line == null || line.isEmpty()) {
-                InfumiaLauncher.logger.info("Çerez bulunamadı giriş sayfası yükleniyor");
-                loadLauncherParent();
-                return;
-            }
-            JSONObject jsonObject = new JSONObject(line);
-            if (!jsonObject.isNull("username")) {
-                InfumiaLauncher.logger.info("Bir hesap bulundu");
-                if (!jsonObject.isNull("password") && !jsonObject.isNull("e-mail")) {
-                    String password = new String(Base64.getDecoder().decode((String) jsonObject.get("password")));
-                    InfumiaLauncher.logger.info("Hesap bilgileri için istek gönderiliyor");
-                    AuthThread authThread = new AuthThread((String) jsonObject.get("e-mail"), password, response -> {
-                        if (response.equals("-1")) {
-                            InfumiaLauncher.logger.info("Hesap bulunamadı giriş sayfası açılıyor");
-                            Platform.runLater(() -> {
-                                loadLauncherParent();
-                            });
-                            return;
-                        }
-                        if (!response.contains("accessToken") || !response.contains("selectedProfile")) {
-                            InfumiaLauncher.logger.info("Profil bulunamadı giriş sayfası açılıyor");
-                            Platform.runLater(() -> {
-                                loadLauncherParent();
-                            });
-                            return;
-                        }
-                        InfumiaLauncher.logger.info("Hesap onaylandı");
-                        JSONObject responJson = new JSONObject(response);
-                        String accessToken = (String) responJson.get("accessToken");
-                        String profileName = (String) responJson.getJSONObject("selectedProfile").get("name");
-                        String uuid = (String) responJson.getJSONObject("selectedProfile").get("id");
-                        if (!accessToken.isEmpty() && !profileName.isEmpty() && !uuid.isEmpty()) {
-                            InfumiaLauncher.logger.info("Kullanıcı bilgileri yükleniyor");
-                            Minecraft.playerName = profileName;
-                            Minecraft.accessToken = accessToken;
-                            Minecraft.uuid = uuid;
-                            InfumiaLauncher.logger.info("Accesstoken ve uuid ayarlandı");
-                            loadHomeParent();
-                        }
+        if (!cacheFile.exists()) {
+            loadLauncherParent();
+            logger.info("Infumia Launcher başlatıldı.");
+            return;
+        }
+
+        FileReader fileInputStream = new FileReader(cacheFile);
+        BufferedReader reader = new BufferedReader(fileInputStream);
+        String line = reader.readLine();
+        if (line == null || line.isEmpty()) {
+            InfumiaLauncher.logger.info("Çerez bulunamadı giriş sayfası yükleniyor");
+            loadLauncherParent();
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject(line);
+        if (jsonObject.isNull("username")) return;
+        InfumiaLauncher.logger.info("Bir hesap bulundu");
+        if (!jsonObject.isNull("password") && !jsonObject.isNull("e-mail")) {
+            String password = new String(Base64.getDecoder().decode((String) jsonObject.get("password")));
+            InfumiaLauncher.logger.info("Hesap bilgileri için istek gönderiliyor");
+            AuthThread authThread = new AuthThread((String) jsonObject.get("e-mail"), password, response -> {
+                if (response.equals("-1")) {
+                    InfumiaLauncher.logger.info("Hesap bulunamadı giriş sayfası açılıyor");
+                    Platform.runLater(() -> {
+                        loadLauncherParent();
                     });
-                    authThread.start();
-                } else {
-                    Minecraft.playerName = (String) jsonObject.get("username");
+                    return;
+                }
+                if (!response.contains("accessToken") || !response.contains("selectedProfile")) {
+                    InfumiaLauncher.logger.info("Profil bulunamadı giriş sayfası açılıyor");
+                    Platform.runLater(() -> {
+                        loadLauncherParent();
+                    });
+                    return;
+                }
+                InfumiaLauncher.logger.info("Hesap onaylandı");
+                JSONObject responJson = new JSONObject(response);
+                String accessToken = (String) responJson.get("accessToken");
+                String profileName = (String) responJson.getJSONObject("selectedProfile").get("name");
+                String uuid = (String) responJson.getJSONObject("selectedProfile").get("id");
+                if (!accessToken.isEmpty() && !profileName.isEmpty() && !uuid.isEmpty()) {
+                    InfumiaLauncher.logger.info("Kullanıcı bilgileri yükleniyor");
+                    Minecraft.playerName = profileName;
+                    Minecraft.accessToken = accessToken;
+                    Minecraft.uuid = uuid;
+                    InfumiaLauncher.logger.info("Accesstoken ve uuid ayarlandı");
                     loadHomeParent();
                 }
-            }
+            });
+            authThread.start();
+        } else {
+            Minecraft.playerName = (String) jsonObject.get("username");
+            loadHomeParent();
         }
-        logger.info("Infumia Launcher başlatıldı.");
+
     }
 
     void loadHomeParent() {

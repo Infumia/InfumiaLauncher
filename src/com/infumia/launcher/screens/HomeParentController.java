@@ -208,7 +208,7 @@ public class HomeParentController implements Initializable {
         if(!indexesDir.exists())indexesDir.mkdir();
         if(!logconfigsDir.exists())logconfigsDir.mkdir();
 
-        MoveYAnimation animation = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 610, Duration.seconds(0.3));
+        MoveYAnimation animation = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 606, Duration.seconds(0.3));
         animation.play();
         AtomicReference<Timeline> animation2 = new AtomicReference<>();
         animation.setOnFinished(event -> {
@@ -216,25 +216,27 @@ public class HomeParentController implements Initializable {
                     new KeyFrame(Duration.millis(1), ((actionEvent) -> {
                         if (InfumiaLauncher.step == 1) {
                             if (MinecraftAssetsDownloader.objects == null) return;
-                            double perc = (Double.valueOf(String.valueOf(MinecraftAssetsDownloader.currentfile)) / MinecraftAssetsDownloader.objects.length()) * 25d;
+                            double perc = (Double.parseDouble(String.valueOf(MinecraftAssetsDownloader.currentfile)) / MinecraftAssetsDownloader.objects.length()) * 25d;
                             percent.setText("%" + new DecimalFormat("##.#").format(perc).replace(",", "."));
                             progressbar.setProgress(perc / 100d);
                             return;
                         }
                         if (InfumiaLauncher.step == 2) {
                             percent.setText("%" + new DecimalFormat("##.#").format((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d).replace(",", "."));
-                            progressbar.setProgress(((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d) / 100d);
+                            progressbar.setProgress(((MinecraftClientDownloader.downloadPercent * 0.25d) + 25 ) / 100d);
                             return;
                         }
                         if (InfumiaLauncher.step == 3) {
                             percent.setText("%" + new DecimalFormat("##.#").format((MinecraftNativesDownloader.fileStep / 11d) * 25d + 50d).replace(",", "."));
-                            progressbar.setProgress(((Double.valueOf(MinecraftNativesDownloader.fileStep + "") / 11d) * 25d + 50d) / 100d);
-
+                            progressbar.setProgress(((Double.parseDouble(MinecraftNativesDownloader.fileStep + "") / 11d) * 25d + 50d) / 100d);
                         }
                         if (InfumiaLauncher.step == 4) {
                             if (MinecraftLibrariesDownloader.objects != null) {
-                                percent.setText("%" + new DecimalFormat("##.#").format(((Double.valueOf(MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib) / (MinecraftLibrariesDownloader.totalNativeLib + MinecraftLibrariesDownloader.objects.length())) * 25d) + 75d).replace(",", "."));
-                                progressbar.setProgress((((Double.valueOf(MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib) / (MinecraftLibrariesDownloader.totalNativeLib + MinecraftLibrariesDownloader.objects.length())) * 25d) + 75d) / 100d);
+                                double currentDownloaded = MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib;
+                                double totalFile = MinecraftLibrariesDownloader.totalNativeLib + MinecraftLibrariesDownloader.objects.length();
+                                double calc = (((currentDownloaded / totalFile) * 25d) + 75d) / 100d;
+                                percent.setText("%" + new DecimalFormat("##.#").format(calc * 100d).replace(",", "."));
+                                progressbar.setProgress(calc);
                             }
                         }
                         if (InfumiaLauncher.step == 5) {

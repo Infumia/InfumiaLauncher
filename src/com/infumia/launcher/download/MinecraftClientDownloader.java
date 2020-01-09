@@ -27,6 +27,7 @@ public class MinecraftClientDownloader implements Runnable{
     public void run() {
 
         if (clientFile.exists()) {
+            downloadPercent = 100.0d;
             InfumiaLauncher.logger.info("Client indirme islemi bitti.");
             InfumiaLauncher.logger.info("Natives indirme islemi baslatiliyor");
             InfumiaLauncher.step++;

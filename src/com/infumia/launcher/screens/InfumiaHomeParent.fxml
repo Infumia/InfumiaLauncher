@@ -37,14 +37,14 @@
       </Rectangle>
       <Pane prefHeight="14.0" prefWidth="1100.0">
          <children>
-            <JFXProgressBar fx:id="progressbar" layoutY="620.0" prefHeight="10.0" prefWidth="1100.0" progress="0.0" stylesheets="@stylesheet.css" />
-            <HBox alignment="CENTER" layoutY="606.0" prefHeight="14.0" prefWidth="1100.0">
+            <JFXProgressBar fx:id="progressbar" layoutY="620.0" prefHeight="14.0" prefWidth="1100.0" progress="0.0" stylesheets="@stylesheet.css" />
+            <HBox alignment="CENTER" layoutY="604.0" prefHeight="14.0" prefWidth="1100.0">
                <children>
-                  <VBox alignment="CENTER">
-                     <children>
-                        <Label id="percent" fx:id="percent" />
-                     </children>
-                  </VBox>
+                  <Label id="percent" fx:id="percent" textFill="#1548C4">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
          </children>
