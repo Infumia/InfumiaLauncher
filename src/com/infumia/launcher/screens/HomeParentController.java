@@ -259,16 +259,21 @@ public class HomeParentController implements Initializable {
             ));
 
             animation2.get().setCycleCount(Timeline.INDEFINITE);
-            animation2.get().play();
+            // animation2.get().play();
 
-            Thread thread = new Thread(new MinecraftAssetsDownloader("1.15", response -> Platform.runLater(() -> {
-                error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
-                MoveYAnimation animation1 = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 620, Duration.seconds(0.3));
-                animation1.play();
-                playButton.setDisable(false);
-                exitButton.setDisable(false);
-            })));
-            InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
+//            Thread thread = new Thread(new MinecraftAssetsDownloader("1.12", response -> Platform.runLater(() -> {
+//                error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
+//                MoveYAnimation animation1 = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 620, Duration.seconds(0.3));
+//                animation1.play();
+//                playButton.setDisable(false);
+//                exitButton.setDisable(false);
+//            })));
+
+
+            tagapi_3.API_Interface api = new tagapi_3.API_Interface();
+            api.downloadMinecraft("1.12", false);
+
+            //InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
         });
     }
 

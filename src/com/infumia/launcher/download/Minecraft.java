@@ -190,7 +190,7 @@ public class Minecraft {
         return minMemory;
     }
 
-    private String versionData = "#ammarbless";
+    private String versionData = "#infumialauncher";
 
     public void setVersionData(String versionData_) {
         versionData = versionData_;
