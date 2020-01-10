@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,6 +56,8 @@ public class MinecraftLibrariesDownloader {
         for (int i = 0; i < local.version_name_list.size(); i++) {
             local.version_path_list.add(local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i).toString()));
         }
+
+        sorted = versionCheck();
     }
 
     public static int totalFile = 0;
@@ -72,6 +75,7 @@ public class MinecraftLibrariesDownloader {
 
     Local local = new Local();
     Utils utils = new Utils();
+    List sorted;
 
     public void run() throws MalformedURLException, FileNotFoundException, InterruptedException {
 
@@ -108,10 +112,6 @@ public class MinecraftLibrariesDownloader {
             System.out.print("\r");
             libsDownloaded = true;
             InfumiaLauncher.logger.info("Natives dosyasi aktiflestirildi isletim sisteminiz kontrol ediliyor");
-            for (Object obj : local.version_url_list_natives) {
-                InfumiaLauncher.logger.info("\nNative dosyaları: " + obj);
-            }
-            InfumiaLauncher.logger.info("\n");
             runNatives();
             return;
         }
@@ -173,10 +173,82 @@ public class MinecraftLibrariesDownloader {
         }
     }
 
+    boolean isInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        }catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    List versionCheck() {
+        List list = new ArrayList<String>();
+        list.addAll(local.version_path_list_natives);
+
+        List removeList = new ArrayList<String>();
+
+        Collections.sort(list, (a, b)-> {
+            if (a == null || b == null) return 0;
+            File aFile = new File((String) a);
+            File bFile = new File((String) b);
+            String aname = aFile.getName();
+            String aremoved = aname.substring(0, aname.lastIndexOf('.'));
+            String bname = bFile.getName();
+            String bremoved = bname.substring(0, bname.lastIndexOf('.'));
+            for (String str : aremoved.split("-")) {
+                if (isInteger(str)) {
+                    if (Integer.parseInt(str) > 1000) {
+                        aremoved = aremoved.replaceAll("-" + str, "");
+                    }
+                }
+            }
+            for (String str : bremoved.split("-")) {
+                if (isInteger(str)) {
+                    if (Integer.parseInt(str) > 1000) {
+                        bremoved = bremoved.replaceAll("-" + str, "");
+                    }
+                }
+            }
+            int versiona = Integer.parseInt(aremoved.replaceAll("[\\D]", ""));
+            int versionB = Integer.parseInt(bremoved.replaceAll("[\\D]", ""));
+            // lwjgl-tinyfd-3.2.1-natives-windows lwjgl-tinyfd-3.2.2-natives-windows
+            String formattedvera = aremoved.replaceAll(local.getNatives_OS(getOS()), "").replaceAll("[A-Za-z]?", "").replaceAll("-", "");
+            String formattedverb = bremoved.replaceAll(local.getNatives_OS(getOS()), "").replaceAll("[A-Za-z]?", "").replaceAll("-", "");
+            if (!aname.replaceAll(local.getNatives_OS(getOS()), "").replaceAll(formattedvera, "").equals(
+                    bname.replaceAll(local.getNatives_OS(getOS()), "").replaceAll(formattedverb, ""))) return 0;
+            if (versiona == versionB) return 0;
+            if (versiona > versionB){
+                if (!removeList.contains(b)) {
+                    removeList.add(b);
+                }
+                return 1;
+            }
+            if (versiona < versionB) {
+                if (!removeList.contains(a)) removeList.add(a);
+                return -1;
+            }
+            return 0;
+        });
+
+        List sortedList = list;
+        sortedList.removeAll(removeList);
+
+        return sortedList;
+    }
+
+
+    boolean containsListString(List list, String obj) {
+        for (String elmnt : (List<String>) list) {
+            if (elmnt.contains(obj)) return true;
+        }
+        return false;
+    }
 
     public void runNatives() throws MalformedURLException, FileNotFoundException, InterruptedException {
 
         String OperatingSystemToUse = utils.getOS();
+
 
         if (currentfilenativelib == local.version_url_list_natives.size()) {
             System.out.print("\r");
@@ -186,7 +258,6 @@ public class MinecraftLibrariesDownloader {
             run();
             return;
         }
-
 
         String dirs = "";
         String fullName = local.version_path_list_natives.get(currentfilenativelib).toString();
@@ -201,12 +272,17 @@ public class MinecraftLibrariesDownloader {
 
         libDir = new File(utils.getMineCraftLibrariesLocation(OperatingSystemToUse) + "/" + dirs, name);
 
+
         DirectDownloader ddnative = new DirectDownloader();
         if (libDir.exists()) {
             if ((long) local.version_size_list_natives.get(currentfilenativelib) == libDir.length()) {
+                if (sorted.contains(fullName)) {
+                    System.out.print("\r>Dosya çıkartılıyor: " + name);
+                    jarExtract(dirs + name, getMineCraft_Versions_X_Natives_Location(version));
+                }
                 System.out.print("\r");
-                System.out.print("Dosya zaten var diger dosyaya geciliyor. " + currentfilenativelib + "/" + local.version_url_list_natives.size());
                 currentfilenativelib++;
+                System.out.print("Diger dosyaya geciliyor. " + currentfilenativelib + "/" + local.version_url_list_natives.size());
                 runNatives();
                 return;
             }
@@ -238,7 +314,6 @@ public class MinecraftLibrariesDownloader {
             @Override
             public void onComplete() {
                 try {
-                    jarExtract(finalDirs + name, getMineCraft_Versions_X_Natives_Location(version));
                     currentfilenativelib++;
                     runNatives();
                 } catch (Exception e) {

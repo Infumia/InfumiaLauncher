@@ -3,6 +3,7 @@ package com.infumia.launcher.download;
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.objects.Callback;
 import com.infumia.launcher.util.JSONUrl;
+import com.infumia.launcher.util.Utils;
 import com.sun.javafx.PlatformUtil;
 import javafx.application.Platform;
 import org.json.JSONArray;
@@ -46,6 +47,8 @@ public class MinecraftAssetsDownloader implements Runnable {
 
     public void run() {
         try {
+            Utils utils = new Utils();
+            String OperatingSystemToUse = utils.getOS();
             if (objects == null) {
                 JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
                 JSONArray versions = manifest.getJSONArray("versions");
@@ -53,7 +56,12 @@ public class MinecraftAssetsDownloader implements Runnable {
                     if (versions.getJSONObject(i).getString("id").equals(version)) {
                         versionUrl = versions.getJSONObject(i).getString("url");
                         versionObject = JSONUrl.readURL(versionUrl);
-                        objects = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url")).getJSONObject("objects");
+                        JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
+                        objects = readedUrl.getJSONObject("objects");
+                        try (FileWriter file = new FileWriter(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, versionObject.getJSONObject("assetIndex").getString("id")))) {
+                            file.write(readedUrl.toString());
+                            file.flush();
+                        }
                         break;
                     }
                 }

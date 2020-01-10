@@ -13,12 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -730,16 +725,81 @@ public class Local {
         return tempArgsSplit;
     }
 
+    boolean isInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        }catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public String generateLibrariesArguments(String OS) {
         String cp = "";
         Utils utils = new Utils();
-        for (int i = 0; i < libraries_path.size(); i++) {
-            if (i == libraries_path.size() - 1) {
 
-                cp = cp + libraries_path.get(i).toString();
+        List list = new ArrayList<String>();
+        list.addAll(libraries_path);
+
+        List removeList = new ArrayList<String>();
+
+        Collections.sort(list, (a, b)-> {
+            if (a == null || b == null) return 0;
+            File aFile = new File((String) a);
+            File bFile = new File((String) b);
+            String aname = aFile.getName();
+            String aremoved = aname.substring(0, aname.lastIndexOf('.'));
+            String bname = bFile.getName();
+            String bremoved = bname.substring(0, bname.lastIndexOf('.'));
+            for (String str : aremoved.split("-")) {
+                if (isInteger(str)) {
+                    if (Integer.parseInt(str) > 1000) {
+                        aremoved = aremoved.replaceAll("-" + str, "");
+                    }
+                }
+            }
+            for (String str : bremoved.split("-")) {
+                if (isInteger(str)) {
+                    if (Integer.parseInt(str) > 1000) {
+                        bremoved = bremoved.replaceAll("-" + str, "");
+                    }
+                }
+            }
+            if (aremoved.replaceAll("[\\D]", "").isEmpty()) return 0;
+            if (bremoved.replaceAll("[\\D]", "").isEmpty()) return 0;
+            int versiona = Integer.parseInt(aremoved.replaceAll("[\\D]", ""));
+            int versionB = Integer.parseInt(bremoved.replaceAll("[\\D]", ""));
+            String formattedvera = aremoved.substring(aremoved.lastIndexOf("-")+1).replaceAll("[A-Za-z]?", "");
+            String formattedverb = bremoved.substring(bremoved.lastIndexOf("-")+1).replaceAll("[A-Za-z]?", "");
+            if (!aname.replaceAll(formattedvera, "").equals(bname.replaceAll(formattedverb, ""))) return 0;
+            if (versiona == versionB) return 0;
+            if (versiona > versionB){
+                if (!removeList.contains(b)) {
+                    removeList.add(b);
+                }
+                return 1;
+            }
+            if (versiona < versionB) {
+                if (!removeList.contains(a)) removeList.add(a);
+                return -1;
+            }
+            return 0;
+        });
+
+        List sorted = new ArrayList();
+        sorted.addAll(list);
+        sorted.removeAll(removeList);
+
+        for (int i = 0; i < sorted.size(); i++) {
+
+            if (cp.contains(sorted.get(i).toString())) continue;
+
+            if (i == sorted.size() - 1) {
+
+                cp = cp + sorted.get(i);
 
             } else {
-                cp = cp + libraries_path.get(i).toString() + utils.getArgsDiv(OS);
+                cp = cp + sorted.get(i) + utils.getArgsDiv(OS);
 
             }
         }
@@ -785,6 +845,24 @@ public class Local {
             e.printStackTrace();
         }
         return "N/A";
+    }
+
+    public String getNatives_OS(String natives_OS) {
+        try {
+            if (natives_OS.equals("Linux")) {
+                return natives_OS.replace("Linux", "natives-linux");
+            } else if (natives_OS.equals("Windows")) {
+                return natives_OS.replace("Windows", "natives-windows");
+            } else if (natives_OS.equals("Mac")) {
+                return natives_OS.replace("Mac", "natives-osx");
+            } else {
+                return "N/A";
+                //I DON'T KNOW THIS OS!
+            }
+        }catch (Exception ex) {
+            System.out.println(ex.toString());
+            return "N/A";
+        }
     }
 
     public String generateNativesPath(String natives_OS, String _name) {
