@@ -8,6 +8,7 @@ import com.infumia.launcher.download.*;
 import com.infumia.launcher.objects.Callback;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
+import com.sun.javafx.PlatformUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.ScaleTransition;
@@ -36,14 +37,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class HomeParentController implements Initializable {
 
-    File gamedir = new File(System.getenv().get("APPDATA") + "/.infumia/");
-    File assestdir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/");
-    File objectsdir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/objects");
-    File librarydir = new File(System.getenv().get("APPDATA") + "/.infumia/libraries/");
-    File versionsdir = new File(System.getenv().get("APPDATA") + "/.infumia/versions/");
-    File nativedir = new File(System.getenv().get("APPDATA") + "/.infumia/libraries/native/");
-    File indexesDir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/indexes/");
-    File logconfigsDir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/log_configs/");
+    File gamedir = new File(getMineCraftLocation() + "/");
+    File assestdir = new File(getMineCraftLocation() + "/assets/");
+    File objectsdir = new File(getMineCraftLocation() + "/assets/objects");
+    File librarydir = new File(getMineCraftLocation() + "/libraries/");
+    File versionsdir = new File(getMineCraftLocation() + "/versions/");
+    File indexesDir = new File(getMineCraftLocation() + "/assets/indexes/");
+    File logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
 
     @FXML
     Label percent;
@@ -204,7 +204,6 @@ public class HomeParentController implements Initializable {
 
         if(!objectsdir.exists())objectsdir.mkdir();
         if(!versionsdir.exists())versionsdir.mkdir();
-        if(!nativedir.exists())nativedir.mkdir();
         if(!indexesDir.exists())indexesDir.mkdir();
         if(!logconfigsDir.exists())logconfigsDir.mkdir();
 
@@ -214,34 +213,31 @@ public class HomeParentController implements Initializable {
         animation.setOnFinished(event -> {
             animation2.set(new Timeline(
                     new KeyFrame(Duration.millis(1), ((actionEvent) -> {
-                        if (InfumiaLauncher.step == 1) {
-                            if (MinecraftAssetsDownloader.objects == null) return;
-                            double perc = (Double.parseDouble(String.valueOf(MinecraftAssetsDownloader.currentfile)) / MinecraftAssetsDownloader.objects.length()) * 25d;
-                            percent.setText("%" + new DecimalFormat("##.#").format(perc).replace(",", "."));
-                            progressbar.setProgress(perc / 100d);
-                            return;
-                        }
-                        if (InfumiaLauncher.step == 2) {
-                            percent.setText("%" + new DecimalFormat("##.#").format((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d).replace(",", "."));
-                            progressbar.setProgress(((MinecraftClientDownloader.downloadPercent * 0.25d) + 25 ) / 100d);
-                            return;
-                        }
-                        if (InfumiaLauncher.step == 3) {
-                            percent.setText("%" + new DecimalFormat("##.#").format((MinecraftNativesDownloader.fileStep / 11d) * 25d + 50d).replace(",", "."));
-                            progressbar.setProgress(((Double.parseDouble(MinecraftNativesDownloader.fileStep + "") / 11d) * 25d + 50d) / 100d);
-                        }
-                        if (InfumiaLauncher.step == 4) {
-                            if (MinecraftLibrariesDownloader.objects != null) {
-                                double currentDownloaded = MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib;
-                                double totalFile = MinecraftLibrariesDownloader.totalNativeLib + MinecraftLibrariesDownloader.objects.length();
-                                double calc = (((currentDownloaded / totalFile) * 25d) + 75d) / 100d;
-                                percent.setText("%" + new DecimalFormat("##.#").format(calc * 100d).replace(",", "."));
-                                progressbar.setProgress(calc);
+                        try {
+                            if (InfumiaLauncher.step == 1) {
+                                if (MinecraftAssetsDownloader.objects == null) return;
+                                double perc = (Double.parseDouble(String.valueOf(MinecraftAssetsDownloader.currentfile)) / MinecraftAssetsDownloader.objects.length()) * 25d;
+                                percent.setText("%" + new DecimalFormat("##.#").format(perc).replace(",", "."));
+                                progressbar.setProgress(perc / 100d);
+                                return;
                             }
-                        }
-                        if (InfumiaLauncher.step == 5) {
-                            percent.setText("%100");
-                            progressbar.setProgress(1);
+
+                            if (InfumiaLauncher.step == 2) {
+                                percent.setText("%" + new DecimalFormat("##.#").format((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d).replace(",", "."));
+                                progressbar.setProgress(((MinecraftClientDownloader.downloadPercent * 0.25d) + 25) / 100d);
+                                return;
+                            } if (InfumiaLauncher.step == 3) {
+                                if (MinecraftLibrariesDownloader.objects != null) {
+                                    double currentDownloaded = MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib;
+                                    double totalFile = MinecraftLibrariesDownloader.totalFile;
+                                    double calc = (((currentDownloaded / totalFile) * 25d) + 75d) / 100d;
+                                    percent.setText("%" + new DecimalFormat("##.#").format(calc * 100d).replace(",", "."));
+                                    progressbar.setProgress(calc);
+                                }
+                            }
+                            if (InfumiaLauncher.step == 4) {
+                                percent.setText("%100");
+                                progressbar.setProgress(1);
 //                        try {
 //                            SystemTray tray = SystemTray.getSystemTray();
 //                            java.awt.Image trayImage = Toolkit.getDefaultToolkit().createImage(InfumiaLauncher.class.getClassLoader().getResource("images/logo-small.png"));
@@ -253,16 +249,20 @@ public class HomeParentController implements Initializable {
 //                        }catch (AWTException e){
 //                            e.printStackTrace();
 //                        }
-                            Platform.exit();
+                                Platform.exit();
+                            }
+                        }catch (Exception e ){
+                            e.printStackTrace();
                         }
                     })
                     )
             ));
+
             animation2.get().setCycleCount(Timeline.INDEFINITE);
             animation2.get().play();
 
-            Thread thread = new Thread(new MinecraftAssetsDownloader(response -> Platform.runLater(() -> {
-                error("HATA", "Sunucuyla bağlantı kurulurken hata oluştu: " + response);
+            Thread thread = new Thread(new MinecraftAssetsDownloader("1.15", response -> Platform.runLater(() -> {
+                error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
                 MoveYAnimation animation1 = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 620, Duration.seconds(0.3));
                 animation1.play();
                 playButton.setDisable(false);
@@ -288,6 +288,19 @@ public class HomeParentController implements Initializable {
         FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);;
         fade3.play();
         Animation.salla(exitPane);
+    }
+
+    public String getMineCraftLocation() {
+        if (PlatformUtil.isWindows()) {
+            return (System.getenv("APPDATA") + "/.infumia");
+        }
+        if (PlatformUtil.isLinux()) {
+            return (System.getProperty("user.home") + "/.infumia");
+        }
+        if (PlatformUtil.isMac()) {
+            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+        }
+        return "N/A";
     }
 
     @FXML

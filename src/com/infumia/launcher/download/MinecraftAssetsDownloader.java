@@ -3,6 +3,9 @@ package com.infumia.launcher.download;
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.objects.Callback;
 import com.infumia.launcher.util.JSONUrl;
+import com.sun.javafx.PlatformUtil;
+import javafx.application.Platform;
+import org.json.JSONArray;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
@@ -11,39 +14,60 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
 public class MinecraftAssetsDownloader implements Runnable {
 
-    Callback errorCallback;
+    private Callback errorCallback;
+    private String version;
+    private File objectsDir;
+    private File indexesDir;
+    private File logconfigsDir;
+    private File indexes;
+    private File xmlFile;
 
-    public MinecraftAssetsDownloader(Callback errorCallback) {
+    public MinecraftAssetsDownloader(String version, Callback errorCallback) {
         this.errorCallback = errorCallback;
+        this.version = version;
+        objectsDir = new File(getMineCraftLocation() + "/assets/objects/");
+        indexesDir = new File(getMineCraftLocation() + "/versions/" + version + "/");
+        logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
+        indexes = new File(indexesDir, version + ".json");
+        xmlFile = new File(logconfigsDir + "/" +"client-" + version + ".xml");
     }
 
     public static int currentfile=0;
 
-    File objectsDir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/objects/");
-    File indexesDir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/indexes/");
-    File logconfigsDir = new File(System.getenv().get("APPDATA") + "/.infumia/assets/log_configs/");
-    File indexes = new File(indexesDir + "/" +"1.12.json");
-    File xmlFile = new File(logconfigsDir + "/" +"client-1.12.xml");
 
     public static JSONObject objects = null;
+
+    private String versionUrl;
+    public static JSONObject versionObject;
 
     public void run() {
         try {
             if (objects == null) {
-                objects = JSONUrl.readURL("https://launchermeta.mojang.com/v1/packages/1584b57c1a0b5e593fad1f5b8f78536ca640547b/1.12.json").getJSONObject("objects");
+                JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+                JSONArray versions = manifest.getJSONArray("versions");
+                for (int i = 0; i < versions.length(); i++) {
+                    if (versions.getJSONObject(i).getString("id").equals(version)) {
+                        versionUrl = versions.getJSONObject(i).getString("url");
+                        versionObject = JSONUrl.readURL(versionUrl);
+                        objects = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url")).getJSONObject("objects");
+                        break;
+                    }
+                }
             }
             if (!indexes.exists()) {
+                if (!indexesDir.exists()) indexesDir.mkdir();
                 indexes.createNewFile();
                 try (FileWriter file = new FileWriter(indexes)) {
-                    file.write(JSONUrl.readURL("https://launchermeta.mojang.com/v1/packages/1584b57c1a0b5e593fad1f5b8f78536ca640547b/1.12.json").toString());
+                    file.write(JSONUrl.readURL(versionUrl).toString());
                     file.flush();
                 }
             }
             if (!xmlFile.exists()) {
-                String url = "https://launcher.mojang.com/v1/objects/ef4f57b922df243d0cef096efe808c72db042149/client-1.12.xml";
+                String url = versionObject.getJSONObject("logging").getJSONObject("client").getJSONObject("file").getString("url");
                 URL oracle = new URL(url);
                 BufferedReader in = new BufferedReader(new InputStreamReader(oracle.openStream()));
                 FileWriter file = new FileWriter(xmlFile);
@@ -56,10 +80,11 @@ public class MinecraftAssetsDownloader implements Runnable {
                 System.out.print("\r");
                 InfumiaLauncher.logger.info("Assets indirme islemi bitti.");
                 InfumiaLauncher.logger.info("Client indirme islemi baslatiliyor");
-                currentfile = 0;
                 InfumiaLauncher.step++;
-                Thread thread = new Thread(new MinecraftClientDownloader(errorCallback));
-                thread.run();
+                Thread thread = new Thread(()-> {
+                    new MinecraftClientDownloader(versionObject.getJSONObject("downloads").getJSONObject("client").getString("url"), version, errorCallback).run();
+                });
+                InfumiaLauncher.executor.schedule(thread, 1, TimeUnit.MILLISECONDS);
                 return;
             }
         } catch (IOException e) {
@@ -67,68 +92,85 @@ public class MinecraftAssetsDownloader implements Runnable {
             errorCallback.response(e.toString());
         }
 
-
         String url = "http://resources.download.minecraft.net/" + getHash(currentfile).substring(0, 2) + "/" + getHash(currentfile);
         File direc = new File(objectsDir + "/" + getHash(currentfile).substring(0, 2) + "/");
         if (!direc.exists()) direc.mkdir();
 
         File file = new File(objectsDir + "/" + getHash(currentfile).substring(0, 2) + "/" + getHash(currentfile));
 
-        if (file.exists()) {
-            if (getSize(currentfile) == file.length()) {
-                System.out.print("\r");
-                System.out.print("Dosya zaten var diger dosyaya geciliyor. " + currentfile + "/" + objects.length());
-                currentfile++;
-                run();
-                return;
-            }
-        }
-
-        DirectDownloader dd = new DirectDownloader();
         try {
-            dd.download(new DownloadTask(new URL(url), new FileOutputStream(objectsDir + "/" + getHash(currentfile).substring(0, 2) + "/" + getHash(currentfile)), new DownloadListener() {
-
-                String fname;
-                double fileSize = 0;
-
-                @Override
-                public void onStart(String fname, int fsize) {
-                    this.fname = fname;
-                    fileSize = fsize;
+            if (file.exists()) {
+                if (getSize(currentfile) == file.length()) {
+                    System.out.print("\r");
+                    System.out.print("Dosya zaten var diger dosyaya geciliyor. " + currentfile + "/" + objects.length());
+                    currentfile++;
+                    Platform.runLater(()-> run());
+                    return;
                 }
+            }
 
-                @Override
-                public void onUpdate(int bytes, int totalDownloaded) {
-                    double t1 = totalDownloaded + 0.0d;
-                    double t2 = fileSize + 0.0d;
-                    double downloadpercent = (t1 / t2) * 100.0d;
-                    System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", ".") + " " + currentfile + "/" + objects.length());
-                }
+            DirectDownloader dd = new DirectDownloader();
+            try {
+                dd.download(new DownloadTask(new URL(url), new FileOutputStream(objectsDir + "/" + getHash(currentfile).substring(0, 2) + "/" + getHash(currentfile)), new DownloadListener() {
 
-                @Override
-                public void onComplete() {
-                    try {
-                        currentfile++;
-                        run();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    String fname;
+                    double fileSize = 0;
+
+                    @Override
+                    public void onStart(String fname, int fsize) {
+                        this.fname = fname;
+                        fileSize = fsize;
                     }
-                }
 
-                @Override
-                public void onCancel() {
+                    @Override
+                    public void onUpdate(int bytes, int totalDownloaded) {
+                        double t1 = totalDownloaded + 0.0d;
+                        double t2 = fileSize + 0.0d;
+                        double downloadpercent = (t1 / t2) * 100.0d;
+                        System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", ".") + " " + currentfile + "/" + objects.length());
+                    }
 
-                }
-            }));
-        } catch (Exception e) {
+                    @Override
+                    public void onComplete() {
+                        try {
+                            currentfile++;
+                            run();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                }));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Thread t = new Thread(dd);
+            t.start();
+        }catch (Exception e) {
             e.printStackTrace();
         }
-        Thread t = new Thread(dd);
-        t.start();
 
     }
+
+    public String getMineCraftLocation() {
+        if (PlatformUtil.isWindows()) {
+            return (System.getenv("APPDATA") + "/.infumia");
+        }
+        if (PlatformUtil.isLinux()) {
+            return (System.getProperty("user.home") + "/.infumia");
+        }
+        if (PlatformUtil.isMac()) {
+            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+        }
+        return "N/A";
+    }
+
     private String getHash(int size){
-        return objects.getJSONObject((String) objects.names().get(size)).get("hash").toString();
+        return objects.getJSONObject((String) objects.names().get(size)).getString("hash");
     }
 
     private int getSize(int size){

@@ -3,6 +3,7 @@ package com.infumia.launcher;
 import com.infumia.launcher.animations.FadeInSceneTransition;
 import com.infumia.launcher.download.Minecraft;
 import com.infumia.launcher.objects.AuthThread;
+import com.sun.javafx.PlatformUtil;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -32,8 +33,8 @@ public class InfumiaLauncher extends Application {
 
     public static int step = 1;
 
-    public static String cacheDir = System.getenv().get("APPDATA") + "/.infumia/usercache.json";
-    public static String photoCacheDir = System.getenv().get("APPDATA") + "/.infumia/avatar.png";
+    public static String cacheDir = getMineCraftLocation() + "/usercache.json";
+    public static String photoCacheDir = getMineCraftLocation() + "/avatar.png";
 
     private static InfumiaLauncher infumiaLauncher = new InfumiaLauncher();
 
@@ -152,9 +153,23 @@ public class InfumiaLauncher extends Application {
                 sceneTransition.loadNextScene();
                 InfumiaLauncher.logger.info("Ana sayfa yüklendi");
             } catch (IOException e) {
-                InfumiaLauncher.logger.info("Sahne değişimi yapılırken hata oluştu:" + e.toString());
+                InfumiaLauncher.logger.info("Sahne değişimi yapılırken hata oluştu:");
+                e.printStackTrace();
             }
         });
+    }
+
+    private static String getMineCraftLocation() {
+        if (PlatformUtil.isWindows()) {
+            return (System.getenv("APPDATA") + "/.infumia");
+        }
+        if (PlatformUtil.isLinux()) {
+            return (System.getProperty("user.home") + "/.infumia");
+        }
+        if (PlatformUtil.isMac()) {
+            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+        }
+        return "N/A";
     }
 
     void loadLauncherParent() {

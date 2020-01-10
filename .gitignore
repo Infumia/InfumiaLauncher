@@ -3,3 +3,15 @@ target
 *.iml
 out
 META-INF
+.script.js
+hs_err_pid20240.log
+hs_err_pid35832.log
+hs_err_pid8032.log
+logs/2020-01-10-1.log.gz
+logs/2020-01-10-2.log.gz
+logs/2020-01-10-3.log.gz
+logs/2020-01-10-4.log.gz
+logs/2020-01-10-5.log.gz
+logs/2020-01-10-6.log.gz
+logs/2020-01-10-7.log.gz
+*.log

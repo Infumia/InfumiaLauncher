@@ -2,6 +2,7 @@ package com.infumia.launcher.download;
 
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.objects.Callback;
+import com.sun.javafx.PlatformUtil;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
@@ -13,18 +14,26 @@ import java.text.DecimalFormat;
 
 public class MinecraftClientDownloader implements Runnable{
 
-    Callback errorCallback;
+    private Callback errorCallback;
+    private String version;
+    private String clientUrl;
+    private File versionsDir;
+    private File clientFile;
 
-    public MinecraftClientDownloader(Callback errorCallback) {
+    public MinecraftClientDownloader(String clientUrl, String version, Callback errorCallback) {
         this.errorCallback = errorCallback;
+        this.version = version;
+        this.clientUrl = clientUrl;
+        versionsDir = new File(getMineCraftLocation() + "/versions/" + version + "/");
+        clientFile = new File(versionsDir, version + ".jar");
     }
 
     public static double downloadPercent = 0;
 
-    File versionsDir = new File(System.getenv().get("APPDATA") + "/.infumia/versions/");
-    File clientFile = new File(versionsDir, "1.12.jar");
 
     public void run() {
+
+        if (!versionsDir.exists()) versionsDir.mkdir();
 
         if (clientFile.exists()) {
             downloadPercent = 100.0d;
@@ -32,7 +41,7 @@ public class MinecraftClientDownloader implements Runnable{
             InfumiaLauncher.logger.info("Natives indirme islemi baslatiliyor");
             InfumiaLauncher.step++;
             try {
-                new MinecraftNativesDownloader(errorCallback).run();
+                new MinecraftLibrariesDownloader(version, errorCallback).run();
             } catch (Exception e) {
                 e.printStackTrace();
                 errorCallback.response(e.toString());
@@ -42,11 +51,9 @@ public class MinecraftClientDownloader implements Runnable{
 
         DirectDownloader dd = new DirectDownloader();
 
-        String url = "https://launcher.mojang.com/v1/objects/909823f9c467f9934687f136bc95a667a0d19d7f/client.jar";
-
         try {
 
-            dd.download(new DownloadTask(new URL(url), new FileOutputStream(clientFile), new DownloadListener() {
+            dd.download(new DownloadTask(new URL(clientUrl), new FileOutputStream(clientFile), new DownloadListener() {
 
                 String fname;
                 double fileSize = 0;
@@ -75,9 +82,10 @@ public class MinecraftClientDownloader implements Runnable{
                     InfumiaLauncher.logger.info("OpenGL Natives indirme islemi baslatiliyor");
                     InfumiaLauncher.step++;
                     try {
-                        new MinecraftNativesDownloader(errorCallback).run();
+                        new MinecraftLibrariesDownloader(version, errorCallback).run();
                     } catch (Exception e) {
                         e.printStackTrace();
+                        errorCallback.response(e.toString());
                     }
                 }
 
@@ -91,6 +99,19 @@ public class MinecraftClientDownloader implements Runnable{
             ex.printStackTrace();
             errorCallback.response(ex.toString());
         }
+    }
+
+    public String getMineCraftLocation() {
+        if (PlatformUtil.isWindows()) {
+            return (System.getenv("APPDATA") + "/.infumia");
+        }
+        if (PlatformUtil.isLinux()) {
+            return (System.getProperty("user.home") + "/.infumia");
+        }
+        if (PlatformUtil.isMac()) {
+            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+        }
+        return "N/A";
     }
 
 }

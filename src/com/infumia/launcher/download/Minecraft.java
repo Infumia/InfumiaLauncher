@@ -1,6 +1,9 @@
 package com.infumia.launcher.download;
 
 import com.infumia.launcher.InfumiaLauncher;
+import com.infumia.launcher.util.Local;
+import com.infumia.launcher.util.Utils;
+import com.sun.javafx.PlatformUtil;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 
@@ -11,8 +14,22 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class Minecraft {
+
+    private String version;
+    private Utils utils;
+    private Local local;
+
+    public Minecraft(String version, Utils utils, Local local) {
+        this.version = version;
+        versionsdir = new File(getMineCraftLocation() + "/versions/" + version + "\\");
+        nativedir = new File(getMineCraftLocation() + "/versions/" + version + "/natives\\");
+        this.utils = utils;
+        this.local = local;
+    }
 
     public static Process proc = null;
 
@@ -21,11 +38,12 @@ public class Minecraft {
     public static String uuid = "0";
     public static Image image;
 
-    File gamedir = new File(System.getenv().get("APPDATA") + "/.infumia\\");
-    File assestdir = new File(System.getenv().get("APPDATA") + "/.infumia/assets\\");
-    File librarydir = new File(System.getenv().get("APPDATA") + "/.infumia/libraries\\");
-    File versionsdir = new File(System.getenv().get("APPDATA") + "/.infumia/versions\\");
-    File nativedir = new File(System.getenv().get("APPDATA") + "/.infumia/libraries/native\\");
+    File gamedir = new File(getMineCraftLocation() + "\\");
+    File assestdir = new File(getMineCraftLocation() + "/assets\\");
+    File librarydir = new File(getMineCraftLocation() + "/libraries\\");
+
+    File versionsdir;
+    File nativedir;
 
     public ArrayList<String> names;
 
@@ -34,13 +52,51 @@ public class Minecraft {
     public void launchMinecraft(){
         names = new ArrayList<>(Arrays.asList(Objects.requireNonNull(librarydir.list())));
         names.replaceAll( s -> librarydir.getPath() + "\\" + s);
-        libraryargument = names.toString().replace(" ","").replace(",",";").replace("[","").replace("]","");
+
+        String OperatingSystemToUse = utils.getOS();
+        String gameDirectory = utils.getMineCraftGameDirectoryLocation(OperatingSystemToUse);
+        String AssetsRoot = utils.getMineCraftAssetsRootLocation(OperatingSystemToUse);
+
+        //String HalfArgumentTemplate = local.readJson_minecraftArguments(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse));
+        int Xmx = this.getMemory();
+        int Xms = this.getMinMemory();
+        int Width = this.getWidth();
+        int Height = this.getHeight();
+        String JavaPath = this.getJavaPath();
+        String JVMArgument = this.getJVMArgument();
+        String versionName = local.readJson_id(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
+        String assetsIdexId = local.readJson_assets(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
+
+        String VersionType = this.getVersionData();
+        String GameAssets = utils.getMineCraftAssetsVirtualLegacyLocation(OperatingSystemToUse);
+        String AuthSession = "OFFLINE";
+
+        String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIdexId, "0", "0", "{}", "mojang", VersionType, GameAssets, AuthSession);
+        String MinecraftJar = utils.getMineCraft_Versions_X_X_jar(OperatingSystemToUse, version);
+        String FullLibraryArgument = local.generateLibrariesArguments(OperatingSystemToUse) + utils.getArgsDiv(OperatingSystemToUse) + MinecraftJar;
+        String mainClass = local.readJson_mainClass(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
+        String NativesDir = utils.getMineCraft_Versions_X_Natives(OperatingSystemToUse, version);
+
+        String cmds[] = {"-Xms" + Xms + "M", "-Xmx" + Xmx + "M", "-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump", "-Djava.library.path=" + NativesDir, "-cp", FullLibraryArgument, mainClass, "--width", String.valueOf(Width), "--height", String.valueOf(Height)};
+        //put jvm arguments here
+        String[] JVMArguments = JVMArgument.split(" ");
+        //we now have all the arguments. merge cmds with JVMArguments
+        if (!JVMArgument.isEmpty()) {
+            //no need to join.
+            cmds = Stream.concat(Arrays.stream(JVMArguments), Arrays.stream(cmds)).toArray(String[]::new);
+        }
+        String javaPathArr[] = {JavaPath};
+        //merge javapath back to cmds
+        cmds = Stream.concat(Arrays.stream(javaPathArr), Arrays.stream(cmds)).toArray(String[]::new);
+
+        String[] finalArgs = Stream.concat(Arrays.stream(cmds), Arrays.stream(HalfArgument)).toArray(String[]::new);
 
         try {
-            proc = Runtime.getRuntime().exec("javaw -Djava.library.path="+nativedir+" -cp "+libraryargument+";"+versionsdir+"\\1.12.jar -Xms8G -Xmx8G -Dlog4j.configurationFile="+getClass().getClassLoader().getResource("log4j2.xml")+" net.minecraft.client.main.Main --username " + playerName + " --version 1.12 --gameDir "+gamedir+" --assetsDir "+assestdir+" --assetIndex 1.12 --uuid "+ uuid +" --accessToken " + accessToken + " --userType mojang");
+            proc = Runtime.getRuntime().exec(finalArgs);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         if(proc != null){
             BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -61,5 +117,86 @@ public class Minecraft {
                 System.exit(0);
             }
         }
+    }
+
+    public String getMineCraftLocation() {
+        if (PlatformUtil.isWindows()) {
+            return (System.getenv("APPDATA") + "/.infumia");
+        }
+        if (PlatformUtil.isLinux()) {
+            return (System.getProperty("user.home") + "/.infumia");
+        }
+        if (PlatformUtil.isMac()) {
+            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+        }
+        return "N/A";
+    }
+
+    private String jvmArgument = "";
+    public void setJVMArgument(String jvmArgument_) {
+        jvmArgument = jvmArgument_;
+    }
+
+    private String getJVMArgument() {
+        return jvmArgument;
+    }
+
+    private String javaPath = "java";
+    public void setJavaPath(String javaPath_) {
+        javaPath = javaPath_;
+    }
+
+    private String getJavaPath() {
+        return javaPath;
+    }
+
+    private int width = 854;
+
+    public void setWidth(int width_) {
+        width = width_;
+    }
+
+    private int getWidth() {
+        return width;
+    }
+
+    private int height = 480;
+
+    public void setHeight(int height_) {
+        height = height_;
+    }
+
+    private int getHeight() {
+        return height;
+    }
+
+    private int memory = 2048;
+
+    public void setMemory(int memory_) {
+        memory = memory_;
+    }
+
+    private int getMemory() {
+        return memory;
+    }
+
+    private int minMemory = 1024;
+
+    public void setMinMemory(int memory_) {
+        minMemory = memory_;
+    }
+
+    private int getMinMemory() {
+        return minMemory;
+    }
+
+    private String versionData = "#ammarbless";
+
+    public void setVersionData(String versionData_) {
+        versionData = versionData_;
+    }
+
+    private String getVersionData() {
+        return versionData;
     }
 }

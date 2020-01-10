@@ -311,7 +311,8 @@ public class InfumiaLauncherParent implements Initializable {
                     });
 
                 } catch (IOException e) {
-                    InfumiaLauncher.logger.info("Sahne değişimi yapılırken hata oluştu:" + e.toString());
+                    InfumiaLauncher.logger.info("Sahne değişimi yapılırken hata oluştu:");
+                    e.printStackTrace();
                 }
             }
         };
