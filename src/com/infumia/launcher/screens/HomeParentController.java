@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
@@ -138,6 +139,14 @@ public class HomeParentController implements Initializable {
             ramField.setText((Math.round(observable.getValue().doubleValue())) + " MB");
         });
         playerName.requestFocus();
+
+        long memorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory
+                .getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
+        ramSlider.setMax(Double.valueOf(memorySize / 1000000));
+
+        long freeMemorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory
+                .getOperatingSystemMXBean()).getFreePhysicalMemorySize();
+        ramSlider.setValue((freeMemorySize / 1000000) * 0.6);
     }
 
 
@@ -182,8 +191,8 @@ public class HomeParentController implements Initializable {
             ramSlider.setValue(formatted);
             ramField.setText(ramField.getText().replaceAll(" MB", "") + " MB");
         }catch (NumberFormatException e) {
-            ramSlider.setValue(1024);
-            ramField.setText("1024 MB");
+            ramSlider.setValue((int) ramSlider.getMin());
+            ramField.setText((int) (ramSlider.getMin()) + " MB");
         }
     }
 

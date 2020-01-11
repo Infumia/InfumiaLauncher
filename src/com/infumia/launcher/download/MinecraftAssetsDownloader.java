@@ -91,6 +91,7 @@ public class MinecraftAssetsDownloader implements Runnable {
                     }
                 }
             }
+
             if (!indexes.exists()) {
                 if (!indexesDir.exists()) indexesDir.mkdir();
                 indexes.createNewFile();
@@ -101,16 +102,23 @@ public class MinecraftAssetsDownloader implements Runnable {
                     errorCallback.response("İnternet bağlantısı gerekiyor.");
                 }
             }
-            if (!xmlFile.exists()) {
-                String url = versionObject.getJSONObject("logging").getJSONObject("client").getJSONObject("file").getString("url");
-                URL oracle = new URL(url);
-                BufferedReader in = new BufferedReader(new InputStreamReader(oracle.openStream()));
-                FileWriter file = new FileWriter(xmlFile);
-                String inputLine;
-                while ((inputLine = in.readLine()) != null)
-                    file.write(inputLine + "\n");
-                file.flush();
+
+            if (!xmlFile.exists() && !versionObject.isNull("logging")) {
+                try {
+                    String url = versionObject.getJSONObject("logging").getJSONObject("client").getJSONObject("file").getString("url");
+                    URL oracle = new URL(url);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(oracle.openStream()));
+                    FileWriter file = new FileWriter(xmlFile);
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null)
+                        file.write(inputLine + "\n");
+                    file.flush();
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    errorCallback.response(e.toString());
+                }
             }
+
             if (currentfile == objects.length()) {
                 System.out.print("\r");
                 InfumiaLauncher.logger.info("Assets indirme islemi bitti.");
@@ -191,6 +199,7 @@ public class MinecraftAssetsDownloader implements Runnable {
             t.start();
         }catch (Exception e) {
             e.printStackTrace();
+            errorCallback.response(e.toString());
         }
 
     }

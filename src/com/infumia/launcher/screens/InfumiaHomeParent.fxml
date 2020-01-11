@@ -22,7 +22,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.HomeParentController">
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.HomeParentController">
    <children>
       <ImageView fitHeight="620.0" fitWidth="1100.0">
          <image>
@@ -107,7 +107,7 @@
                               </HBox>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <JFXSlider fx:id="ramSlider" blockIncrement="0.0" indicatorPosition="RIGHT" majorTickUnit="1.0" max="8196.0" min="512.0" minorTickCount="1" nodeOrientation="LEFT_TO_RIGHT" styleClass="jfx-slider" value="2048.0" />
+                                    <JFXSlider fx:id="ramSlider" blockIncrement="0.0" indicatorPosition="RIGHT" majorTickUnit="1.0" max="8196.0" min="128.0" minorTickCount="1" nodeOrientation="LEFT_TO_RIGHT" styleClass="jfx-slider" value="1024.0" />
                                  </children>
                                  <VBox.margin>
                                     <Insets top="20.0" />
