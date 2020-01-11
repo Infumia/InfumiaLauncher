@@ -207,6 +207,9 @@ public class HomeParentController implements Initializable {
         if(!indexesDir.exists())indexesDir.mkdir();
         if(!logconfigsDir.exists())logconfigsDir.mkdir();
 
+        Storage storage = new Storage();
+        storage.setVersion("1.15.1");
+
         MoveYAnimation animation = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 606, Duration.seconds(0.3));
         animation.play();
         AtomicReference<Timeline> animation2 = new AtomicReference<>();
@@ -215,21 +218,21 @@ public class HomeParentController implements Initializable {
                     new KeyFrame(Duration.millis(1), ((actionEvent) -> {
                         try {
                             if (InfumiaLauncher.step == 1) {
-                                if (MinecraftAssetsDownloader.objects == null) return;
-                                double perc = (Double.parseDouble(String.valueOf(MinecraftAssetsDownloader.currentfile)) / MinecraftAssetsDownloader.objects.length()) * 25d;
+                                if (storage.getAssets() == null) return;
+                                double perc = (Double.parseDouble(String.valueOf(storage.getDownloadedAssets())) / storage.getAssets().length()) * 25d;
                                 percent.setText("%" + new DecimalFormat("##.#").format(perc).replace(",", "."));
                                 progressbar.setProgress(perc / 100d);
                                 return;
                             }
 
                             if (InfumiaLauncher.step == 2) {
-                                percent.setText("%" + new DecimalFormat("##.#").format((MinecraftClientDownloader.downloadPercent * 0.25d) + 25d).replace(",", "."));
-                                progressbar.setProgress(((MinecraftClientDownloader.downloadPercent * 0.25d) + 25) / 100d);
+                                percent.setText("%" + new DecimalFormat("##.#").format((storage.getClientDownloadPercent() * 0.25d) + 25d).replace(",", "."));
+                                progressbar.setProgress(((storage.getClientDownloadPercent() * 0.25d) + 25) / 100d);
                                 return;
                             } if (InfumiaLauncher.step == 3) {
-                                if (MinecraftLibrariesDownloader.objects != null) {
-                                    double currentDownloaded = MinecraftLibrariesDownloader.currentfilelib + MinecraftLibrariesDownloader.currentfilenativelib;
-                                    double totalFile = MinecraftLibrariesDownloader.totalFile;
+                                if (storage.getLibraries() != null) {
+                                    double currentDownloaded = storage.getDownloadedLib() + storage.getDownloadedNatives();
+                                    double totalFile = storage.getTotalLibraries();
                                     double calc = (((currentDownloaded / totalFile) * 25d) + 75d) / 100d;
                                     percent.setText("%" + new DecimalFormat("##.#").format(calc * 100d).replace(",", "."));
                                     progressbar.setProgress(calc);
@@ -261,17 +264,15 @@ public class HomeParentController implements Initializable {
             animation2.get().setCycleCount(Timeline.INDEFINITE);
             animation2.get().play();
 
-            Thread thread = new Thread(new MinecraftAssetsDownloader("1.8.9", response -> Platform.runLater(() -> {
+
+
+            Thread thread = new Thread(new MinecraftAssetsDownloader(storage, response -> Platform.runLater(() -> {
                 error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
                 MoveYAnimation animation1 = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 620, Duration.seconds(0.3));
                 animation1.play();
                 playButton.setDisable(false);
                 exitButton.setDisable(false);
             })));
-
-
-            //tagapi_3.API_Interface api = new tagapi_3.API_Interface();
-            //api.downloadMinecraft("1.15", true);
 
             InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
         });

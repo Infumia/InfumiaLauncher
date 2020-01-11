@@ -1,21 +1,17 @@
 package com.infumia.launcher.download;
 
 import com.infumia.launcher.objects.Callback;
-import com.infumia.launcher.util.Local;
-import com.infumia.launcher.util.Utils;
 import com.sun.javafx.PlatformUtil;
 import org.json.JSONArray;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
 import com.infumia.launcher.InfumiaLauncher;
-import com.infumia.launcher.util.JSONUrl;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -28,42 +24,45 @@ public class MinecraftLibrariesDownloader {
 
     private Callback errorCallback;
     private String version;
+    private JSONObject versionObject;
+    private Storage storage;
 
-    public MinecraftLibrariesDownloader(String version, Callback errorCallback) {
+    public MinecraftLibrariesDownloader(Storage storage, Callback errorCallback) {
         this.errorCallback = errorCallback;
-        this.version = version;
-        String OperatingSystemToUse = utils.getOS();
+        this.storage = storage;
+        this.version = storage.getVersion();
+        this.versionObject = storage.getVersionObject();
 
         //version_url_list_natives
-        local.readJson_libraries_downloads_classifiers_natives_X(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version), OperatingSystemToUse);
+        storage.getLocal().readJson_libraries_downloads_classifiers_natives_X(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         //version_path_list_natives
-        local.readJson_libraries_downloads_classifiers_natives_Y(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version), OperatingSystemToUse);
-        local.readJson_libraries_downloads_classifiers_natives_size(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version), OperatingSystemToUse);
-        local.readJson_libraries_name(utils.getMineCraft_Version_Json(OperatingSystemToUse, version));
-        local.readJson_libraries_downloads_artifact_path(utils.getMineCraft_Version_Json(OperatingSystemToUse, version));
-        local.readJson_libraries_downloads_artifact_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, version));
-        local.readJson_libraries_downloads_artifact_size(utils.getMineCraft_Version_Json(OperatingSystemToUse, version));
+        storage.getLocal().readJson_libraries_downloads_classifiers_natives_Y(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
+        storage.getLocal().readJson_libraries_downloads_classifiers_natives_size(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
+        storage.getLocal().readJson_libraries_name(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version));
+        storage.getLocal().readJson_libraries_downloads_artifact_path(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version));
+        storage.getLocal().readJson_libraries_downloads_artifact_url(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version));
+        storage.getLocal().readJson_libraries_downloads_artifact_size(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version));
 
 
-//        for (int i = 0; i < local.version_url_list_natives.size(); i++) {
-//            utils.jarExtract(OperatingSystemToUse, local.version_path_list_natives.get(i).toString(), utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, version));
+//        for (int i = 0; i < storage.getLocal().version_url_list_natives.size(); i++) {
+//            storage.getUtils().jarExtract(storage.getOperationgSystem(), storage.getLocal().version_path_list_natives.get(i).toString(), storage.getUtils().getMineCraft_Versions_X_Natives_Location(storage.getOperationgSystem(), version));
 //        }
 
-        for (int i = 0; i < local.version_path_list.size(); i++) {
-            local.libraries_path.add(utils.setMineCraft_librariesLocation(OperatingSystemToUse, local.version_path_list.get(i).toString()));
+        for (int i = 0; i < storage.getLocal().version_path_list.size(); i++) {
+            storage.getLocal().libraries_path.add(storage.getUtils().setMineCraft_librariesLocation(storage.getOperationgSystem(), storage.getLocal().version_path_list.get(i).toString()));
         }
 
-        for (int i = 0; i < local.version_name_list.size(); i++) {
-            local.version_path_list.add(local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i).toString()));
+        for (int i = 0; i < storage.getLocal().version_name_list.size(); i++) {
+            storage.getLocal().version_path_list.add(storage.getLocal().generateLibrariesPath(storage.getOperationgSystem(), storage.getLocal().version_name_list.get(i).toString()));
         }
 
         sorted = versionCheck();
     }
 
-    public static int totalFile = 0;
+    int totalFile = 0;
 
-    public static int currentfilelib = 0;
-    public static int currentfilenativelib = 0;
+    int currentfilelib = 0;
+    int currentfilenativelib = 0;
 
     File librariesDir = new File(getMineCraftLocation() + "/libraries/");
 
@@ -71,44 +70,41 @@ public class MinecraftLibrariesDownloader {
     private boolean libsDownloaded = false;
     private boolean nativesDownloaded = false;
 
-    public static JSONArray objects = null;
-
-    Local local = new Local();
-    Utils utils = new Utils();
+    JSONArray objects = null;
     List sorted;
 
     public void run() throws MalformedURLException, FileNotFoundException, InterruptedException {
 
         if (objects == null) {
-            objects = MinecraftAssetsDownloader.versionObject.getJSONArray("libraries");
-            totalFile = local.version_url_list.size() + local.version_url_list_natives.size();
+            objects = versionObject.getJSONArray("libraries");
+            storage.setLibraries(objects);
+            totalFile = storage.getLocal().version_url_list.size() + storage.getLocal().version_url_list_natives.size();
+            storage.setTotalLibraries(totalFile);
         }
-
-        String OperatingSystemToUse = utils.getOS();
 
         if (libsDownloaded && nativesDownloaded) {
             System.out.print("\r");
             InfumiaLauncher.logger.info("Oyun baslatiliyor");
             InfumiaLauncher.step++;
-            new Minecraft(version, utils, local).launchMinecraft();
+            new Minecraft(storage).launchMinecraft();
             return;
         }
 
 
         String dirs = "";
-        String fullName = local.version_path_list.get(currentfilelib).toString();
-        String[] fullNameSplitted = local.version_path_list.get(currentfilelib).toString().split("/");
+        String fullName = storage.getLocal().version_path_list.get(currentfilelib).toString();
+        String[] fullNameSplitted = storage.getLocal().version_path_list.get(currentfilelib).toString().split("/");
         String name = fullName.split("/")[fullNameSplitted.length - 1];
         for (String str : fullNameSplitted) {
             if (!str.contains(".jar")) dirs += str + "/";
         }
 
-        File libDir = new File(utils.getMineCraftLibrariesLocation(OperatingSystemToUse) + "/" + dirs);
+        File libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs);
         libDir.mkdirs();
 
-        libDir = new File(utils.getMineCraftLibrariesLocation(OperatingSystemToUse) + "/" + dirs, name);
+        libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs, name);
 
-        if (currentfilelib == local.version_url_list.size()) {
+        if (currentfilelib == storage.getLocal().version_url_list.size()) {
             System.out.print("\r");
             libsDownloaded = true;
             InfumiaLauncher.logger.info("Natives dosyasi aktiflestirildi isletim sisteminiz kontrol ediliyor");
@@ -118,10 +114,10 @@ public class MinecraftLibrariesDownloader {
 
         DirectDownloader dd = new DirectDownloader();
         if (libDir.exists() && !libDir.isDirectory()) {
-            if ((long) local.version_size_list.get(currentfilelib) == libDir.length()) {
+            if ((long) storage.getLocal().version_size_list.get(currentfilelib) == libDir.length()) {
                 System.out.print("\r");
-                System.out.print("Dosya zaten var diger dosyaya geciliyor. " + (currentfilelib + currentfilenativelib) + "/" + local.version_url_list.size());
-                currentfilelib++;
+                System.out.print("Dosya zaten var diger dosyaya geciliyor. " + (currentfilelib + currentfilenativelib) + "/" + storage.getLocal().version_url_list.size());
+                storage.setDownloadedLib(++currentfilelib);
                 run();
                 return;
             }
@@ -130,7 +126,7 @@ public class MinecraftLibrariesDownloader {
 
         try {
 
-            dd.download(new DownloadTask(new URL(local.version_url_list.get(currentfilelib).toString()), new FileOutputStream(new File(librariesDir + "/" + dirs, name)), new DownloadListener() {
+            dd.download(new DownloadTask(new URL(storage.getLocal().version_url_list.get(currentfilelib).toString()), new FileOutputStream(new File(librariesDir + "/" + dirs, name)), new DownloadListener() {
 
                 String fname;
                 double fileSize = 0;
@@ -152,7 +148,7 @@ public class MinecraftLibrariesDownloader {
                 @Override
                 public void onComplete() {
                     try {
-                        currentfilelib++;
+                        storage.setDownloadedLib(++currentfilelib);
                         run();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -184,7 +180,7 @@ public class MinecraftLibrariesDownloader {
 
     List versionCheck() {
         List list = new ArrayList<String>();
-        list.addAll(local.version_path_list_natives);
+        list.addAll(storage.getLocal().version_path_list_natives);
 
         List removeList = new ArrayList<String>();
 
@@ -213,10 +209,10 @@ public class MinecraftLibrariesDownloader {
             int versiona = Integer.parseInt(aremoved.replaceAll("[\\D]", ""));
             int versionB = Integer.parseInt(bremoved.replaceAll("[\\D]", ""));
             // lwjgl-tinyfd-3.2.1-natives-windows lwjgl-tinyfd-3.2.2-natives-windows
-            String formattedvera = aremoved.replaceAll(local.getNatives_OS(getOS()), "").replaceAll("[A-Za-z]?", "").replaceAll("-", "");
-            String formattedverb = bremoved.replaceAll(local.getNatives_OS(getOS()), "").replaceAll("[A-Za-z]?", "").replaceAll("-", "");
-            if (!aname.replaceAll(local.getNatives_OS(getOS()), "").replaceAll(formattedvera, "").equals(
-                    bname.replaceAll(local.getNatives_OS(getOS()), "").replaceAll(formattedverb, ""))) return 0;
+            String formattedvera = aremoved.replaceAll(storage.getLocal().getNatives_OS(getOS()), "").replaceAll("[A-Za-z]?", "").replaceAll("-", "");
+            String formattedverb = bremoved.replaceAll(storage.getLocal().getNatives_OS(getOS()), "").replaceAll("[A-Za-z]?", "").replaceAll("-", "");
+            if (!aname.replaceAll(storage.getLocal().getNatives_OS(getOS()), "").replaceAll(formattedvera, "").equals(
+                    bname.replaceAll(storage.getLocal().getNatives_OS(getOS()), "").replaceAll(formattedverb, ""))) return 0;
             if (versiona == versionB) return 0;
             if (versiona > versionB){
                 if (!removeList.contains(b)) {
@@ -247,42 +243,40 @@ public class MinecraftLibrariesDownloader {
 
     public void runNatives() throws MalformedURLException, FileNotFoundException, InterruptedException {
 
-        String OperatingSystemToUse = utils.getOS();
 
-
-        if (currentfilenativelib == local.version_url_list_natives.size()) {
+        if (currentfilenativelib == storage.getLocal().version_url_list_natives.size()) {
             System.out.print("\r");
-            InfumiaLauncher.logger.info(OperatingSystemToUse + " libleri indirildi");
-            currentfilelib++;
+            InfumiaLauncher.logger.info(storage.getOperationgSystem() + " libleri indirildi");
+            storage.setDownloadedLib(++currentfilelib);
             nativesDownloaded = true;
             run();
             return;
         }
 
         String dirs = "";
-        String fullName = local.version_path_list_natives.get(currentfilenativelib).toString();
-        String[] fullNameSplitted = local.version_path_list_natives.get(currentfilenativelib).toString().split("/");
+        String fullName = storage.getLocal().version_path_list_natives.get(currentfilenativelib).toString();
+        String[] fullNameSplitted = storage.getLocal().version_path_list_natives.get(currentfilenativelib).toString().split("/");
         String name = fullName.split("/")[fullNameSplitted.length - 1];
         for (String str : fullNameSplitted) {
             if (!str.contains(".jar")) dirs += str + "/";
         }
 
-        File libDir = new File(utils.getMineCraftLibrariesLocation(OperatingSystemToUse) + "/" + dirs);
+        File libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs);
         libDir.mkdirs();
 
-        libDir = new File(utils.getMineCraftLibrariesLocation(OperatingSystemToUse) + "/" + dirs, name);
+        libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs, name);
 
 
         DirectDownloader ddnative = new DirectDownloader();
         if (libDir.exists()) {
-            if ((long) local.version_size_list_natives.get(currentfilenativelib) == libDir.length()) {
+            if ((long) storage.getLocal().version_size_list_natives.get(currentfilenativelib) == libDir.length()) {
                 if (sorted.contains(fullName)) {
                     System.out.print("\r>Dosya çıkartılıyor: " + name);
                     jarExtract(dirs + name, getMineCraft_Versions_X_Natives_Location(version));
                 }
                 System.out.print("\r");
-                currentfilenativelib++;
-                System.out.print("Diger dosyaya geciliyor. " + currentfilenativelib + "/" + local.version_url_list_natives.size());
+                storage.setDownloadedNatives(++currentfilenativelib);
+                System.out.print("Diger dosyaya geciliyor. " + currentfilenativelib + "/" + storage.getLocal().version_url_list_natives.size());
                 runNatives();
                 return;
             }
@@ -291,7 +285,7 @@ public class MinecraftLibrariesDownloader {
         File downloadedFile = new File(librariesDir + "/" + dirs, name);
 
         String finalDirs = dirs;
-        ddnative.download(new DownloadTask(new URL(local.version_url_list_natives.get(currentfilenativelib).toString()), new FileOutputStream(downloadedFile), new DownloadListener() {
+        ddnative.download(new DownloadTask(new URL(storage.getLocal().version_url_list_natives.get(currentfilenativelib).toString()), new FileOutputStream(downloadedFile), new DownloadListener() {
 
             String fname;
             double fileSize = 0;
@@ -314,7 +308,7 @@ public class MinecraftLibrariesDownloader {
             @Override
             public void onComplete() {
                 try {
-                    currentfilenativelib++;
+                    storage.setDownloadedNatives(++currentfilenativelib);
                     runNatives();
                 } catch (Exception e) {
                     e.printStackTrace();

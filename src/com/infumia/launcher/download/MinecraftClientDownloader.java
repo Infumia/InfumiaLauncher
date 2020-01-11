@@ -19,16 +19,18 @@ public class MinecraftClientDownloader implements Runnable{
     private String clientUrl;
     private File versionsDir;
     private File clientFile;
+    private Storage storage;
 
-    public MinecraftClientDownloader(String clientUrl, String version, Callback errorCallback) {
+    public MinecraftClientDownloader(Storage storage, Callback errorCallback) {
         this.errorCallback = errorCallback;
-        this.version = version;
-        this.clientUrl = clientUrl;
+        this.storage = storage;
+        this.version = storage.getVersion();
+        this.clientUrl = storage.getClientUrl();
         versionsDir = new File(getMineCraftLocation() + "/versions/" + version + "/");
         clientFile = new File(versionsDir, version + ".jar");
     }
 
-    public static double downloadPercent = 0;
+    double downloadPercent = 0;
 
 
     public void run() {
@@ -37,11 +39,12 @@ public class MinecraftClientDownloader implements Runnable{
 
         if (clientFile.exists()) {
             downloadPercent = 100.0d;
+            storage.setClientDownloadPercent(downloadPercent);
             InfumiaLauncher.logger.info("Client indirme islemi bitti.");
             InfumiaLauncher.logger.info("Natives indirme islemi baslatiliyor");
             InfumiaLauncher.step++;
             try {
-                new MinecraftLibrariesDownloader(version, errorCallback).run();
+                new MinecraftLibrariesDownloader(storage, errorCallback).run();
             } catch (Exception e) {
                 e.printStackTrace();
                 errorCallback.response(e.toString());
@@ -73,6 +76,7 @@ public class MinecraftClientDownloader implements Runnable{
                     double downloadpercent = (t1 / t2) * 100.0d;
                     System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", "."));
                     downloadPercent = downloadpercent;
+                    storage.setClientDownloadPercent(downloadPercent);
                 }
 
                 @Override
@@ -82,7 +86,7 @@ public class MinecraftClientDownloader implements Runnable{
                     InfumiaLauncher.logger.info("OpenGL Natives indirme islemi baslatiliyor");
                     InfumiaLauncher.step++;
                     try {
-                        new MinecraftLibrariesDownloader(version, errorCallback).run();
+                        new MinecraftLibrariesDownloader(storage, errorCallback).run();
                     } catch (Exception e) {
                         e.printStackTrace();
                         errorCallback.response(e.toString());

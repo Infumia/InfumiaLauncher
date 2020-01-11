@@ -3,6 +3,7 @@ package com.infumia.launcher.download;
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.objects.Callback;
 import com.infumia.launcher.util.JSONUrl;
+import com.infumia.launcher.util.Local;
 import com.infumia.launcher.util.Utils;
 import com.sun.javafx.PlatformUtil;
 import javafx.application.Platform;
@@ -26,10 +27,15 @@ public class MinecraftAssetsDownloader implements Runnable {
     private File logconfigsDir;
     private File indexes;
     private File xmlFile;
+    private Storage storage;
 
-    public MinecraftAssetsDownloader(String version, Callback errorCallback) {
+    public MinecraftAssetsDownloader(Storage storage, Callback errorCallback) {
         this.errorCallback = errorCallback;
-        this.version = version;
+        this.storage = storage;
+        this.version = storage.getVersion();
+        storage.setLocal(new Local());
+        storage.setUtils(new Utils());
+        storage.setOperationgSystem(storage.getUtils().getOS());
         objectsDir = new File(getMineCraftLocation() + "/assets/objects/");
         indexesDir = new File(getMineCraftLocation() + "/versions/" + version + "/");
         logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
@@ -37,18 +43,16 @@ public class MinecraftAssetsDownloader implements Runnable {
         xmlFile = new File(logconfigsDir + "/" +"client-" + version + ".xml");
     }
 
-    public static int currentfile=0;
+    int currentfile=0;
 
 
-    public static JSONObject objects = null;
+    private JSONObject objects = null;
 
     private String versionUrl;
-    public static JSONObject versionObject;
+    private JSONObject versionObject;
 
     public void run() {
         try {
-            Utils utils = new Utils();
-            String OperatingSystemToUse = utils.getOS();
             if (objects == null) {
                 JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
                 JSONArray versions = manifest.getJSONArray("versions");
@@ -56,9 +60,11 @@ public class MinecraftAssetsDownloader implements Runnable {
                     if (versions.getJSONObject(i).getString("id").equals(version)) {
                         versionUrl = versions.getJSONObject(i).getString("url");
                         versionObject = JSONUrl.readURL(versionUrl);
+                        storage.setVersionObject(versionObject);
                         JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
                         objects = readedUrl.getJSONObject("objects");
-                        try (FileWriter file = new FileWriter(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, versionObject.getJSONObject("assetIndex").getString("id")))) {
+                        storage.setAssets(objects);
+                        try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
                             file.write(readedUrl.toString());
                             file.flush();
                         }
@@ -89,8 +95,11 @@ public class MinecraftAssetsDownloader implements Runnable {
                 InfumiaLauncher.logger.info("Assets indirme islemi bitti.");
                 InfumiaLauncher.logger.info("Client indirme islemi baslatiliyor");
                 InfumiaLauncher.step++;
+
+                storage.setClientUrl(versionObject.getJSONObject("downloads").getJSONObject("client").getString("url"));
+
                 Thread thread = new Thread(()-> {
-                    new MinecraftClientDownloader(versionObject.getJSONObject("downloads").getJSONObject("client").getString("url"), version, errorCallback).run();
+                    new MinecraftClientDownloader(storage, errorCallback).run();
                 });
                 InfumiaLauncher.executor.schedule(thread, 1, TimeUnit.MILLISECONDS);
                 return;
@@ -111,7 +120,7 @@ public class MinecraftAssetsDownloader implements Runnable {
                 if (getSize(currentfile) == file.length()) {
                     System.out.print("\r");
                     System.out.print("Dosya zaten var diger dosyaya geciliyor. " + currentfile + "/" + objects.length());
-                    currentfile++;
+                    storage.setDownloadedAssets(++currentfile);
                     Platform.runLater(()-> run());
                     return;
                 }
@@ -141,7 +150,7 @@ public class MinecraftAssetsDownloader implements Runnable {
                     @Override
                     public void onComplete() {
                         try {
-                            currentfile++;
+                            storage.setDownloadedAssets(++currentfile);
                             run();
                         } catch (Exception e) {
                             e.printStackTrace();

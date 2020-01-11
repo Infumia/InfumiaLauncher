@@ -22,28 +22,29 @@ public class Minecraft {
     private String version;
     private Utils utils;
     private Local local;
+    private Storage storage;
 
-    public Minecraft(String version, Utils utils, Local local) {
-        this.version = version;
+    public Minecraft(Storage storage) {
+        this.version = storage.getVersion();
         versionsdir = new File(getMineCraftLocation() + "/versions/" + version + "\\");
         nativedir = new File(getMineCraftLocation() + "/versions/" + version + "/natives\\");
-        this.utils = utils;
-        this.local = local;
+        this.utils = storage.getUtils();
+        this.local = storage.getLocal();
     }
 
-    public static Process proc = null;
+    private Process proc = null;
 
     public static String playerName = "";
     public static String accessToken = "0";
     public static String uuid = "0";
     public static Image image;
 
-    File gamedir = new File(getMineCraftLocation() + "\\");
-    File assestdir = new File(getMineCraftLocation() + "/assets\\");
-    File librarydir = new File(getMineCraftLocation() + "/libraries\\");
+    private File gamedir = new File(getMineCraftLocation() + "\\");
+    private File assestdir = new File(getMineCraftLocation() + "/assets\\");
+    private File librarydir = new File(getMineCraftLocation() + "/libraries\\");
 
-    File versionsdir;
-    File nativedir;
+    private File versionsdir;
+    private File nativedir;
 
     public ArrayList<String> names;
 
@@ -71,7 +72,7 @@ public class Minecraft {
         String GameAssets = utils.getMineCraftAssetsVirtualLegacyLocation(OperatingSystemToUse);
         String AuthSession = "OFFLINE";
 
-        String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIdexId, "0", "0", "{}", "mojang", VersionType, GameAssets, AuthSession);
+        String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIdexId, uuid, accessToken, "{}", "mojang", VersionType, GameAssets, AuthSession);
         String MinecraftJar = utils.getMineCraft_Versions_X_X_jar(OperatingSystemToUse, version);
         String FullLibraryArgument = local.generateLibrariesArguments(OperatingSystemToUse) + utils.getArgsDiv(OperatingSystemToUse) + MinecraftJar;
         String mainClass = local.readJson_mainClass(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
@@ -107,7 +108,7 @@ public class Minecraft {
                 }
 
                 if (reader.readLine() == null) {
-                    Minecraft.proc.destroy();
+                    proc.destroy();
                     InfumiaLauncher.getInfumiaLauncher().stop();
                     Platform.exit();
                     System.exit(0);
