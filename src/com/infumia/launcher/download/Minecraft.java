@@ -26,10 +26,9 @@ public class Minecraft {
 
     public Minecraft(Storage storage) {
         this.version = storage.getVersion();
-        versionsdir = new File(getMineCraftLocation() + "/versions/" + version + "\\");
-        nativedir = new File(getMineCraftLocation() + "/versions/" + version + "/natives\\");
         this.utils = storage.getUtils();
         this.local = storage.getLocal();
+        this.storage = storage;
     }
 
     private Process proc = null;
@@ -39,16 +38,10 @@ public class Minecraft {
     public static String uuid = "0";
     public static Image image;
 
-    private File gamedir = new File(getMineCraftLocation() + "\\");
-    private File assestdir = new File(getMineCraftLocation() + "/assets\\");
     private File librarydir = new File(getMineCraftLocation() + "/libraries\\");
-
-    private File versionsdir;
-    private File nativedir;
 
     public ArrayList<String> names;
 
-    String libraryargument;
 
     public void launchMinecraft(){
         names = new ArrayList<>(Arrays.asList(Objects.requireNonNull(librarydir.list())));
@@ -57,6 +50,8 @@ public class Minecraft {
         String OperatingSystemToUse = utils.getOS();
         String gameDirectory = utils.getMineCraftGameDirectoryLocation(OperatingSystemToUse);
         String AssetsRoot = utils.getMineCraftAssetsRootLocation(OperatingSystemToUse);
+        setMemory(storage.getPrefRAM());
+        setMinMemory(storage.getPrefRAM());
 
         //String HalfArgumentTemplate = local.readJson_minecraftArguments(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse));
         int Xmx = this.getMemory();
@@ -66,13 +61,13 @@ public class Minecraft {
         String JavaPath = this.getJavaPath();
         String JVMArgument = this.getJVMArgument();
         String versionName = local.readJson_id(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
-        String assetsIdexId = local.readJson_assets(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
+        String assetsIndexId = local.readJson_assets(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
 
         String VersionType = this.getVersionData();
         String GameAssets = utils.getMineCraftAssetsVirtualLegacyLocation(OperatingSystemToUse);
         String AuthSession = "OFFLINE";
 
-        String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIdexId, uuid, accessToken, "{}", "mojang", VersionType, GameAssets, AuthSession);
+        String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIndexId, uuid, accessToken, "{}", "mojang", VersionType, GameAssets, AuthSession);
         String MinecraftJar = utils.getMineCraft_Versions_X_X_jar(OperatingSystemToUse, version);
         String FullLibraryArgument = local.generateLibrariesArguments(OperatingSystemToUse) + utils.getArgsDiv(OperatingSystemToUse) + MinecraftJar;
         String mainClass = local.readJson_mainClass(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));

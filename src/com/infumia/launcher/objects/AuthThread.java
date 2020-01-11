@@ -1,6 +1,6 @@
 package com.infumia.launcher.objects;
 
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

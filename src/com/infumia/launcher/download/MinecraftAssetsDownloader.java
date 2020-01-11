@@ -3,11 +3,10 @@ package com.infumia.launcher.download;
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.objects.Callback;
 import com.infumia.launcher.util.JSONUrl;
-import com.infumia.launcher.util.Local;
-import com.infumia.launcher.util.Utils;
 import com.sun.javafx.PlatformUtil;
 import javafx.application.Platform;
 import org.json.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
@@ -15,6 +14,8 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +44,6 @@ public class MinecraftAssetsDownloader implements Runnable {
 
     int currentfile=0;
 
-
     private JSONObject objects = null;
 
     private String versionUrl;
@@ -52,21 +52,42 @@ public class MinecraftAssetsDownloader implements Runnable {
     public void run() {
         try {
             if (objects == null) {
-                JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
-                JSONArray versions = manifest.getJSONArray("versions");
-                for (int i = 0; i < versions.length(); i++) {
-                    if (versions.getJSONObject(i).getString("id").equals(version)) {
-                        versionUrl = versions.getJSONObject(i).getString("url");
-                        versionObject = JSONUrl.readURL(versionUrl);
-                        storage.setVersionObject(versionObject);
-                        JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
-                        objects = readedUrl.getJSONObject("objects");
-                        storage.setAssets(objects);
-                        try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
-                            file.write(readedUrl.toString());
-                            file.flush();
+                try {
+                    JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+                    JSONArray versions = manifest.getJSONArray("versions");
+                    for (int i = 0; i < versions.length(); i++) {
+                        if (versions.getJSONObject(i).getString("id").equals(version)) {
+                            versionUrl = versions.getJSONObject(i).getString("url");
+                            versionObject = JSONUrl.readURL(versionUrl);
+                            storage.setVersionObject(versionObject);
+                            JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
+                            objects = readedUrl.getJSONObject("objects");
+                            storage.setAssets(objects);
+                            try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
+                                file.write(readedUrl.toString());
+                                file.flush();
+                            }
+                            break;
                         }
-                        break;
+                    }
+                }catch (Exception e) {
+                    try
+                    {
+                        String assetsIndexId = storage.getLocal().readJson_assets(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
+                        File file = new File(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), assetsIndexId));
+                        if (!file.exists()) {
+                            errorCallback.response("İnternet bağlantısı gerekiyor.");
+                            return;
+                        }
+                        versionObject = new JSONObject(new String(Files.readAllBytes(Paths.get(indexes.getPath()))));
+                        storage.setVersionObject(versionObject);
+                        JSONObject obj = new JSONObject(new String(Files.readAllBytes(Paths.get(file.getPath()))));
+                        objects = obj.getJSONObject("objects");
+                        storage.setAssets(objects);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        errorCallback.response(ex.toString());
+                        return;
                     }
                 }
             }
@@ -76,6 +97,8 @@ public class MinecraftAssetsDownloader implements Runnable {
                 try (FileWriter file = new FileWriter(indexes)) {
                     file.write(JSONUrl.readURL(versionUrl).toString());
                     file.flush();
+                }catch (IOException e) {
+                    errorCallback.response("İnternet bağlantısı gerekiyor.");
                 }
             }
             if (!xmlFile.exists()) {
@@ -107,7 +130,6 @@ public class MinecraftAssetsDownloader implements Runnable {
             errorCallback.response(e.toString());
         }
 
-        String url = "http://resources.download.minecraft.net/" + getHash(currentfile).substring(0, 2) + "/" + getHash(currentfile);
         File direc = new File(objectsDir + "/" + getHash(currentfile).substring(0, 2) + "/");
         if (!direc.exists()) direc.mkdir();
 
@@ -123,6 +145,8 @@ public class MinecraftAssetsDownloader implements Runnable {
                     return;
                 }
             }
+
+            String url = "http://resources.download.minecraft.net/" + getHash(currentfile).substring(0, 2) + "/" + getHash(currentfile);
 
             DirectDownloader dd = new DirectDownloader();
             try {

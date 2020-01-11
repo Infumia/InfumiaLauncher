@@ -117,7 +117,8 @@ public class MinecraftLibrariesDownloader {
             if ((long) storage.getLocal().version_size_list.get(currentfilelib) == libDir.length()) {
                 System.out.print("\r");
                 System.out.print("Dosya zaten var diger dosyaya geciliyor. " + (currentfilelib + currentfilenativelib) + "/" + storage.getLocal().version_url_list.size());
-                storage.setDownloadedLib(++currentfilelib);
+                currentfilelib++;
+                storage.setDownloadedLib(currentfilelib);
                 run();
                 return;
             }
@@ -148,7 +149,8 @@ public class MinecraftLibrariesDownloader {
                 @Override
                 public void onComplete() {
                     try {
-                        storage.setDownloadedLib(++currentfilelib);
+                        currentfilelib++;
+                        storage.setDownloadedLib(currentfilelib);
                         run();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -242,12 +244,11 @@ public class MinecraftLibrariesDownloader {
     }
 
     public void runNatives() throws MalformedURLException, FileNotFoundException, InterruptedException {
-
-
         if (currentfilenativelib == storage.getLocal().version_url_list_natives.size()) {
             System.out.print("\r");
             InfumiaLauncher.logger.info(storage.getOperationgSystem() + " libleri indirildi");
-            storage.setDownloadedLib(++currentfilelib);
+            currentfilelib++;
+            storage.setDownloadedLib(currentfilelib);
             nativesDownloaded = true;
             run();
             return;

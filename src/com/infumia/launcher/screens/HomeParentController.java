@@ -6,8 +6,9 @@ import com.infumia.launcher.animations.FadeInSceneTransition;
 import com.infumia.launcher.animations.MoveYAnimation;
 import com.infumia.launcher.download.*;
 import com.infumia.launcher.objects.Callback;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXProgressBar;
+import com.infumia.launcher.objects.MinecraftVersion;
+import com.infumia.launcher.util.JSONUrl;
+import com.jfoenix.controls.*;
 import com.sun.javafx.PlatformUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -21,29 +22,38 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.util.Duration;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HomeParentController implements Initializable {
 
-    File gamedir = new File(getMineCraftLocation() + "/");
-    File assestdir = new File(getMineCraftLocation() + "/assets/");
-    File objectsdir = new File(getMineCraftLocation() + "/assets/objects");
-    File librarydir = new File(getMineCraftLocation() + "/libraries/");
-    File versionsdir = new File(getMineCraftLocation() + "/versions/");
-    File indexesDir = new File(getMineCraftLocation() + "/assets/indexes/");
-    File logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
+    private HashMap<String, String> versionList = new HashMap<>();
+
+    private File gamedir = new File(getMineCraftLocation() + "/");
+    private File assestdir = new File(getMineCraftLocation() + "/assets/");
+    private File objectsdir = new File(getMineCraftLocation() + "/assets/objects");
+    private File librarydir = new File(getMineCraftLocation() + "/libraries/");
+    private File versionsdir = new File(getMineCraftLocation() + "/versions/");
+    private File indexesDir = new File(getMineCraftLocation() + "/assets/indexes/");
+    private File logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
+    private Storage storage = new Storage();
 
     @FXML
     Label percent;
@@ -60,6 +70,15 @@ public class HomeParentController implements Initializable {
     @FXML
     Label playerName;
 
+    @FXML
+    JFXComboBox comboBox;
+
+    @FXML
+    JFXSlider ramSlider;
+
+    @FXML
+    TextField ramField;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if (!gamedir.exists()) gamedir.mkdir();
@@ -67,12 +86,61 @@ public class HomeParentController implements Initializable {
         if (!librarydir.exists()) librarydir.mkdir();
         String name = Minecraft.playerName;
         playerName.setText(name);
+        avatar.setImage(Minecraft.image);
         try {
-            avatar.setImage(Minecraft.image);
-        }catch (Exception ex) {
-            ex.printStackTrace();
+            JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+            JSONArray versions = manifest.getJSONArray("versions");
+            for (int i = 0; i < versions.length(); i++) {
+                JSONObject versionObject = versions.getJSONObject(i);
+                if (versionObject.getString("type").equals("release")) {
+                    versionList.put(versionObject.getString("id"), versionObject.getString("url"));
+                }
+            }
+        }catch (IOException ex) {
+            InfumiaLauncher.logger.warn("Sunucuya bağlanılamadı. Yerel sürümler okunuyor.");
+            File versionsDir = new File(storage.getUtils().getMineCraftVersionsLocation(storage.getOperationgSystem()));
+            File[] dirs = versionsDir.listFiles(fileName -> {
+                if (fileName.isDirectory()) return true;
+                else return false;
+            });
+            for (File dir : dirs) {
+                versionList.put(dir.getName(), "");
+            }
         }
+
+        List<String> sorted = new ArrayList<>(versionList.keySet());
+
+        Collections.sort(sorted, (a, b)-> {
+            if (a.isEmpty() || b.isEmpty()) return 0;
+            if (a.equals(b)) return 0;
+            String[] splittedA = a.replace(".", " ").split(" ");
+            String[] formattedb = b.replace(".", " ").split(" ");
+            if (splittedA[1].equals(formattedb[1])) {
+                if (splittedA.length == 3 && formattedb.length == 3) {
+                    if (Integer.parseInt(splittedA[2]) > Integer.parseInt(formattedb[2])) return -1;
+                    if (Integer.parseInt(splittedA[2]) < Integer.parseInt(formattedb[2])) return 1;
+                }
+                if (splittedA.length > formattedb.length) return -1;
+                if (splittedA.length < formattedb.length) return 1;
+            }
+            if (Integer.parseInt(splittedA[1]) > Integer.parseInt(formattedb[1])) return -1;
+            if (Integer.parseInt(splittedA[1]) < Integer.parseInt(formattedb[1])) return 1;
+            return 0;
+        });
+
+        storage.setVersionsList(versionList);
+
+        for (String str : sorted) {
+            comboBox.getItems().add(new Label(str));
+        }
+
+        ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            ramField.setText((Math.round(observable.getValue().doubleValue())) + " MB");
+        });
+        playerName.requestFocus();
     }
+
+
 
     @FXML
     HBox exitPaneBox;
@@ -100,6 +168,24 @@ public class HomeParentController implements Initializable {
 
     @FXML
     Label exitButton;
+
+    @FXML
+    Pane progressBarPane;
+
+    @FXML
+    public void syncSlider() {
+        if (ramField.getText().isEmpty()) return;
+        try {
+            int formatted = Integer.parseInt(ramField.getText().replaceAll(" MB", ""));
+            if (formatted < ramSlider.getMin()) formatted = (int) ramSlider.getMin();
+            if (formatted > ramSlider.getMax()) formatted = (int) ramSlider.getMax();
+            ramSlider.setValue(formatted);
+            ramField.setText(ramField.getText().replaceAll(" MB", "") + " MB");
+        }catch (NumberFormatException e) {
+            ramSlider.setValue(1024);
+            ramField.setText("1024 MB");
+        }
+    }
 
     @FXML
     public void goExitScene() {
@@ -207,10 +293,9 @@ public class HomeParentController implements Initializable {
         if(!indexesDir.exists())indexesDir.mkdir();
         if(!logconfigsDir.exists())logconfigsDir.mkdir();
 
-        Storage storage = new Storage();
-        storage.setVersion("1.15.1");
+        storage.setVersion(((Label)comboBox.getValue()).getText());
 
-        MoveYAnimation animation = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 606, Duration.seconds(0.3));
+        MoveYAnimation animation = new MoveYAnimation(progressBarPane, progressBarPane.getLayoutY(), 606, Duration.seconds(0.3));
         animation.play();
         AtomicReference<Timeline> animation2 = new AtomicReference<>();
         animation.setOnFinished(event -> {
@@ -219,7 +304,7 @@ public class HomeParentController implements Initializable {
                         try {
                             if (InfumiaLauncher.step == 1) {
                                 if (storage.getAssets() == null) return;
-                                double perc = (Double.parseDouble(String.valueOf(storage.getDownloadedAssets())) / storage.getAssets().length()) * 25d;
+                                double perc = (Double.parseDouble(String.valueOf(storage.getDownloadedAssets())) / (storage.getAssets().length() == 0 ? 1 : storage.getAssets().length())) * 25d;
                                 percent.setText("%" + new DecimalFormat("##.#").format(perc).replace(",", "."));
                                 progressbar.setProgress(perc / 100d);
                                 return;
@@ -264,11 +349,9 @@ public class HomeParentController implements Initializable {
             animation2.get().setCycleCount(Timeline.INDEFINITE);
             animation2.get().play();
 
-
-
             Thread thread = new Thread(new MinecraftAssetsDownloader(storage, response -> Platform.runLater(() -> {
                 error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
-                MoveYAnimation animation1 = new MoveYAnimation(progressbar, progressbar.getLayoutY(), 620, Duration.seconds(0.3));
+                MoveYAnimation animation1 = new MoveYAnimation(progressBarPane, progressBarPane.getLayoutY(), 620, Duration.seconds(0.3));
                 animation1.play();
                 playButton.setDisable(false);
                 exitButton.setDisable(false);

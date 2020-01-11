@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXProgressBar?>
+<?import com.jfoenix.controls.JFXSlider?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,7 +22,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.HomeParentController">
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.HomeParentController">
    <children>
       <ImageView fitHeight="620.0" fitWidth="1100.0">
          <image>
@@ -35,10 +39,10 @@
             </LinearGradient>
          </fill>
       </Rectangle>
-      <Pane prefHeight="14.0" prefWidth="1100.0">
+      <Pane fx:id="progressBarPane" layoutY="620.0" prefHeight="14.0" prefWidth="1100.0">
          <children>
-            <JFXProgressBar fx:id="progressbar" layoutY="620.0" prefHeight="14.0" prefWidth="1100.0" progress="0.0" stylesheets="@stylesheet.css" />
-            <HBox alignment="CENTER" layoutY="604.0" prefHeight="14.0" prefWidth="1100.0">
+            <JFXProgressBar fx:id="progressbar" prefHeight="14.0" prefWidth="1100.0" progress="0.0" stylesheets="@stylesheet.css" />
+            <HBox alignment="TOP_CENTER" layoutY="-2.0" prefHeight="14.0" prefWidth="1100.0">
                <children>
                   <Label id="percent" fx:id="percent" textFill="#1548C4">
                      <font>
@@ -51,6 +55,70 @@
       </Pane>
       <HBox alignment="CENTER" prefHeight="620.0" prefWidth="1100.0">
          <children>
+            <VBox alignment="CENTER">
+               <children>
+                  <Pane style="-fx-background-color: rgba(6, 12, 32, 0.7); -fx-background-radius: 10px;">
+                     <children>
+                        <VBox prefHeight="164.0" prefWidth="266.0">
+                           <children>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label text="RAM" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="27.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Pane prefHeight="0.0" prefWidth="120.0">
+                                       <children>
+                                          <HBox alignment="CENTER" prefWidth="120.0" style="-fx-background-color: #040B20; -fx-background-radius: 10px;">
+                                             <children>
+                                                <TextField fx:id="ramField" alignment="CENTER" onAction="#syncSlider" style="-fx-background-color: transparent;" styleClass="textfields" text="1024 MB">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                   <HBox.margin>
+                                                      <Insets left="5" top="0"/>
+                                                   </HBox.margin>
+                                                </TextField>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="49.0" />
+                                       </padding>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </Pane>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="12.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <JFXSlider fx:id="ramSlider" blockIncrement="0.0" indicatorPosition="RIGHT" majorTickUnit="1.0" max="8196.0" min="512.0" minorTickCount="1" nodeOrientation="LEFT_TO_RIGHT" styleClass="jfx-slider" value="2048.0" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
             <VBox alignment="CENTER" prefHeight="620.0" prefWidth="400.0">
                <children>
                   <ImageView fx:id="logo" fitHeight="187.0" fitWidth="191.0">
@@ -111,6 +179,61 @@
                   </Label>
                </children>
             </VBox>
+            <VBox alignment="CENTER">
+               <children>
+                  <Pane style="-fx-background-color: rgba(6, 12, 32, 0.7); -fx-background-radius: 10px;">
+                     <children>
+                        <VBox prefWidth="266.0">
+                           <children>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label text="SÜRÜM" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="27.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <JFXComboBox fx:id="comboBox" focusColor="#e1a517" nodeOrientation="LEFT_TO_RIGHT" prefWidth="190.0" promptText="Sürüm seçin" styleClass="mycombobox">
+
+                                    </JFXComboBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <JFXCheckBox fx:id="clientMode" checkedColor="#f5b51b" text="Özel Sunucu Modu" textFill="#AEAEAE" unCheckedColor="#AEAEAE">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </JFXCheckBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="25.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="15.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
          </children>
       </HBox>
       <Pane fx:id="exitScene" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: rgba(0,0,0,0.6);" visible="false" />
@@ -163,7 +286,7 @@
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
                                           </JFXButton>
-                                          <JFXButton visible="false" fx:id="okButton" layoutX="290.0" layoutY="10.0" onMouseClicked="#cancelExit" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #103693;" text="Tamam" textFill="WHITE">
+                                          <JFXButton fx:id="okButton" layoutX="290.0" layoutY="10.0" onMouseClicked="#cancelExit" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #103693;" text="Tamam" textFill="WHITE" visible="false">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
@@ -184,7 +307,6 @@
                   </Pane>
                </children>
             </VBox>
-            <VBox prefHeight="200.0" prefWidth="0.0" />
          </children>
       </HBox>
       <FontAwesomeIcon id="closebtn" fill="#94b3ff" iconName="CLOSE" layoutX="1076.0" layoutY="22.0" onMouseClicked="#closeApp" size="1.2em" styleClass="closebtn" text="" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0">

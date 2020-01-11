@@ -5,9 +5,11 @@ import com.infumia.launcher.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 public class Storage {
 
-    private String version = "1.8";
+    private String version = "1.15";
     private JSONObject versionObject = new JSONObject();
     private String clientUrl = "";
     private Utils utils = new Utils();
@@ -18,8 +20,10 @@ public class Storage {
     private JSONArray libraries = new JSONArray();
     private int downloadedLib = 0;
     private int downloadedNatives = 0;
-    private int totalLibraries = 0;
+    private int totalLibraries = 1;
     private String operationgSystem = utils.getOS();
+    private HashMap<String, String> versionsList = new HashMap<>();
+    private int prefRAM = 1024;
 
     public String getVersion() {
         return version;
@@ -115,5 +119,21 @@ public class Storage {
 
     public String getOperationgSystem() {
         return operationgSystem;
+    }
+
+    public HashMap<String, String> getVersionsList() {
+        return versionsList;
+    }
+
+    public void setVersionsList(HashMap<String, String> versionsList) {
+        this.versionsList = versionsList;
+    }
+
+    public int getPrefRAM() {
+        return prefRAM;
+    }
+
+    public void setPrefRAM(int prefRAM) {
+        this.prefRAM = prefRAM;
     }
 }
