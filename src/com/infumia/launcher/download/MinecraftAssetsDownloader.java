@@ -33,8 +33,6 @@ public class MinecraftAssetsDownloader implements Runnable {
         this.errorCallback = errorCallback;
         this.storage = storage;
         this.version = storage.getVersion();
-        storage.setLocal(new Local());
-        storage.setUtils(new Utils());
         storage.setOperationgSystem(storage.getUtils().getOS());
         objectsDir = new File(getMineCraftLocation() + "/assets/objects/");
         indexesDir = new File(getMineCraftLocation() + "/versions/" + version + "/");

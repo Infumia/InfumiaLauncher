@@ -7,19 +7,19 @@ import org.json.JSONObject;
 
 public class Storage {
 
-    private String version;
-    private JSONObject versionObject;
-    private String clientUrl;
-    private Utils utils;
-    private Local local;
-    private JSONObject assets;
-    private int downloadedAssets;
-    private double clientDownloadPercent;
-    private JSONArray libraries;
-    private int downloadedLib;
-    private int downloadedNatives;
-    private int totalLibraries;
-    private String operationgSystem;
+    private String version = "1.8";
+    private JSONObject versionObject = new JSONObject();
+    private String clientUrl = "";
+    private Utils utils = new Utils();
+    private Local local = new Local();
+    private JSONObject assets = new JSONObject();
+    private int downloadedAssets = 0;
+    private double clientDownloadPercent = 0.0D;
+    private JSONArray libraries = new JSONArray();
+    private int downloadedLib = 0;
+    private int downloadedNatives = 0;
+    private int totalLibraries = 0;
+    private String operationgSystem = utils.getOS();
 
     public String getVersion() {
         return version;
@@ -51,14 +51,6 @@ public class Storage {
 
     public Utils getUtils() {
         return utils;
-    }
-
-    public void setLocal(Local local) {
-        this.local = local;
-    }
-
-    public void setUtils(Utils utils) {
-        this.utils = utils;
     }
 
     public JSONObject getAssets() {
