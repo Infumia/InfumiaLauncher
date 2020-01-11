@@ -79,12 +79,12 @@
                                        <children>
                                           <HBox alignment="CENTER" prefWidth="120.0" style="-fx-background-color: #040B20; -fx-background-radius: 10px;">
                                              <children>
-                                                <TextField fx:id="ramField" alignment="CENTER" onAction="#syncSlider" style="-fx-background-color: transparent;" styleClass="textfields" text="1024 MB">
+                                                <TextField fx:id="ramField" alignment="CENTER" focusTraversable="false" onAction="#syncSlider" style="-fx-background-color: transparent;" styleClass="textfields" text="1024 MB">
                                                    <font>
                                                       <Font size="18.0" />
                                                    </font>
                                                    <HBox.margin>
-                                                      <Insets left="5" top="0"/>
+                                                      <Insets left="5" top="0" />
                                                    </HBox.margin>
                                                 </TextField>
                                              </children>
@@ -155,7 +155,7 @@
                         <Insets top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <JFXButton fx:id="playButton" onMouseClicked="#launch" prefHeight="66.0" prefWidth="216.0" ripplerFill="#463204" style="-fx-background-color: #C49015; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.53), 8, 0, 0, 3);" text="Oyna" textFill="WHITE">
+                  <JFXButton fx:id="playButton" focusTraversable="false" onMouseClicked="#launch" prefHeight="66.0" prefWidth="216.0" ripplerFill="#463204" style="-fx-background-color: #C49015; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.53), 8, 0, 0, 3);" text="Oyna" textFill="WHITE">
                      <font>
                         <Font size="19.0" />
                      </font>
@@ -199,7 +199,7 @@
                               </HBox>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <JFXComboBox fx:id="comboBox" focusColor="#e1a517" nodeOrientation="LEFT_TO_RIGHT" prefWidth="190.0" promptText="Sürüm seçin" styleClass="mycombobox">
+                                    <JFXComboBox fx:id="comboBox" focusColor="#e1a517" focusTraversable="false" nodeOrientation="LEFT_TO_RIGHT" prefWidth="190.0" promptText="Sürüm seçin" styleClass="mycombobox">
 
                                     </JFXComboBox>
                                  </children>
@@ -209,7 +209,7 @@
                               </HBox>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <JFXCheckBox fx:id="clientMode" checkedColor="#f5b51b" text="Özel Sunucu Modu" textFill="#AEAEAE" unCheckedColor="#AEAEAE">
+                                    <JFXCheckBox fx:id="clientMode" checkedColor="#f5b51b" focusTraversable="false" text="Özel Sunucu Modu" textFill="#AEAEAE" unCheckedColor="#AEAEAE">
                                        <font>
                                           <Font size="15.0" />
                                        </font>

@@ -285,6 +285,11 @@ public class HomeParentController implements Initializable {
 
     @FXML
     public void launch(){
+        if (comboBox.getValue() == null){
+            error("HATA", "Lütfen sürüm seçin.");
+            return;
+        }
+
         playButton.setDisable(true);
         exitButton.setDisable(true);
 
@@ -294,6 +299,7 @@ public class HomeParentController implements Initializable {
         if(!logconfigsDir.exists())logconfigsDir.mkdir();
 
         storage.setVersion(((Label)comboBox.getValue()).getText());
+        storage.setPrefRAM((int) Math.round(ramSlider.getValue()));
 
         MoveYAnimation animation = new MoveYAnimation(progressBarPane, progressBarPane.getLayoutY(), 606, Duration.seconds(0.3));
         animation.play();
