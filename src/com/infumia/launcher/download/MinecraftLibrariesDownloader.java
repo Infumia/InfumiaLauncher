@@ -37,6 +37,9 @@ public class MinecraftLibrariesDownloader {
         storage.getLocal().readJson_libraries_downloads_classifiers_natives_X(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         //version_path_list_natives
         storage.getLocal().readJson_libraries_downloads_classifiers_natives_Y(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
+        storage.getLocal().readJson_libraries_downloads_classifiers_natives_Z(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
+        if (PlatformUtil.isWindows()) storage.getLocal().readJson_twitch_natives_Windows(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
+        if (PlatformUtil.isWindows()) storage.getLocal().readJson_twitch_natives_url_Windows(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
         storage.getLocal().readJson_libraries_downloads_classifiers_natives_size(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         storage.getLocal().readJson_libraries_name(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version));
         storage.getLocal().readJson_libraries_downloads_artifact_path(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version));
@@ -55,7 +58,6 @@ public class MinecraftLibrariesDownloader {
         for (int i = 0; i < storage.getLocal().version_name_list.size(); i++) {
             storage.getLocal().version_path_list.add(storage.getLocal().generateLibrariesPath(storage.getOperationgSystem(), storage.getLocal().version_name_list.get(i).toString()));
         }
-
         sorted = versionCheck();
     }
 
@@ -73,8 +75,7 @@ public class MinecraftLibrariesDownloader {
     JSONArray objects = null;
     List sorted;
 
-    public void run() throws MalformedURLException, FileNotFoundException, InterruptedException {
-
+    public void run() {
         if (objects == null) {
             objects = versionObject.getJSONArray("libraries");
             storage.setLibraries(objects);
@@ -123,7 +124,6 @@ public class MinecraftLibrariesDownloader {
                 return;
             }
         }
-
 
         try {
 
@@ -191,8 +191,10 @@ public class MinecraftLibrariesDownloader {
             File aFile = new File((String) a);
             File bFile = new File((String) b);
             String aname = aFile.getName();
+            if (aname.isEmpty()) return 0;
             String aremoved = aname.substring(0, aname.lastIndexOf('.'));
             String bname = bFile.getName();
+            if (bname.isEmpty()) return 0;
             String bremoved = bname.substring(0, bname.lastIndexOf('.'));
             for (String str : aremoved.split("-")) {
                 if (isInteger(str)) {
@@ -235,7 +237,6 @@ public class MinecraftLibrariesDownloader {
         return sortedList;
     }
 
-
     boolean containsListString(List list, String obj) {
         for (String elmnt : (List<String>) list) {
             if (elmnt.contains(obj)) return true;
@@ -243,88 +244,105 @@ public class MinecraftLibrariesDownloader {
         return false;
     }
 
-    public void runNatives() throws MalformedURLException, FileNotFoundException, InterruptedException {
-        if (currentfilenativelib == storage.getLocal().version_url_list_natives.size()) {
-            System.out.print("\r");
-            InfumiaLauncher.logger.info(storage.getOperationgSystem() + " libleri indirildi");
-            currentfilelib++;
-            storage.setDownloadedLib(currentfilelib);
-            nativesDownloaded = true;
-            run();
-            return;
-        }
-
-        String dirs = "";
-        String fullName = storage.getLocal().version_path_list_natives.get(currentfilenativelib).toString();
-        String[] fullNameSplitted = storage.getLocal().version_path_list_natives.get(currentfilenativelib).toString().split("/");
-        String name = fullName.split("/")[fullNameSplitted.length - 1];
-        for (String str : fullNameSplitted) {
-            if (!str.contains(".jar")) dirs += str + "/";
-        }
-
-        File libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs);
-        libDir.mkdirs();
-
-        libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs, name);
-
-
-        DirectDownloader ddnative = new DirectDownloader();
-        if (libDir.exists()) {
-            if ((long) storage.getLocal().version_size_list_natives.get(currentfilenativelib) == libDir.length()) {
-                if (sorted.contains(fullName)) {
-                    System.out.print("\r>Dosya çıkartılıyor: " + name);
-                    jarExtract(dirs + name, getMineCraft_Versions_X_Natives_Location(version));
-                }
+    public void runNatives() {
+        try {
+            if (currentfilenativelib == storage.getLocal().version_url_list_natives.size()) {
                 System.out.print("\r");
-                storage.setDownloadedNatives(++currentfilenativelib);
+                InfumiaLauncher.logger.info(storage.getOperationgSystem() + " libleri indirildi");
+                currentfilelib++;
+                storage.setDownloadedLib(currentfilelib);
+                nativesDownloaded = true;
+                run();
+                return;
+            }
+
+            if (storage.getLocal().version_url_list_natives.get(currentfilenativelib).toString().isEmpty()) {
+                System.out.print("\r");
+                currentfilenativelib++;
+                storage.setDownloadedNatives(currentfilenativelib);
                 System.out.print("Diger dosyaya geciliyor. " + currentfilenativelib + "/" + storage.getLocal().version_url_list_natives.size());
                 runNatives();
                 return;
             }
-        }
 
-        File downloadedFile = new File(librariesDir + "/" + dirs, name);
+            File nativeDir = new File(storage.getUtils().getMineCraft_Versions_X_Natives(storage.getOperationgSystem(), storage.getVersion()));
+            nativeDir.mkdir();
 
-        String finalDirs = dirs;
-        ddnative.download(new DownloadTask(new URL(storage.getLocal().version_url_list_natives.get(currentfilenativelib).toString()), new FileOutputStream(downloadedFile), new DownloadListener() {
-
-            String fname;
-            double fileSize = 0;
-
-            @Override
-            public void onStart(String fname, int fsize) {
-                this.fname = fname;
-                fileSize = fsize;
-                //SLauncher.logger.info("Downloading " + fname + " of size " + fsize + " " + getNativeLibName("windows",currentfilenativelib));
+            String dirs = "";
+            String fullName = storage.getLocal().version_path_list_natives.get(currentfilenativelib).toString();
+            String[] fullNameSplitted = storage.getLocal().version_path_list_natives.get(currentfilenativelib).toString().split("/");
+            String name = fullName.split("/")[fullNameSplitted.length - 1];
+            for (String str : fullNameSplitted) {
+                if (!str.contains(".jar")) dirs += str + "/";
             }
 
-            @Override
-            public void onUpdate(int bytes, int totalDownloaded) {
-                double t1 = totalDownloaded + 0.0d;
-                double t2 = fileSize + 0.0d;
-                double downloadpercent = (t1 / t2) * 100.0d;
-                System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", ".") + " " + currentfilenativelib + "/" + getNativeLength("windows"));
-            }
+            File libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs);
+            libDir.mkdirs();
 
-            @Override
-            public void onComplete() {
-                try {
-                    storage.setDownloadedNatives(++currentfilenativelib);
+            libDir = new File(storage.getUtils().getMineCraftLibrariesLocation(storage.getOperationgSystem()) + "/" + dirs, name);
+
+            DirectDownloader ddnative = new DirectDownloader();
+            if (libDir.exists()) {
+                if ((long) storage.getLocal().version_size_list_natives.get(currentfilenativelib) == libDir.length()) {
+                    if (sorted.contains(fullName)) {
+                        System.out.print("\r>Dosya çıkartılıyor: " + name);
+                        jarExtract(dirs + name, getMineCraft_Versions_X_Natives_Location(version));
+                    }
+                    System.out.print("\r");
+                    currentfilenativelib++;
+                    storage.setDownloadedNatives(currentfilenativelib);
+                    System.out.print("Diger dosyaya geciliyor. " + currentfilenativelib + "/" + storage.getLocal().version_url_list_natives.size());
                     runNatives();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    errorCallback.response(e.toString());
+                    return;
                 }
             }
 
-            @Override
-            public void onCancel() {
+            File downloadedFile = new File(librariesDir + "/" + dirs, name);
 
-            }
-        }));
-        Thread t = new Thread(ddnative);
-        t.start();
-        return;
+            String finalDirs = dirs;
+            ddnative.download(new DownloadTask(new URL(storage.getLocal().version_url_list_natives.get(currentfilenativelib).toString()), new FileOutputStream(downloadedFile), new DownloadListener() {
+
+                String fname;
+                double fileSize = 0;
+
+                @Override
+                public void onStart(String fname, int fsize) {
+                    this.fname = fname;
+                    fileSize = fsize;
+                    //SLauncher.logger.info("Downloading " + fname + " of size " + fsize + " " + getNativeLibName("windows",currentfilenativelib));
+                }
+
+                @Override
+                public void onUpdate(int bytes, int totalDownloaded) {
+                    double t1 = totalDownloaded + 0.0d;
+                    double t2 = fileSize + 0.0d;
+                    double downloadpercent = (t1 / t2) * 100.0d;
+                    System.out.print("\r" + ">Indiriliyor " + fname + " %" + new DecimalFormat("##.#").format(downloadpercent).replace(",", ".") + " " + currentfilenativelib + "/" + storage.getLocal().version_url_list_natives.size());
+                }
+
+                @Override
+                public void onComplete() {
+                    try {
+                        currentfilenativelib++;
+                        storage.setDownloadedNatives(currentfilenativelib);
+                        jarExtract(finalDirs + name, getMineCraft_Versions_X_Natives_Location(version));
+                        runNatives();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        errorCallback.response(e.toString());
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            }));
+            Thread t = new Thread(ddnative);
+            t.start();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getOS() {

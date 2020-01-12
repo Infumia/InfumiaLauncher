@@ -149,8 +149,6 @@ public class HomeParentController implements Initializable {
         ramSlider.setValue((freeMemorySize / 1000000) * 0.6);
     }
 
-
-
     @FXML
     HBox exitPaneBox;
 

@@ -501,6 +501,79 @@ public class Local {
         }
     }
 
+    public void readJson_twitch_natives_Windows(String path) {
+        try {
+            boolean is64bit = System.getProperty("sun.arch.data.model").contains("64");
+            String natives_OS = "natives-windows-" + (is64bit ? "64" : "32");
+            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+            //System.out.println(content);
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            try {
+
+                String script_js = "var getJsonLibrariesDownloadsClassifiersNativesX=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].url+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesY=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].path+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesZ=function(r){var s=r,a=JSON.parse(s),e=\"\",n=0;for(i=0;i<500;i++)try{a.libraries[n].natives?(e=e+a.libraries[n].name+\"\\n\",n+=1):n+=1}catch(t){n+=1}return e};";
+
+                File file = new File("./.script.js");
+                file.createNewFile();
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(script_js);
+                bw.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            engine.eval(new FileReader("./.script.js"));
+
+            Invocable invocable = (Invocable) engine;
+
+            Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesY", content, natives_OS);
+
+            for (String retval : result.toString().split("\n")) {
+                version_path_list_natives.add(retval);
+            }
+        } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void readJson_twitch_natives_url_Windows(String path) {
+
+        try {
+            boolean is64bit = System.getProperty("sun.arch.data.model").contains("64");
+            String natives_OS = "natives-windows-" + (is64bit ? "64" : "32");
+            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+            //System.out.println(content);
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            try {
+
+                String script_js = "var getJsonLibrariesDownloadsClassifiersNativesX=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].url+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesY=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].path+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesZ=function(r){var s=r,a=JSON.parse(s),e=\"\",n=0;for(i=0;i<500;i++)try{a.libraries[n].natives?(e=e+a.libraries[n].name+\"\\n\",n+=1):n+=1}catch(t){n+=1}return e};";
+
+                File file = new File("./.script.js");
+                file.createNewFile();
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(script_js);
+                bw.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            engine.eval(new FileReader("./.script.js"));
+
+            Invocable invocable = (Invocable) engine;
+
+            Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesX", content, natives_OS);
+
+            for (String retval : result.toString().split("\n")) {
+                version_url_list_natives.add(retval);
+            }
+            new File("./.script.js").delete();
+        } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+
     public void readJson_objects_KEY(String path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {

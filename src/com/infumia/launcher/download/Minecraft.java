@@ -102,12 +102,10 @@ public class Minecraft {
                     System.out.println(line);
                 }
 
-                if (reader.readLine() == null) {
                     proc.destroy();
                     InfumiaLauncher.getInfumiaLauncher().stop();
                     Platform.exit();
                     System.exit(0);
-                }
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(0);
