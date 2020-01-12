@@ -73,7 +73,7 @@ public class Minecraft {
         String mainClass = local.readJson_mainClass(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
         String NativesDir = utils.getMineCraft_Versions_X_Natives(OperatingSystemToUse, version);
 
-        String cmds[] = {"-Xms" + Xms + "M", "-Xmx" + Xmx + "M", "-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump", "-Djava.library.path=" + NativesDir, "-cp", FullLibraryArgument, mainClass, "--width", String.valueOf(Width), "--height", String.valueOf(Height)};
+        String cmds[] = {"-Xms" + Xms + "M", "-Xmx" + Xmx + "M", "-XX:+UseConcMarkSweepGC" ,"-XX:+CMSIncrementalMode", "-XX:-UseAdaptiveSizePolicy", "-Xmn128M", "-Djava.library.path=" + NativesDir, "-cp", FullLibraryArgument, mainClass, "--width", String.valueOf(Width), "--height", String.valueOf(Height)};
         //put jvm arguments here
         String[] JVMArguments = JVMArgument.split(" ");
         //we now have all the arguments. merge cmds with JVMArguments
@@ -87,6 +87,12 @@ public class Minecraft {
 
         String[] finalArgs = Stream.concat(Arrays.stream(cmds), Arrays.stream(HalfArgument)).toArray(String[]::new);
 
+        StringBuilder builder = new StringBuilder();
+        for (String str : finalArgs) {
+            builder.append(str + " ");
+        }
+        System.out.println(builder.toString());
+
         try {
             proc = Runtime.getRuntime().exec(finalArgs);
         } catch (IOException e) {
@@ -97,15 +103,19 @@ public class Minecraft {
         if(proc != null){
             BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String line;
+            BufferedReader stdError = new BufferedReader(new
+                    InputStreamReader(proc.getErrorStream()));
             try {
                 while((line = reader.readLine()) != null) {
                     System.out.println(line);
                 }
-
-                    proc.destroy();
-                    InfumiaLauncher.getInfumiaLauncher().stop();
-                    Platform.exit();
-                    System.exit(0);
+                while ((line = stdError.readLine()) != null) {
+                    System.out.println(line);
+                }
+                proc.destroy();
+                InfumiaLauncher.getInfumiaLauncher().stop();
+                Platform.exit();
+                System.exit(0);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(0);

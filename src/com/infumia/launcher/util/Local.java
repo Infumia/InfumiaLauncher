@@ -240,15 +240,30 @@ public class Local {
     }
 
 
-    public void readJson_libraries_name(String path) {
+    public void readJson_libraries_name(String path, String os) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = versions.iterator();
-            while (iterator.hasNext()) {
+            outer: while (iterator.hasNext()) {
                 JSONObject name_ =  iterator.next();
+                if (os.toLowerCase().equals("windows")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (int i = 0; i < rulesArray.size(); i++) {
+                            JSONObject rule = (JSONObject) rulesArray.get(i);
+                            if (rule.get("os") != null) {
+                                String action = (String) rule.get("action");
+                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
+                                if (action.equals("allow") && osname.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
                 version_name_list.add(name_.get("name"));
             }
         } catch (IOException | ParseException e) {
@@ -256,7 +271,7 @@ public class Local {
         }
     }
 
-    public void readJson_libraries_downloads_artifact_size(String path) {
+    public void readJson_libraries_downloads_artifact_size(String path, String os) {
 
         JSONParser readMCJSONFiles = new JSONParser();
         try {
@@ -264,8 +279,23 @@ public class Local {
             JSONObject jsonObject = (JSONObject) object;
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = msg.iterator();
-            while (iterator.hasNext()) {
+            outer: while (iterator.hasNext()) {
                 JSONObject lib = (JSONObject) iterator.next();
+                if (os.toLowerCase().equals("windows")) {
+                    if (lib.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) lib.get("rules");
+                        for (int i = 0; i < rulesArray.size(); i++) {
+                            JSONObject rule = (JSONObject) rulesArray.get(i);
+                            if (rule.get("os") != null) {
+                                String action = (String) rule.get("action");
+                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
+                                if (action.equals("allow") && osname.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
                 JSONObject downloads = (JSONObject) lib.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
@@ -281,7 +311,7 @@ public class Local {
 
     }
 
-    public void readJson_libraries_downloads_artifact_url(String path) {
+    public void readJson_libraries_downloads_artifact_url(String path, String os) {
 
         JSONParser readMCJSONFiles = new JSONParser();
         try {
@@ -289,8 +319,23 @@ public class Local {
             JSONObject jsonObject = (JSONObject) object;
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = msg.iterator();
-            while (iterator.hasNext()) {
+            outer: while (iterator.hasNext()) {
                 JSONObject lib = (JSONObject) iterator.next();
+                if (os.toLowerCase().equals("windows")) {
+                    if (lib.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) lib.get("rules");
+                        for (int i = 0; i < rulesArray.size(); i++) {
+                            JSONObject rule = (JSONObject) rulesArray.get(i);
+                            if (rule.get("os") != null) {
+                                String action = (String) rule.get("action");
+                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
+                                if (action.equals("allow") && osname.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
                 JSONObject downloads = (JSONObject) lib.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
@@ -306,7 +351,7 @@ public class Local {
 
     }
 
-    public void readJson_libraries_downloads_artifact_path(String path) {
+    public void readJson_libraries_downloads_artifact_path(String path, String os) {
 
         JSONParser readMCJSONFiles = new JSONParser();
         try {
@@ -314,8 +359,23 @@ public class Local {
             JSONObject jsonObject = (JSONObject) object;
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = msg.iterator();
-            while (iterator.hasNext()) {
+            outer: while (iterator.hasNext()) {
                 JSONObject lib = (JSONObject) iterator.next();
+                if (os.toLowerCase().equals("windows")) {
+                    if (lib.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) lib.get("rules");
+                        for (int i = 0; i < rulesArray.size(); i++) {
+                            JSONObject rule = (JSONObject) rulesArray.get(i);
+                            if (rule.get("os") != null) {
+                                String action = (String) rule.get("action");
+                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
+                                if (action.equals("allow") && osname.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
                 JSONObject downloads = (JSONObject) lib.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
@@ -529,8 +589,45 @@ public class Local {
             Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesY", content, natives_OS);
 
             for (String retval : result.toString().split("\n")) {
-                version_path_list_natives.add(retval);
+                if (!retval.isEmpty()) version_path_list_natives.add(retval);
             }
+        } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void readJson_twitch_natives_size_Windows(String path) {
+
+        try {
+            boolean is64bit = System.getProperty("sun.arch.data.model").contains("64");
+            String natives_OS = "natives-windows-" + (is64bit ? "64" : "32");
+            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+            //System.out.println(content);
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            try {
+
+                String script_js = "var getJsonLibrariesDownloadsClassifiersNativesX=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].size+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesY=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].path+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesZ=function(r){var s=r,a=JSON.parse(s),e=\"\",n=0;for(i=0;i<500;i++)try{a.libraries[n].natives?(e=e+a.libraries[n].name+\"\\n\",n+=1):n+=1}catch(t){n+=1}return e};";
+
+                File file = new File("./.script.js");
+                file.createNewFile();
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(script_js);
+                bw.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            engine.eval(new FileReader("./.script.js"));
+
+            Invocable invocable = (Invocable) engine;
+
+            Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesX", content, natives_OS);
+
+            for (String retval : result.toString().split("\n")) {
+                if (!retval.isEmpty()) version_size_list_natives.add(Long.valueOf(retval));
+            }
+            new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
             System.out.println(ex.getMessage());
         }
@@ -565,7 +662,7 @@ public class Local {
             Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesX", content, natives_OS);
 
             for (String retval : result.toString().split("\n")) {
-                version_url_list_natives.add(retval);
+                if (!retval.isEmpty()) version_url_list_natives.add(retval);
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
@@ -681,7 +778,7 @@ public class Local {
             String args = jsonArgs.get("game").toString();
             args = args.replaceAll("\\[","").replaceAll("\\]","").replaceAll(",", "").replaceAll("\"\"", " ").replaceAll("\"", "");
             String[] argsF = args.split("\\{rules");
-            return (String)(argsF[0]);
+            return (argsF[0]);
 
         } catch (IOException | ParseException e) {
             System.out.print(e);
@@ -816,52 +913,53 @@ public class Local {
 
         List removeList = new ArrayList<String>();
 
-        Collections.sort(list, (a, b)-> {
-            if (a == null || b == null) return 0;
-            File aFile = new File((String) a);
-            File bFile = new File((String) b);
-            String aname = aFile.getName();
-            String aremoved = aname.substring(0, aname.lastIndexOf('.'));
-            String bname = bFile.getName();
-            String bremoved = bname.substring(0, bname.lastIndexOf('.'));
-            for (String str : aremoved.split("-")) {
-                if (isInteger(str)) {
-                    if (Integer.parseInt(str) > 1000) {
-                        aremoved = aremoved.replaceAll("-" + str, "");
-                    }
-                }
-            }
-            for (String str : bremoved.split("-")) {
-                if (isInteger(str)) {
-                    if (Integer.parseInt(str) > 1000) {
-                        bremoved = bremoved.replaceAll("-" + str, "");
-                    }
-                }
-            }
-            if (aremoved.replaceAll("[\\D]", "").isEmpty()) return 0;
-            if (bremoved.replaceAll("[\\D]", "").isEmpty()) return 0;
-            int versiona = Integer.parseInt(aremoved.replaceAll("[\\D]", ""));
-            int versionB = Integer.parseInt(bremoved.replaceAll("[\\D]", ""));
-            String formattedvera = aremoved.substring(aremoved.lastIndexOf("-")+1).replaceAll("[A-Za-z]?", "");
-            String formattedverb = bremoved.substring(bremoved.lastIndexOf("-")+1).replaceAll("[A-Za-z]?", "");
-            if (!aname.replaceAll(formattedvera, "").equals(bname.replaceAll(formattedverb, ""))) return 0;
-            if (versiona == versionB) return 0;
-            if (versiona > versionB){
-                if (!removeList.contains(b)) {
-                    removeList.add(b);
-                }
-                return 1;
-            }
-            if (versiona < versionB) {
-                if (!removeList.contains(a)) removeList.add(a);
-                return -1;
-            }
-            return 0;
-        });
+//        Collections.sort(list, (a, b)-> {
+//            if (a == null || b == null) return 0;
+//            File aFile = new File((String) a);
+//            File bFile = new File((String) b);
+//            String aname = aFile.getName();
+//            String bname = bFile.getName();
+//            if (!aname.contains("lwjgl") || !bname.contains("lwjgl")) return 0;
+//            String aremoved = aname.substring(0, aname.lastIndexOf('.'));
+//            String bremoved = bname.substring(0, bname.lastIndexOf('.'));
+//            for (String str : aremoved.split("-")) {
+//                if (isInteger(str)) {
+//                    if (Integer.parseInt(str) > 1000) {
+//                        aremoved = aremoved.replaceAll("-" + str, "");
+//                    }
+//                }
+//            }
+//            for (String str : bremoved.split("-")) {
+//                if (isInteger(str)) {
+//                    if (Integer.parseInt(str) > 1000) {
+//                        bremoved = bremoved.replaceAll("-" + str, "");
+//                    }
+//                }
+//            }
+//            if (aremoved.replaceAll("[\\D]", "").isEmpty()) return 0;
+//            if (bremoved.replaceAll("[\\D]", "").isEmpty()) return 0;
+//            int versiona = Integer.parseInt(aremoved.replaceAll("[\\D]", ""));
+//            int versionB = Integer.parseInt(bremoved.replaceAll("[\\D]", ""));
+//            String formattedvera = aremoved.replace("_", "").replace("-", "").replaceAll("[A-Za-z]?", "");
+//            String formattedverb = bremoved.replace("_", "").replace("-", "").replaceAll("[A-Za-z]?", "");
+//            if (!aname.replaceAll(formattedvera, "").equals(bname.replaceAll(formattedverb, ""))) return 0;
+//            if (versiona == versionB) return 0;
+//            if (versiona > versionB){
+//                if (!removeList.contains(b)) {
+//                    removeList.add(b);
+//                }
+//                return 1;
+//            }
+//            if (versiona < versionB) {
+//                if (!removeList.contains(a)) removeList.add(a);
+//                return -1;
+//            }
+//            return 0;
+//        });
 
         List sorted = new ArrayList();
         sorted.addAll(list);
-        sorted.removeAll(removeList);
+        //sorted.removeAll(removeList);
 
         for (int i = 0; i < sorted.size(); i++) {
 

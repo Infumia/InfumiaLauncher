@@ -54,7 +54,6 @@ public class HomeParentController implements Initializable {
     private File versionsdir = new File(getMineCraftLocation() + "/versions/");
     private File indexesDir = new File(getMineCraftLocation() + "/assets/indexes/");
     private File logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
-    private Storage storage = new Storage();
 
     @FXML
     Label percent;
@@ -99,8 +98,7 @@ public class HomeParentController implements Initializable {
             }
         }catch (IOException ex) {
             InfumiaLauncher.logger.warn("Sunucuya bağlanılamadı. Yerel sürümler okunuyor.");
-            File versionsDir = new File(storage.getUtils().getMineCraftVersionsLocation(storage.getOperationgSystem()));
-            File[] dirs = versionsDir.listFiles(fileName -> {
+            File[] dirs = versionsdir.listFiles(fileName -> {
                 if (fileName.isDirectory()) return true;
                 else return false;
             });
@@ -128,8 +126,6 @@ public class HomeParentController implements Initializable {
             if (Integer.parseInt(splittedA[1]) < Integer.parseInt(formattedb[1])) return 1;
             return 0;
         });
-
-        storage.setVersionsList(versionList);
 
         for (String str : sorted) {
             comboBox.getItems().add(new Label(str));
@@ -305,6 +301,7 @@ public class HomeParentController implements Initializable {
         if(!indexesDir.exists())indexesDir.mkdir();
         if(!logconfigsDir.exists())logconfigsDir.mkdir();
 
+        Storage storage = new Storage();
         storage.setVersion(((Label)comboBox.getValue()).getText());
         storage.setPrefRAM((int) Math.round(ramSlider.getValue()));
 

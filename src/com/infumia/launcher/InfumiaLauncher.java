@@ -32,7 +32,7 @@ public class InfumiaLauncher extends Application {
 
     public static int step = 1;
 
-    public static String cacheDir = getMineCraftLocation() + "/usercache.json";
+    public static String cacheDir = getMineCraftLocation() + "/infumia-usercache.json";
     public static String photoCacheDir = getMineCraftLocation() + "/avatar.png";
 
     private static InfumiaLauncher infumiaLauncher = new InfumiaLauncher();

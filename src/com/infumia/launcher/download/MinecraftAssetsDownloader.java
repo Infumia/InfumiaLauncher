@@ -73,14 +73,14 @@ public class MinecraftAssetsDownloader implements Runnable {
                 }catch (Exception e) {
                     try
                     {
-                        String assetsIndexId = storage.getLocal().readJson_assets(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
+                        versionObject = new JSONObject(new String(Files.readAllBytes(Paths.get(indexes.getPath()))));
+                        storage.setVersionObject(versionObject);
+                        String assetsIndexId = storage.getLocal().readJson_assets(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")));
                         File file = new File(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), assetsIndexId));
                         if (!file.exists()) {
                             errorCallback.response("İnternet bağlantısı gerekiyor.");
                             return;
                         }
-                        versionObject = new JSONObject(new String(Files.readAllBytes(Paths.get(indexes.getPath()))));
-                        storage.setVersionObject(versionObject);
                         JSONObject obj = new JSONObject(new String(Files.readAllBytes(Paths.get(file.getPath()))));
                         objects = obj.getJSONObject("objects");
                         storage.setAssets(objects);

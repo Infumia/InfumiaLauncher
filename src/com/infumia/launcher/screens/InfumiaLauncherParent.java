@@ -414,7 +414,9 @@ public class InfumiaLauncherParent implements Initializable {
     public void saveUserStats(String username) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("username", username);
-        try (FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir)) {
+        File file = new File(InfumiaLauncher.cacheDir);
+        try {
+            FileWriter writer = new FileWriter(file);
             writer.write(jsonObject.toString());
         } catch (IOException e) {
             e.printStackTrace();
