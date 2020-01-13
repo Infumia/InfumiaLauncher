@@ -30,64 +30,64 @@ public class Utils {
     //String versions_linux = getMineCraftLocation("Linux") + "/versions";
     public String getMineCraftLocation(String OS) {
         if (OS.equals("Windows")) {
-            return (System.getenv("APPDATA") + "/.infumia");
+            return (System.getenv("APPDATA") + File.separator + ".infumia");
         }
         if (OS.equals("Linux")) {
-            return (System.getProperty("user.home") + "/.infumia");
+            return (System.getProperty("user.home") + File.separator + ".infumia");
         }
         if (OS.equals("Mac")) {
-            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+            return (System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "infumia");
         }
         return "N/A";
     }
 
     public String getMineCraftGameDirectoryLocation(String OS) {
         if (OS.equals("Windows")) {
-            return (System.getenv("APPDATA") + "/.infumia");
+            return (System.getenv("APPDATA") + File.separator + ".infumia");
         }
         if (OS.equals("Linux")) {
-            return (System.getProperty("user.home") + "/.infumia");
+            return (System.getProperty("user.home") + File.separator + ".infumia");
         }
         if (OS.equals("Mac")) {
-            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+            return (System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "infumia");
         }
         return "N/A";
     }
 
     public String getMineCraft_APIMeta(String OS) {
-        return (getMineCraftLocation(OS) + "/api_meta");
+        return (getMineCraftLocation(OS) + File.separator + "api_meta");
     }
 
     public String getMineCraft_ServersDat(String OS) {
-        return (getMineCraftLocation(OS) + "/servers.dat");
+        return (getMineCraftLocation(OS) + File.separator + "servers.dat");
     }
 
     public String getMineCraftVersionsLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/versions");
+        return (getMineCraftLocation(OS) + File.separator + "versions");
     }
 
     public String getMineCraftTmpLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/tmp");
+        return (getMineCraftLocation(OS) + File.separator + "tmp");
     }
 
     public String getMineCraft_Launcherlogs_txt(String OS) {
-        return (getMineCraftLocation(OS) + "/Launcherlogs.txt");
+        return (getMineCraftLocation(OS) + File.separator + "Launcherlogs.txt");
     }
 
     public String getMineCraftLibrariesLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/libraries");
+        return (getMineCraftLocation(OS) + File.separator + "libraries");
     }
 
     public String getMineCraftLibrariesComMojangNettyLocation(String OS) {
-        return (getMineCraftLibrariesLocation(OS) + "/com/mojang/netty");
+        return (getMineCraftLibrariesLocation(OS) + File.separator + "com" + File.separator + "mojang" + File.separator + "netty");
     }
 
     public String getMineCraftTmpIoNettyBootstrapLocation(String OS) {
-        return (getMineCraftTmpLocation(OS) + "/io/netty/bootstrap");
+        return (getMineCraftTmpLocation(OS) + File.separator + "io" + File.separator + "netty" + File.separator + "bootstrap");
     }
 
     public String getMineCraftTmpIoNettyBootstrapBootstrap_class(String OS) {
-        return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
+        return (getMineCraftTmpIoNettyBootstrapLocation(OS) + File.separator + "Bootstrap.class");
     }
 
     public Map getMineCraftLibrariesComMojangNetty_jar(String OS) {
@@ -152,7 +152,7 @@ public class Utils {
     }
 
     public String getMineCraftLibrariesComMojangPatchyLocation(String OS) {
-        return (getMineCraftLibrariesLocation(OS) + "/com/mojang/patchy");
+        return (getMineCraftLibrariesLocation(OS) + File.separator + "com" + File.separator + "mojang" + File.separator + "patchy");
     }
 
     public String getMineCraftTmpIoPatchyBootstrapBootstrap_class(String OS) {
@@ -187,46 +187,46 @@ public class Utils {
     }
 
     public String getMineCraft_Launcher_Profiles_json(String OS) {
-        return (getMineCraftLocation(OS) + "/launcher_profiles.json");
+        return (getMineCraftLocation(OS) + File.separator + "launcher_profiles.json");
     }
 
     public String getMineCraft_Version_Json(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".json");
+        return (getMineCraftVersionsLocation(OS) + File.separator + VersionNumber + File.separator + VersionNumber + ".json");
     }
 
     public String getMineCraft_Versions_X_X_json(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".json");
+        return (getMineCraftVersionsLocation(OS) + File.separator + VersionNumber + File.separator + VersionNumber + ".json");
 
     }
 
     public String getMineCraft_Versions_X_X_jar(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".jar");
+        return (getMineCraftVersionsLocation(OS) + File.separator + VersionNumber + File.separator + VersionNumber + ".jar");
 
     }
 
     public String getMineCraft_Versions_X_X_jar_Location(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".jar");
+        return (getMineCraftVersionsLocation(OS) + File.separator + VersionNumber + File.separator + VersionNumber + ".jar");
 
     }
 
     public String getMineCraftAssetsRootLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/assets");
+        return (getMineCraftLocation(OS) + File.separator + "assets");
 
     }
 
     public String getMineCraft_Versions_X_Natives_Location(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/natives");
+        return (getMineCraftVersionsLocation(OS) + File.separator + VersionNumber + File.separator + "natives");
 
     }
 
     public String getMineCraft_Versions_X_Natives(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/natives");
+        return (getMineCraftVersionsLocation(OS) + File.separator + VersionNumber + File.separator + "natives");
 
     }
 
     public String getMineCraftAssetsIndexes_X_json(String OS, String VersionNumber) {
 
-        return (getMineCraftAssetsIndexesLocation(OS) + "/" + VersionNumber + ".json");
+        return (getMineCraftAssetsIndexesLocation(OS) + File.separator + VersionNumber + ".json");
     }
 
     public String getMineCraft_X_json(String OS, String Username) {
@@ -236,12 +236,12 @@ public class Utils {
     }
 
     public String getMineCraftAssetsIndexesLocation(String OS) {
-        return (getMineCraftAssetsLocation(OS) + "/indexes");
+        return (getMineCraftAssetsLocation(OS) + File.separator + "indexes");
 
     }
 
     public String getMineCraftAssetsLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/assets");
+        return (getMineCraftLocation(OS) + File.separator + "assets");
 
     }
 
@@ -251,14 +251,14 @@ public class Utils {
 
     public String setMineCraft_Versions_X_NativesLocation(String OS, String _path) {
         Utils utils = new Utils();
-        return (utils.getMineCraftLibrariesLocation(OS) + "/" + _path);
+        return (utils.getMineCraftLibrariesLocation(OS) + File.separator + _path);
 
     }
     
 
     public String setMineCraft_librariesLocation(String OS, String _path) {
         Utils utils = new Utils();
-        return (utils.getMineCraftLibrariesLocation(OS) + "/" + _path);
+        return (utils.getMineCraftLibrariesLocation(OS) + File.separator + _path);
     }
 
     public String getArgsDiv(String OS) {
@@ -345,11 +345,11 @@ public class Utils {
     }
 
     public String getMineCraftAssetsVirtualLocation(String OS) {
-        return (getMineCraftAssetsLocation(OS) + "/virtual");
+        return (getMineCraftAssetsLocation(OS) + File.separator + "virtual");
     }
 
     public String getMineCraftAssetsVirtualLegacyLocation(String OS) {
-        return (getMineCraftAssetsVirtualLocation(OS) + "/legacy");
+        return (getMineCraftAssetsVirtualLocation(OS) + File.separator + "legacy");
     }
 
     public String getOS() {

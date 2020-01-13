@@ -108,15 +108,12 @@ public class HomeParentController implements Initializable {
         }
 
         List<String> sorted = new ArrayList<>(versionList.keySet());
-        List<String> remove = new ArrayList<>();
 
         Collections.sort(sorted, (a, b)-> {
             if (a.isEmpty() || b.isEmpty()) return 0;
             if (a.equals(b)) return 0;
             String[] splittedA = a.replace(".", " ").split(" ");
             String[] splittedB = b.replace(".", " ").split(" ");
-            if (Integer.parseInt(splittedA[1]) <= 5) remove.add(a);
-            if (Integer.parseInt(splittedB[1]) <= 5) remove.add(b);
             if (splittedA[1].equals(splittedB[1])) {
                 if (splittedA.length == 3 && splittedB.length == 3) {
                     if (Integer.parseInt(splittedA[2]) > Integer.parseInt(splittedB[2])) return -1;
@@ -129,8 +126,6 @@ public class HomeParentController implements Initializable {
             if (Integer.parseInt(splittedA[1]) < Integer.parseInt(splittedB[1])) return 1;
             return 0;
         });
-
-        sorted.removeAll(remove);
 
         for (String str : sorted) {
             comboBox.getItems().add(new Label(str));

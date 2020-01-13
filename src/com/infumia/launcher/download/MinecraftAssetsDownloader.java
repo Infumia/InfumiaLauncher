@@ -5,6 +5,7 @@ import com.infumia.launcher.objects.Callback;
 import com.infumia.launcher.util.JSONUrl;
 import com.sun.javafx.PlatformUtil;
 import javafx.application.Platform;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.kamranzafar.jddl.DirectDownloader;
@@ -121,6 +122,10 @@ public class MinecraftAssetsDownloader implements Runnable {
 
             if (currentfile == objects.length()) {
                 System.out.print("\r");
+                String assetId = versionObject.getString("assets");
+                if (assetId.equals("pre-1.6") || assetId.equals("legacy")) {
+                    assetsToResources();
+                }
                 InfumiaLauncher.logger.info("Assets indirme islemi bitti.");
                 InfumiaLauncher.logger.info("Client indirme islemi baslatiliyor");
                 InfumiaLauncher.step++;
@@ -201,18 +206,33 @@ public class MinecraftAssetsDownloader implements Runnable {
             e.printStackTrace();
             errorCallback.response(e.toString());
         }
-
     }
 
-    public String getMineCraftLocation() {
+    private void assetsToResources() throws IOException {
+        File resourcesDir = new File(getMineCraftLocation() + File.separator + "resources");
+        if (!resourcesDir.exists()) resourcesDir.mkdir();
+        for (int i = 0; i <objects.length();i++) {
+            File resourceFile = new File((String) objects.names().get(i));
+            String name = resourceFile.getName();
+            String hash = getHash(i);
+            File assetFile = new File(getMineCraftLocation() + File.separator + "assets" + File.separator + "objects" + File.separator + hash.substring(0, 2) + File.separator + hash);
+            File finalDir = new File(resourcesDir.getPath() + File.separator + resourceFile.getPath().replace(name, ""));
+
+            finalDir.mkdirs();
+
+            FileUtils.copyFile(assetFile, new File(finalDir, name));
+        }
+    }
+
+    private String getMineCraftLocation() {
         if (PlatformUtil.isWindows()) {
-            return (System.getenv("APPDATA") + "/.infumia");
+            return (System.getenv("APPDATA") + File.separator + ".infumia");
         }
         if (PlatformUtil.isLinux()) {
-            return (System.getProperty("user.home") + "/.infumia");
+            return (System.getProperty("user.home") + File.separator + ".infumia");
         }
         if (PlatformUtil.isMac()) {
-            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
+            return (System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "infumia");
         }
         return "N/A";
     }

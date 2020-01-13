@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class Minecraft {
@@ -38,7 +37,7 @@ public class Minecraft {
     public static String uuid = "0";
     public static Image image;
 
-    private File librarydir = new File(getMineCraftLocation() + "/libraries\\");
+    private File librarydir = new File(getMineCraftLocation() + File.separator + "libraries" + File.separator);
 
     public ArrayList<String> names;
 
@@ -53,18 +52,15 @@ public class Minecraft {
         setMemory(storage.getPrefRAM());
         setMinMemory(storage.getPrefRAM());
 
-        //String HalfArgumentTemplate = local.readJson_minecraftArguments(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse));
         int Xmx = this.getMemory();
         int Xms = this.getMinMemory();
-        int Width = this.getWidth();
-        int Height = this.getHeight();
         String JavaPath = this.getJavaPath();
         String JVMArgument = this.getJVMArgument();
         String versionName = local.readJson_id(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
         String assetsIndexId = local.readJson_assets(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
 
         String VersionType = this.getVersionData();
-        String GameAssets = utils.getMineCraftAssetsVirtualLegacyLocation(OperatingSystemToUse);
+        String GameAssets = utils.getMineCraftLocation(OperatingSystemToUse) + File.separator + (storage.getVersionObject().get("assets").toString().equals("pre-1.6") || storage.getVersionObject().get("assets").toString().equals("legacy") ? "resources" : "assets");
         String AuthSession = "OFFLINE";
 
         String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIndexId, uuid, accessToken, "{}", "mojang", VersionType, GameAssets, AuthSession);
@@ -73,7 +69,7 @@ public class Minecraft {
         String mainClass = local.readJson_mainClass(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
         String NativesDir = utils.getMineCraft_Versions_X_Natives(OperatingSystemToUse, version);
 
-        String cmds[] = {"-Xms" + Xms + "M", "-Xmx" + Xmx + "M", "-XX:+UseConcMarkSweepGC" ,"-XX:+CMSIncrementalMode", "-XX:-UseAdaptiveSizePolicy", "-Xmn128M", "-Djava.library.path=" + NativesDir, "-cp", FullLibraryArgument, mainClass, "--width", String.valueOf(Width), "--height", String.valueOf(Height)};
+        String cmds[] = {"-Xms" + Xms + "M", "-Xmx" + Xmx + "M", "-XX:+UseConcMarkSweepGC" ,"-XX:+CMSIncrementalMode", "-XX:-UseAdaptiveSizePolicy", "-Xmn128M", "-Djava.library.path=" + NativesDir, "-cp", FullLibraryArgument, mainClass};
         //put jvm arguments here
         String[] JVMArguments = JVMArgument.split(" ");
         //we now have all the arguments. merge cmds with JVMArguments
@@ -154,25 +150,7 @@ public class Minecraft {
         return javaPath;
     }
 
-    private int width = 854;
-
-    public void setWidth(int width_) {
-        width = width_;
-    }
-
-    private int getWidth() {
-        return width;
-    }
-
     private int height = 480;
-
-    public void setHeight(int height_) {
-        height = height_;
-    }
-
-    private int getHeight() {
-        return height;
-    }
 
     private int memory = 2048;
 
