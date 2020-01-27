@@ -15,22 +15,32 @@ import javafx.animation.KeyFrame;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.swing.event.DocumentEvent;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
@@ -128,8 +138,18 @@ public class HomeParentController implements Initializable {
         });
 
         for (String str : sorted) {
-            comboBox.getItems().add(new Label(str));
+            Label label = new Label(str);
+            label.setBackground(new Background(new BackgroundFill(Color.color(0,0,0,0.0),
+                    CornerRadii.EMPTY,
+                    Insets.EMPTY)));
+            label.setTextFill(Paint.valueOf("00ff00"));
+            comboBox.getItems().add(label);
         }
+        comboBox.getSelectionModel().selectFirst();
+
+        comboBox.setOnAction(event -> {
+            ((Label) comboBox.getSelectionModel().getSelectedItem()).setTextFill(Paint.valueOf("#00ff00"));
+        });
 
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             ramField.setText((Math.round(observable.getValue().doubleValue())) + " MB");
@@ -142,7 +162,8 @@ public class HomeParentController implements Initializable {
 
         long freeMemorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory
                 .getOperatingSystemMXBean()).getFreePhysicalMemorySize();
-        ramSlider.setValue((freeMemorySize / 1000000) * 0.6);
+        double rounded = Math.round(freeMemorySize / 1000000) * 0.6;
+        ramSlider.setValue(Math.round(rounded / 10) * 10);
     }
 
     @FXML
@@ -295,6 +316,7 @@ public class HomeParentController implements Initializable {
 
         playButton.setDisable(true);
         exitButton.setDisable(true);
+        ramSlider.setDisable(true);
 
         if(!objectsdir.exists())objectsdir.mkdir();
         if(!versionsdir.exists())versionsdir.mkdir();

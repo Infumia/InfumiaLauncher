@@ -35,7 +35,7 @@ public class InfumiaLauncher extends Application {
     public static String cacheDir = getMineCraftLocation() + "/infumia-usercache.json";
     public static String photoCacheDir = getMineCraftLocation() + "/avatar.png";
 
-    private static InfumiaLauncher infumiaLauncher = new InfumiaLauncher();
+    private static final InfumiaLauncher infumiaLauncher = new InfumiaLauncher();
 
     public static Logger logger = LogManager.getLogger("log4j2.xml");
 
@@ -46,6 +46,8 @@ public class InfumiaLauncher extends Application {
         logger.info("Launcher başlatılıyor...");
 
         InfumiaLauncher.stage = stage;
+
+        stage.setTitle("Infumia Launcher v1.0-ALPHA");
 
         File cacheFile = new File(cacheDir);
         InfumiaLauncher.logger.info("Çerezler okunuyor");
@@ -194,6 +196,11 @@ public class InfumiaLauncher extends Application {
 
     public static InfumiaLauncher getInfumiaLauncher() {
         return infumiaLauncher;
+    }
+
+    public static void main() {
+        String[] args = {};
+        launch(args);
     }
 
 }

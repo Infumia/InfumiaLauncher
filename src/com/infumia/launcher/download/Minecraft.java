@@ -141,7 +141,7 @@ public class Minecraft {
         return jvmArgument;
     }
 
-    private String javaPath = "java";
+    private String javaPath = getMineCraftLocation() + "\\runtime\\jre1.8.0_221\\bin\\java";
     public void setJavaPath(String javaPath_) {
         javaPath = javaPath_;
     }

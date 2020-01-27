@@ -399,7 +399,7 @@ public class InfumiaLauncherParent implements Initializable {
     }
 
 
-    public void saveUserStats(String email, String username, String password) {
+    private void saveUserStats(String email, String username, String password) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("e-mail", email);
         jsonObject.put("username", username);
@@ -411,12 +411,10 @@ public class InfumiaLauncherParent implements Initializable {
         }
     }
 
-    public void saveUserStats(String username) {
+    private void saveUserStats(String username) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("username", username);
-        File file = new File(InfumiaLauncher.cacheDir);
-        try {
-            FileWriter writer = new FileWriter(file);
+        try (FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir)) {
             writer.write(jsonObject.toString());
         } catch (IOException e) {
             e.printStackTrace();

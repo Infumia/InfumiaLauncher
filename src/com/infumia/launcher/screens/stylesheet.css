@@ -99,18 +99,19 @@
     -fx-background-color: none;
 }
 
-.combo-box .list-cell:filled:selected .text,
-.choice-box .list-cell:filled:selected .text {
-    -fx-fill: #96A2BF;
+.combo-box .list-cell:filled:selected .text {
     -fx-max-height: 200;
 }
 
-.combo-box .list-cell .text,
-.choice-box .list-cell .text {
+.combo-box .list-cell .text {
     -fx-font-size: 12px;
-    -fx-fill: #4C5C84;
     -fx-max-height: 200;
 }
+
+.combo-box .label {
+    -
+}
+
 
 .combo-box-base:focused {
     -fx-background-color: none;
