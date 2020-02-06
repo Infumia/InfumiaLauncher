@@ -3,11 +3,9 @@ package com.infumia.launcher.screens;
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.animations.Animation;
 import com.infumia.launcher.animations.FadeInSceneTransition;
-import com.infumia.launcher.animations.MarginAnimation;
 import com.infumia.launcher.animations.ShakeTransition;
 import com.infumia.launcher.download.Minecraft;
 import com.infumia.launcher.objects.AuthThread;
-import com.infumia.launcher.objects.Callback;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXPasswordField;
@@ -20,18 +18,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.util.Duration;
 import org.json.JSONObject;
@@ -244,6 +238,8 @@ public class InfumiaLauncherParent implements Initializable {
 
         loginBtn.setDisable(true);
         premiumCheckBox.setDisable(true);
+        remindCheckBox.setDisable(true);
+        about.setDisable(true);
         String style = loginBtn.styleProperty().get();
         String[] splitted = style.split(";");
         splitted[0] = "-fx-background-color: rgba(196, 144, 21,0.4)";
@@ -274,7 +270,7 @@ public class InfumiaLauncherParent implements Initializable {
 
                 try{
                     InfumiaLauncher.logger.info("Sahne değişimi için hazırlanılıyor");
-                    InfumiaLauncher.parent = FXMLLoader.load(getClass().getResource("FakeParent.fxml"), null, new JavaFXBuilderFactory());
+                    InfumiaLauncher.parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/FakeParent.fxml"), null, new JavaFXBuilderFactory());
                     Scene scene = InfumiaLauncher.stage.getScene();
                     if (scene == null) {
                         InfumiaLauncher.logger.info("Sahte sahne yüklenemedi. Manuel oluşturuluyor.");
@@ -292,7 +288,7 @@ public class InfumiaLauncherParent implements Initializable {
                         public void run() {
                             try {
                                 InfumiaLauncher.logger.info("Asıl sahne yükleniyor.");
-                                Parent secondParent = FXMLLoader.load(getClass().getResource("InfumiaHomeParent.fxml"));
+                                Parent secondParent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaHomeParent.fxml"));
                                 Scene secondScene = new Scene(secondParent);
 
                                 InfumiaLauncher.stage.setScene(secondScene);
@@ -328,6 +324,8 @@ public class InfumiaLauncherParent implements Initializable {
                             canSee = true;
                             loginBtn.setDisable(false);
                             premiumCheckBox.setDisable(false);
+                            remindCheckBox.setDisable(false);
+                            about.setDisable(false);
                             splitted[0] = "-fx-background-color: rgba(196, 144, 21, 1.0)";
                             String astyle = "";
                             for (String str : splitted) astyle += str + ";";
@@ -342,6 +340,8 @@ public class InfumiaLauncherParent implements Initializable {
                             canSee = true;
                             loginBtn.setDisable(false);
                             premiumCheckBox.setDisable(false);
+                            remindCheckBox.setDisable(false);
+                            about.setDisable(false);
                             splitted[0] = "-fx-background-color: rgba(196, 144, 21, 1.0)";
                             String astyle = "";
                             for (String str : splitted) astyle += str + ";";
@@ -370,6 +370,8 @@ public class InfumiaLauncherParent implements Initializable {
                         canSee = true;
                         loginBtn.setDisable(false);
                         premiumCheckBox.setDisable(false);
+                        remindCheckBox.setDisable(false);
+                        about.setDisable(false);
                         splitted[0] = "-fx-background-color: rgba(196, 144, 21, 1.0)";
                         String astyle = "";
                         for (String str : splitted) astyle += str + ";";
@@ -383,6 +385,8 @@ public class InfumiaLauncherParent implements Initializable {
                 canSee = true;
                 loginBtn.setDisable(false);
                 premiumCheckBox.setDisable(false);
+                remindCheckBox.setDisable(false);
+                about.setDisable(false);
                 splitted[0] = "-fx-background-color: rgba(196, 144, 21, 1.0)";
                 String astyle = "";
                 for (String str : splitted) astyle += str + ";";

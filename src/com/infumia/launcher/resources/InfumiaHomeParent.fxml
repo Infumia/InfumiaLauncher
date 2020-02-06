@@ -209,7 +209,7 @@
                               </HBox>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <JFXCheckBox fx:id="clientMode" checkedColor="#f5b51b" focusTraversable="false" text="Özel Sunucu Modu" textFill="#AEAEAE" unCheckedColor="#AEAEAE">
+                                    <JFXCheckBox fx:id="clientMode" checkedColor="#f5b51b" focusTraversable="false" text="Sponsorlu Sürümler" onAction="#onClientModeChange" textFill="#AEAEAE" unCheckedColor="#AEAEAE">
                                        <font>
                                           <Font size="15.0" />
                                        </font>

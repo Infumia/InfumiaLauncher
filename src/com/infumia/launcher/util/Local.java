@@ -33,6 +33,7 @@ public class Local {
     public List version_path_list = new ArrayList();       //%new added... This is for direct paths
     public List version_name_list = new ArrayList();       //%new added... This is for direct names
     public List version_size_list = new ArrayList();       //%new added... This is for direct names
+    public List version_hash_list = new ArrayList();       //%new added... This is for direct names
 
     List objects_hash = new ArrayList();            //gets objects hash
     List objects_KEY = new ArrayList();             //gets objects keys
@@ -44,6 +45,7 @@ public class Local {
     public List version_path_list_natives = new ArrayList();    //%gets url of all the natives
     List version_name_list_natives = new ArrayList(); //EXP CODE!
     public List version_size_list_natives = new ArrayList(); //EXP CODE!
+    public List version_hash_list_natives = new ArrayList(); //EXP CODE!
 
     public List libraries_path = new ArrayList();          //gets path to all the libraries
     //List natives_path = new ArrayList();            //_NOT NEEDED_ gets path to all the natives
@@ -311,6 +313,46 @@ public class Local {
 
     }
 
+    public void readJson_libraries_downloads_artifact_hash(String path, String os) {
+
+        JSONParser readMCJSONFiles = new JSONParser();
+        try {
+            Object object = readMCJSONFiles.parse(new FileReader(path));
+            JSONObject jsonObject = (JSONObject) object;
+            JSONArray msg = (JSONArray) jsonObject.get("libraries");
+            Iterator<JSONObject> iterator = msg.iterator();
+            outer: while (iterator.hasNext()) {
+                JSONObject lib = (JSONObject) iterator.next();
+                if (os.toLowerCase().equals("windows")) {
+                    if (lib.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) lib.get("rules");
+                        for (int i = 0; i < rulesArray.size(); i++) {
+                            JSONObject rule = (JSONObject) rulesArray.get(i);
+                            if (rule.get("os") != null) {
+                                String action = (String) rule.get("action");
+                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
+                                if (action.equals("allow") && osname.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                JSONObject downloads = (JSONObject) lib.get("downloads");
+                if (downloads.get("artifact") != null) {
+                    JSONObject artifact = (JSONObject) downloads.get("artifact");
+                    if (artifact.get("sha1") != null) {
+                        String hash = (String) artifact.get("sha1");
+                        version_hash_list.add(hash);
+                    }
+                }
+            }
+        } catch (IOException | ParseException e) {
+            //System.out.print(e);
+        }
+
+    }
+
     public void readJson_libraries_downloads_artifact_url(String path, String os) {
 
         JSONParser readMCJSONFiles = new JSONParser();
@@ -389,6 +431,51 @@ public class Local {
             //System.out.print(e);
         }
 
+    }
+
+    public void readJson_libraries_downloads_classifiers_natives_hash(String path, String natives_OS) {
+
+        try {
+            if (natives_OS.equals("Linux")) {
+                natives_OS = natives_OS.replace("Linux", "natives-linux");
+            } else if (natives_OS.equals("Windows")) {
+                natives_OS = natives_OS.replace("Windows", "natives-windows");
+            } else if (natives_OS.equals("Mac")) {
+                natives_OS = natives_OS.replace("Mac", "natives-osx");
+            } else {
+                System.out.print("N/A");
+                //I DON'T KNOW THIS OS!
+            }
+            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+            //System.out.println(content);
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            try {
+
+                String script_js = "var getJsonLibrariesDownloadsClassifiersNativesHash=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].sha1+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesY=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].path+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesZ=function(r){var s=r,a=JSON.parse(s),e=\"\",n=0;for(i=0;i<500;i++)try{a.libraries[n].natives?(e=e+a.libraries[n].name+\"\\n\",n+=1):n+=1}catch(t){n+=1}return e};";
+
+                File file = new File("./.script.js");
+                file.createNewFile();
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(script_js);
+                bw.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            engine.eval(new FileReader("./.script.js"));
+
+            Invocable invocable = (Invocable) engine;
+
+            Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesHash", content, natives_OS);
+
+            for (String retval : result.toString().split("\n")) {
+                version_hash_list_natives.add(retval);
+            }
+            new File("./.script.js").delete();
+        } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     public void readJson_libraries_downloads_classifiers_natives_size(String path, String natives_OS) {
@@ -626,6 +713,43 @@ public class Local {
 
             for (String retval : result.toString().split("\n")) {
                 if (!retval.isEmpty()) version_size_list_natives.add(Long.valueOf(retval));
+            }
+            new File("./.script.js").delete();
+        } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void readJson_twitch_natives_hash_Windows(String path) {
+
+        try {
+            boolean is64bit = System.getProperty("sun.arch.data.model").contains("64");
+            String natives_OS = "natives-windows-" + (is64bit ? "64" : "32");
+            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+            //System.out.println(content);
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            try {
+
+                String script_js = "var getJsonLibrariesDownloadsClassifiersNativesX=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].sha1+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesY=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].path+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesZ=function(r){var s=r,a=JSON.parse(s),e=\"\",n=0;for(i=0;i<500;i++)try{a.libraries[n].natives?(e=e+a.libraries[n].name+\"\\n\",n+=1):n+=1}catch(t){n+=1}return e};";
+
+                File file = new File("./.script.js");
+                file.createNewFile();
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(script_js);
+                bw.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            engine.eval(new FileReader("./.script.js"));
+
+            Invocable invocable = (Invocable) engine;
+
+            Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesX", content, natives_OS);
+
+            for (String retval : result.toString().split("\n")) {
+                if (!retval.isEmpty()) version_hash_list_natives.add(retval);
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {

@@ -5,8 +5,6 @@ import com.infumia.launcher.animations.Animation;
 import com.infumia.launcher.animations.FadeInSceneTransition;
 import com.infumia.launcher.animations.MoveYAnimation;
 import com.infumia.launcher.download.*;
-import com.infumia.launcher.objects.Callback;
-import com.infumia.launcher.objects.MinecraftVersion;
 import com.infumia.launcher.util.JSONUrl;
 import com.jfoenix.controls.*;
 import com.sun.javafx.PlatformUtil;
@@ -15,39 +13,30 @@ import javafx.animation.KeyFrame;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import javax.swing.event.DocumentEvent;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class HomeParentController implements Initializable {
 
     private HashMap<String, String> versionList = new HashMap<>();
+    private HashMap<String, String> specialVersionList = new HashMap<>();
 
     private File gamedir = new File(getMineCraftLocation() + "/");
     private File assestdir = new File(getMineCraftLocation() + "/assets/");
@@ -106,50 +96,43 @@ public class HomeParentController implements Initializable {
                     versionList.put(versionObject.getString("id"), versionObject.getString("url"));
                 }
             }
-        }catch (IOException ex) {
+            JSONObject specialManifest = JSONUrl.readURL("https://infumia.com.tr/clients/data.json");
+            JSONArray specialVersions = specialManifest.getJSONArray("clients");
+            for (int i = 0; i < specialVersions.length(); i++) {
+                JSONObject versionObject = specialVersions.getJSONObject(i);
+                specialVersionList.put(versionObject.getString("clientName"), versionObject.getString("clientUrl"));
+            }
+        } catch (IOException ex) {
             InfumiaLauncher.logger.warn("Sunucuya bağlanılamadı. Yerel sürümler okunuyor.");
             File[] dirs = versionsdir.listFiles(fileName -> {
                 if (fileName.isDirectory()) return true;
                 else return false;
             });
             for (File dir : dirs) {
-                versionList.put(dir.getName(), "");
+                if (new File(versionsdir + File.separator + dir + File.separator + dir.getName() + ".json").exists())
+                    versionList.put(dir.getName(), "");
             }
         }
 
-        List<String> sorted = new ArrayList<>(versionList.keySet());
-
-        Collections.sort(sorted, (a, b)-> {
-            if (a.isEmpty() || b.isEmpty()) return 0;
-            if (a.equals(b)) return 0;
-            String[] splittedA = a.replace(".", " ").split(" ");
-            String[] splittedB = b.replace(".", " ").split(" ");
-            if (splittedA[1].equals(splittedB[1])) {
-                if (splittedA.length == 3 && splittedB.length == 3) {
-                    if (Integer.parseInt(splittedA[2]) > Integer.parseInt(splittedB[2])) return -1;
-                    if (Integer.parseInt(splittedA[2]) < Integer.parseInt(splittedB[2])) return 1;
+        JSONObject savedVersion = getVersionStat();
+        if (savedVersion != null && !savedVersion.isNull("version") && !savedVersion.isNull("special")) {
+            String version = savedVersion.getString("version");
+            boolean special = savedVersion.getBoolean("special");
+            if (special && specialVersionList.containsKey(version)) {
+                loadSpecials();
+                clientMode.setSelected(true);
+                for (int i = 0; i < comboBox.getItems().size(); i++) {
+                    if (((Label)(comboBox.getItems().get(i))).getText().equals(version)) {
+                        comboBox.getSelectionModel().select(i);
+                    }
                 }
-                if (splittedA.length > splittedB.length) return -1;
-                if (splittedA.length < splittedB.length) return 1;
             }
-            if (Integer.parseInt(splittedA[1]) > Integer.parseInt(splittedB[1])) return -1;
-            if (Integer.parseInt(splittedA[1]) < Integer.parseInt(splittedB[1])) return 1;
-            return 0;
-        });
-
-        for (String str : sorted) {
-            Label label = new Label(str);
-            label.setBackground(new Background(new BackgroundFill(Color.color(0,0,0,0.0),
-                    CornerRadii.EMPTY,
-                    Insets.EMPTY)));
-            label.setTextFill(Paint.valueOf("00ff00"));
-            comboBox.getItems().add(label);
+            else if (versionList.containsKey(version)) {
+                comboBox.getSelectionModel().select(version);
+            }
+        }else {
+            loadNormalVersions();
         }
-        comboBox.getSelectionModel().selectFirst();
-
-        comboBox.setOnAction(event -> {
-            ((Label) comboBox.getSelectionModel().getSelectedItem()).setTextFill(Paint.valueOf("#00ff00"));
-        });
 
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             ramField.setText((Math.round(observable.getValue().doubleValue())) + " MB");
@@ -195,6 +178,9 @@ public class HomeParentController implements Initializable {
 
     @FXML
     Pane progressBarPane;
+
+    @FXML
+    JFXCheckBox clientMode;
 
     @FXML
     public void syncSlider() {
@@ -274,7 +260,7 @@ public class HomeParentController implements Initializable {
         Minecraft.image = null;
         Minecraft.playerName = null;
         try {
-            InfumiaLauncher.parent = FXMLLoader.load(getClass().getResource("FakeParent.fxml"), null, new JavaFXBuilderFactory());
+            InfumiaLauncher.parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/FakeParent.fxml"), null, new JavaFXBuilderFactory());
             Scene scene = InfumiaLauncher.stage.getScene();
             if (scene == null) {
                 scene = new Scene(InfumiaLauncher.parent, 1100, 620);
@@ -289,7 +275,7 @@ public class HomeParentController implements Initializable {
                     try {
                         FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir);
                         writer.write("");
-                        Parent secondParent = FXMLLoader.load(getClass().getResource("InfumiaLauncherParent.fxml"));
+                        Parent secondParent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaLauncherParent.fxml"));
                         Scene secondScene = new Scene(secondParent);
 
                         InfumiaLauncher.stage.setScene(secondScene);
@@ -317,11 +303,16 @@ public class HomeParentController implements Initializable {
         playButton.setDisable(true);
         exitButton.setDisable(true);
         ramSlider.setDisable(true);
+        ramField.setDisable(true);
+        comboBox.setDisable(true);
+        clientMode.setDisable(true);
 
         if(!objectsdir.exists())objectsdir.mkdir();
         if(!versionsdir.exists())versionsdir.mkdir();
         if(!indexesDir.exists())indexesDir.mkdir();
         if(!logconfigsDir.exists())logconfigsDir.mkdir();
+
+        saveVersionStat(((Label) (comboBox.getSelectionModel().getSelectedItem())).getText(), clientMode.isSelected());
 
         Storage storage = new Storage();
         storage.setVersion(((Label)comboBox.getValue()).getText());
@@ -381,15 +372,133 @@ public class HomeParentController implements Initializable {
             animation2.get().setCycleCount(Timeline.INDEFINITE);
             animation2.get().play();
 
-            Thread thread = new Thread(new MinecraftAssetsDownloader(storage, response -> Platform.runLater(() -> {
-                error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
-                MoveYAnimation animation1 = new MoveYAnimation(progressBarPane, progressBarPane.getLayoutY(), 620, Duration.seconds(0.3));
-                animation1.play();
-                playButton.setDisable(false);
-                exitButton.setDisable(false);
-            })));
+            if (clientMode.isSelected()) {
+                Thread thread = new Thread(new SpecialDownloader(storage, response -> Platform.runLater(() -> {
+                    error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
+                    MoveYAnimation animation1 = new MoveYAnimation(progressBarPane, progressBarPane.getLayoutY(), 620, Duration.seconds(0.3));
+                    animation1.play();
+                    playButton.setDisable(false);
+                    exitButton.setDisable(false);
+                    ramSlider.setDisable(false);
+                    ramField.setDisable(false);
+                    comboBox.setDisable(false);
+                    clientMode.setDisable(false);
+                })));
 
-            InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
+                InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
+            }else {
+                Thread thread = new Thread(new MinecraftAssetsDownloader(storage, response -> Platform.runLater(() -> {
+                    error("HATA", "Dosyalar indirilirken hata oluştu: " + response);
+                    MoveYAnimation animation1 = new MoveYAnimation(progressBarPane, progressBarPane.getLayoutY(), 620, Duration.seconds(0.3));
+                    animation1.play();
+                    playButton.setDisable(false);
+                    exitButton.setDisable(false);
+                    ramSlider.setDisable(false);
+                    ramField.setDisable(false);
+                    comboBox.setDisable(false);
+                    clientMode.setDisable(false);
+                })));
+
+                InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
+            }
+        });
+    }
+
+    @FXML
+    public void onClientModeChange() {
+        if (clientMode.isSelected()) {
+            loadSpecials();
+        }else {
+            loadNormalVersions();
+        }
+    }
+
+    private void loadSpecials() {
+        comboBox.getItems().clear();
+        for (String str : specialVersionList.keySet()) {
+            Label label = new Label(str);
+
+            label.setTextFill(Paint.valueOf("#00ff00"));
+            label.setFont(Font.font(12.0));
+
+            comboBox.getItems().add(label);
+        }
+
+        restyleComboBox();
+        setCellFactory();
+    }
+
+    private void loadNormalVersions() {
+        comboBox.getItems().clear();
+        List<String> sorted = new ArrayList<>(versionList.keySet());
+
+        Collections.sort(sorted, (a, b)-> {
+            if (a.isEmpty() || b.isEmpty()) return 0;
+            if (a.equals(b)) return 0;
+            String[] splittedA = a.replace(".", " ").split(" ");
+            String[] splittedB = b.replace(".", " ").split(" ");
+            if (splittedA[1].equals(splittedB[1])) {
+                if (splittedA.length == 3 && splittedB.length == 3) {
+                    if (Integer.parseInt(splittedA[2]) > Integer.parseInt(splittedB[2])) return -1;
+                    if (Integer.parseInt(splittedA[2]) < Integer.parseInt(splittedB[2])) return 1;
+                }
+                if (splittedA.length > splittedB.length) return -1;
+                if (splittedA.length < splittedB.length) return 1;
+            }
+            if (Integer.parseInt(splittedA[1]) > Integer.parseInt(splittedB[1])) return -1;
+            if (Integer.parseInt(splittedA[1]) < Integer.parseInt(splittedB[1])) return 1;
+            return 0;
+        });
+
+        for (String str : sorted) {
+            Label label = new Label(str);
+
+            label.setTextFill(Paint.valueOf("#00ff00"));
+            label.setFont(Font.font(12.0));
+
+            comboBox.getItems().add(label);
+        }
+
+        restyleComboBox();
+
+        setCellFactory();
+    }
+
+    private void restyleComboBox() {
+        comboBox.setPromptText("Sürüm Seçin");
+        comboBox.setStyle("-fx-font-size: 18px;-fx-text-fill: red;");
+    }
+
+    private void setCellFactory() {
+        comboBox.setCellFactory(new Callback<ListView, ListCell>() {
+            @Override
+            public ListCell call(ListView param) {
+                return new ListCell<Label>() {
+                    @Override
+                    protected void updateItem(Label item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setStyle("-fx-font-size: 14px;");
+                        if (item == null || empty) {
+                            setGraphic(null);
+                        }else {
+                            setText(item.getText());
+                            setTextFill(item.getTextFill());
+                            setFont(Font.font(14.0));
+
+                            String versionId = item.getText();
+                            if (new File(versionsdir + File.separator + versionId + File.separator + versionId + ".json").exists()) {
+                                Image icon = new Image("assets/correct.png");
+                                ImageView iconImageView = new ImageView(icon);
+                                iconImageView.setFitHeight(18);
+                                iconImageView.setPreserveRatio(true);
+                                setGraphic(iconImageView);
+                            }else {
+                                setGraphic(null);
+                            }
+                        }
+                    }
+                };
+            }
         });
     }
 
@@ -409,6 +518,45 @@ public class HomeParentController implements Initializable {
         FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);;
         fade3.play();
         Animation.salla(exitPane);
+    }
+
+    private JSONObject getVersionStat() {
+        try {
+            FileReader fileInputStream = new FileReader(InfumiaLauncher.cacheDir);
+            BufferedReader reader = new BufferedReader(fileInputStream);
+            String line = reader.readLine();
+            JSONObject json = new JSONObject(line);
+            return json;
+        }catch (Exception e) {
+            InfumiaLauncher.logger.info("Cache dosyası bulunamadı. Varsayılan ayarlar yükleniyor.");
+            return null;
+        }
+    }
+
+    private boolean saveVersionStat(String version, boolean isSpecial) {
+        try {
+            File cacheFile = new File(InfumiaLauncher.cacheDir);
+            String line = "{}";
+            if (cacheFile.exists()) {
+                FileReader fileInputStream = new FileReader(cacheFile);
+                BufferedReader reader = new BufferedReader(fileInputStream);
+                String output = reader.readLine();
+                if (output != null) line = output;
+            }
+            org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) new JSONParser().parse(line);
+            jsonObject.put("version", version);
+            jsonObject.put("special", isSpecial);
+            try (FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir)) {
+                writer.write(jsonObject.toString());
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public String getMineCraftLocation() {

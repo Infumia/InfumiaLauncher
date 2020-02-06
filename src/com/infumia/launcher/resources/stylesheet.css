@@ -58,7 +58,6 @@
 
 .combo-box .list-cell
 {
-    -fx-font-size: 18px;
     -fx-background-color: transparent;
 }
 
@@ -95,21 +94,17 @@
 
 .combo-box-base .text
 {
-    -fx-font-size: 18px;
     -fx-background-color: none;
 }
 
 .combo-box .list-cell:filled:selected .text {
+    -fx-fill: #96A2BF;
     -fx-max-height: 200;
 }
 
 .combo-box .list-cell .text {
-    -fx-font-size: 12px;
+    -fx-fill: #4C5C84;
     -fx-max-height: 200;
-}
-
-.combo-box .label {
-    -
 }
 
 

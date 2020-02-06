@@ -4,6 +4,7 @@ import com.infumia.launcher.animations.FadeInSceneTransition;
 import com.infumia.launcher.download.Minecraft;
 import com.infumia.launcher.objects.AuthThread;
 import com.sun.javafx.PlatformUtil;
+import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -41,6 +42,10 @@ public class InfumiaLauncher extends Application {
 
     public static ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
+    public InfumiaLauncher() {
+
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
         logger.info("Launcher başlatılıyor...");
@@ -60,14 +65,20 @@ public class InfumiaLauncher extends Application {
         FileReader fileInputStream = new FileReader(cacheFile);
         BufferedReader reader = new BufferedReader(fileInputStream);
         String line = reader.readLine();
+        JSONObject jsonObject = line == null ? new JSONObject() : new JSONObject(line);
+
         if (line == null || line.isEmpty()) {
             InfumiaLauncher.logger.info("Çerez bulunamadı giriş sayfası yükleniyor");
             loadLauncherParent();
             return;
         }
 
-        JSONObject jsonObject = new JSONObject(line);
-        if (jsonObject.isNull("username")) return;
+        if (jsonObject.isNull("username")) {
+            InfumiaLauncher.logger.info("Çerez bulunamadı giriş sayfası yükleniyor");
+            loadLauncherParent();
+            return;
+        }
+
         InfumiaLauncher.logger.info("Bir hesap bulundu");
         if (!jsonObject.isNull("password") && !jsonObject.isNull("e-mail")) {
             String password = new String(Base64.getDecoder().decode((String) jsonObject.get("password")));
@@ -138,7 +149,8 @@ public class InfumiaLauncher extends Application {
         Platform.runLater(() -> {
             try {
                 InfumiaLauncher.logger.info("Ana sayfa yükleniyor");
-                parent = FXMLLoader.load(InfumiaLauncher.class.getResource("screens/InfumiaHomeParent.fxml"));
+
+                parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaHomeParent.fxml"));
 
                 Scene scene = new Scene(parent);
                 stage.setScene(scene);
@@ -175,7 +187,7 @@ public class InfumiaLauncher extends Application {
 
     void loadLauncherParent() {
         try {
-            parent = FXMLLoader.load(InfumiaLauncher.class.getResource("screens/InfumiaLauncherParent.fxml"));
+            parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaLauncherParent.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -198,9 +210,14 @@ public class InfumiaLauncher extends Application {
         return infumiaLauncher;
     }
 
-    public static void main() {
-        String[] args = {};
-        launch(args);
+    public void main(String[] args) {
+        try {
+            String[] fake = {};
+            if (args.length > 0 && args[0].equals("-6672925679282131965467343395945397370476369279894627999939614659217371136582730618069762179071"))
+                LauncherImpl.launchApplication(this.getClass(), fake);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

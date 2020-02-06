@@ -9,11 +9,12 @@ import org.kamranzafar.jddl.DownloadTask;
 import com.infumia.launcher.InfumiaLauncher;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,17 +36,20 @@ public class MinecraftLibrariesDownloader {
 
         //version_url_list_natives
         storage.getLocal().readJson_libraries_downloads_classifiers_natives_X(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
+        storage.getLocal().readJson_libraries_downloads_classifiers_natives_hash(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         //version_path_list_natives
         storage.getLocal().readJson_libraries_downloads_classifiers_natives_Y(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         storage.getLocal().readJson_libraries_downloads_classifiers_natives_Z(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
         if (PlatformUtil.isWindows()) storage.getLocal().readJson_twitch_natives_Windows(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
         if (PlatformUtil.isWindows()) storage.getLocal().readJson_twitch_natives_url_Windows(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
         if (PlatformUtil.isWindows()) storage.getLocal().readJson_twitch_natives_size_Windows(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
+        if (PlatformUtil.isWindows()) storage.getLocal().readJson_twitch_natives_hash_Windows(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version));
         storage.getLocal().readJson_libraries_downloads_classifiers_natives_size(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         storage.getLocal().readJson_libraries_name(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         storage.getLocal().readJson_libraries_downloads_artifact_path(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         storage.getLocal().readJson_libraries_downloads_artifact_url(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
         storage.getLocal().readJson_libraries_downloads_artifact_size(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
+        storage.getLocal().readJson_libraries_downloads_artifact_hash(storage.getUtils().getMineCraft_Version_Json(storage.getOperationgSystem(), version), storage.getOperationgSystem());
 
 
 //        for (int i = 0; i < storage.getLocal().version_url_list_natives.size(); i++) {
@@ -113,20 +117,19 @@ public class MinecraftLibrariesDownloader {
             runNatives();
             return;
         }
-
-        DirectDownloader dd = new DirectDownloader();
-        if (libDir.exists() && !libDir.isDirectory()) {
-            if ((long) storage.getLocal().version_size_list.get(currentfilelib) == libDir.length()) {
-                System.out.print("\r");
-                System.out.print("Dosya zaten var diger dosyaya geciliyor. " + (currentfilelib + currentfilenativelib) + "/" + storage.getLocal().version_url_list.size());
-                currentfilelib++;
-                storage.setDownloadedLib(currentfilelib);
-                run();
-                return;
-            }
-        }
-
         try {
+
+            DirectDownloader dd = new DirectDownloader();
+            if (libDir.exists() && !libDir.isDirectory()) {
+                if (storage.getLocal().version_hash_list.get(currentfilelib).equals(calcSHA1(libDir))) {
+                    System.out.print("\r");
+                    System.out.print("Dosya zaten var diger dosyaya geciliyor. " + (currentfilelib + currentfilenativelib) + "/" + storage.getLocal().version_url_list.size());
+                    currentfilelib++;
+                    storage.setDownloadedLib(currentfilelib);
+                    run();
+                    return;
+                }
+            }
 
             dd.download(new DownloadTask(new URL(storage.getLocal().version_url_list.get(currentfilelib).toString()), new FileOutputStream(new File(librariesDir + "/" + dirs, name)), new DownloadListener() {
 
@@ -276,7 +279,7 @@ public class MinecraftLibrariesDownloader {
 
             DirectDownloader ddnative = new DirectDownloader();
             if (libDir.exists()) {
-                if ((long) storage.getLocal().version_size_list_natives.get(currentfilenativelib) == libDir.length()) {
+                if (storage.getLocal().version_hash_list_natives.get(currentfilenativelib).equals(calcSHA1(libDir))) {
                     if (sorted.contains(fullName)) {
                         System.out.print("\r>Dosya çıkartılıyor: " + name);
                         jarExtract(dirs + name, getMineCraft_Versions_X_Natives_Location(version));
@@ -379,8 +382,8 @@ public class MinecraftLibrariesDownloader {
             while (enumEntries.hasMoreElements()) {
                 java.util.jar.JarEntry file = (java.util.jar.JarEntry) enumEntries.nextElement();
                 java.io.File f = new java.io.File(destDir + java.io.File.separator + file.getName());
-                if (file.isDirectory()) { // if its a directory, create it
-                    f.mkdirs();
+                if (file.getName().endsWith(".MF")) continue;
+                if (file.isDirectory()) { // if its a directory, don't create it
                     continue;
                 }
                 if (!f.exists()) {
@@ -486,5 +489,29 @@ public class MinecraftLibrariesDownloader {
         String[] splitted = objects.getJSONObject(size).getJSONObject("downloads").getJSONObject("classifiers").getJSONObject("natives-" + OS.toLowerCase()).getString("path").split("/");
         return splitted[splitted.length - 1];
     }
+
+    private String calcSHA1(File file) throws FileNotFoundException,
+            IOException, NoSuchAlgorithmException {
+
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+        try (InputStream input = new FileInputStream(file)) {
+
+            byte[] buffer = new byte[8192];
+            int len = input.read(buffer);
+
+            while (len != -1) {
+                sha1.update(buffer, 0, len);
+                len = input.read(buffer);
+            }
+
+            byte[] digest = sha1.digest();
+
+            return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,
+                    digest));
+        }
+    }
+
+
+
 
 }

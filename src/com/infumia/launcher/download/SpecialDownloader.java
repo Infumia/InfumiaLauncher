@@ -22,7 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
-public class MinecraftAssetsDownloader implements Runnable {
+public class SpecialDownloader implements Runnable {
 
     private Callback errorCallback;
     private String version;
@@ -33,7 +33,7 @@ public class MinecraftAssetsDownloader implements Runnable {
     private File xmlFile;
     private Storage storage;
 
-    public MinecraftAssetsDownloader(Storage storage, Callback errorCallback) {
+    public SpecialDownloader(Storage storage, Callback errorCallback) {
         this.errorCallback = errorCallback;
         this.storage = storage;
         this.version = storage.getVersion();
@@ -56,16 +56,17 @@ public class MinecraftAssetsDownloader implements Runnable {
         try {
             if (objects == null) {
                 try {
-                    JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
-                    JSONArray versions = manifest.getJSONArray("versions");
+                    JSONObject manifest = JSONUrl.readURL("https://infumia.com.tr/clients/data.json");
+                    JSONArray versions = manifest.getJSONArray("clients");
                     for (int i = 0; i < versions.length(); i++) {
-                        if (versions.getJSONObject(i).getString("id").equals(version)) {
-                            versionUrl = versions.getJSONObject(i).getString("url");
+                        if (versions.getJSONObject(i).getString("clientName").equals(version)) {
+                            versionUrl = versions.getJSONObject(i).getString("assetsUrl");
                             versionObject = JSONUrl.readURL(versionUrl);
                             storage.setVersionObject(versionObject);
                             JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
                             objects = readedUrl.getJSONObject("objects");
                             storage.setAssets(objects);
+                            storage.setRemoteHash(versions.getJSONObject(i).getString("clientSha1"));
                             try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
                                 file.write(readedUrl.toString());
                                 file.flush();
@@ -74,6 +75,7 @@ public class MinecraftAssetsDownloader implements Runnable {
                         }
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     try {
                         versionObject = new JSONObject(new String(Files.readAllBytes(Paths.get(indexes.getPath()))));
                         storage.setVersionObject(versionObject);

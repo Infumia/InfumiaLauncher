@@ -7,9 +7,11 @@ import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.math.BigInteger;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 
 public class MinecraftClientDownloader implements Runnable{
@@ -38,18 +40,27 @@ public class MinecraftClientDownloader implements Runnable{
         if (!versionsDir.exists()) versionsDir.mkdir();
 
         if (clientFile.exists()) {
-            downloadPercent = 100.0d;
-            storage.setClientDownloadPercent(downloadPercent);
-            InfumiaLauncher.logger.info("Client indirme islemi bitti.");
-            InfumiaLauncher.logger.info("Natives indirme islemi baslatiliyor");
-            InfumiaLauncher.step++;
             try {
-                new MinecraftLibrariesDownloader(storage, errorCallback).run();
-            } catch (Exception e) {
+                String localHash = calcSHA1(clientFile);
+                String remoteHash = storage.getRemoteHash();
+                if (localHash.equals(remoteHash)) {
+                    downloadPercent = 100.0d;
+                    storage.setClientDownloadPercent(downloadPercent);
+                    InfumiaLauncher.logger.info("Client indirme islemi bitti.");
+                    InfumiaLauncher.logger.info("Natives indirme islemi baslatiliyor");
+                    InfumiaLauncher.step++;
+                    try {
+                        new MinecraftLibrariesDownloader(storage, errorCallback).run();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        errorCallback.response(e.toString());
+                    }
+                    return;
+                }
+            }catch (Exception e) {
                 e.printStackTrace();
                 errorCallback.response(e.toString());
             }
-            return;
         }
 
         DirectDownloader dd = new DirectDownloader();
@@ -118,4 +129,24 @@ public class MinecraftClientDownloader implements Runnable{
         return "N/A";
     }
 
+    private static String calcSHA1(File file) throws FileNotFoundException,
+            IOException, NoSuchAlgorithmException {
+
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+        try (InputStream input = new FileInputStream(file)) {
+
+            byte[] buffer = new byte[8192];
+            int len = input.read(buffer);
+
+            while (len != -1) {
+                sha1.update(buffer, 0, len);
+                len = input.read(buffer);
+            }
+
+            byte[] digest = sha1.digest();
+
+            return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,
+                    digest));
+        }
+    }
 }

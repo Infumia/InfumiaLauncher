@@ -24,6 +24,7 @@ public class Storage {
     private String operationgSystem = utils.getOS();
     private HashMap<String, String> versionsList = new HashMap<>();
     private int prefRAM = 1024;
+    private String remoteHash = "";
 
     public String getVersion() {
         return version;
@@ -135,5 +136,13 @@ public class Storage {
 
     public void setPrefRAM(int prefRAM) {
         this.prefRAM = prefRAM;
+    }
+
+    public String getRemoteHash() {
+        return remoteHash;
+    }
+
+    public void setRemoteHash(String remoteHash) {
+        this.remoteHash = remoteHash;
     }
 }

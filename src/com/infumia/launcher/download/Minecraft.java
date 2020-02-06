@@ -60,7 +60,7 @@ public class Minecraft {
         String assetsIndexId = local.readJson_assets(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
 
         String VersionType = this.getVersionData();
-        String GameAssets = utils.getMineCraftLocation(OperatingSystemToUse) + File.separator + (storage.getVersionObject().get("assets").toString().equals("pre-1.6") || storage.getVersionObject().get("assets").toString().equals("legacy") ? "resources" : "assets");
+        String GameAssets = utils.getMineCraftLocation(OperatingSystemToUse) + File.separator + (storage.getVersionObject().get("assets").toString().equals("pre-1.6") || storage.getVersionObject().get("assets").toString().equals("legacy") ? "com/infumia/launcher/resources" : "assets");
         String AuthSession = "OFFLINE";
 
         String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIndexId, uuid, accessToken, "{}", "mojang", VersionType, GameAssets, AuthSession);
