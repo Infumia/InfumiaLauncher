@@ -270,7 +270,7 @@ public class InfumiaLauncherParent implements Initializable {
 
                 try{
                     InfumiaLauncher.logger.info("Sahne değişimi için hazırlanılıyor");
-                    InfumiaLauncher.parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/FakeParent.fxml"), null, new JavaFXBuilderFactory());
+                    InfumiaLauncher.parent = FXMLLoader.load(getClass().getResource("/parents/FakeParent.fxml"), null, new JavaFXBuilderFactory());
                     Scene scene = InfumiaLauncher.stage.getScene();
                     if (scene == null) {
                         InfumiaLauncher.logger.info("Sahte sahne yüklenemedi. Manuel oluşturuluyor.");
@@ -288,7 +288,7 @@ public class InfumiaLauncherParent implements Initializable {
                         public void run() {
                             try {
                                 InfumiaLauncher.logger.info("Asıl sahne yükleniyor.");
-                                Parent secondParent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaHomeParent.fxml"));
+                                Parent secondParent = FXMLLoader.load(getClass().getResource("/parents/InfumiaHomeParent.fxml"));
                                 Scene secondScene = new Scene(secondParent);
 
                                 InfumiaLauncher.stage.setScene(secondScene);

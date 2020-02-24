@@ -104,16 +104,24 @@ public class HomeParentController implements Initializable {
             }
         } catch (IOException ex) {
             InfumiaLauncher.logger.warn("Sunucuya bağlanılamadı. Yerel sürümler okunuyor.");
-            File[] dirs = versionsdir.listFiles(fileName -> {
-                if (fileName.isDirectory()) return true;
-                else return false;
-            });
-            for (File dir : dirs) {
-                if (new File(versionsdir + File.separator + dir + File.separator + dir.getName() + ".json").exists())
-                    versionList.put(dir.getName(), "");
+            File[] dirs = versionsdir.listFiles(File::isDirectory);
+            if (dirs != null) {
+                for (File dir : dirs) {
+                    if (new File(dir + File.separator + dir.getName() + ".json").exists())
+                        versionList.put(dir.getName(), "");
+                }
             }
+            clientMode.setDisable(true);
         }
-
+//        File[] dirs = versionsdir.listFiles(File::isDirectory);
+//        if (dirs != null) {
+//            for (File dir : dirs) {
+//                if (new File(dir + File.separator + dir.getName() + ".json").exists()
+//                        && !specialVersionList.containsKey(dir.getName())
+//                        && !versionList.containsKey(dir.getName()))
+//                    versionList.put(dir.getName(), "");
+//            }
+//        }
         JSONObject savedVersion = getVersionStat();
         if (savedVersion != null && !savedVersion.isNull("version") && !savedVersion.isNull("special")) {
             String version = savedVersion.getString("version");
@@ -128,24 +136,29 @@ public class HomeParentController implements Initializable {
                 }
             }
             else if (versionList.containsKey(version)) {
-                comboBox.getSelectionModel().select(version);
+                loadNormalVersions();
+                clientMode.setSelected(false);
+                for (int i = 0; i < comboBox.getItems().size(); i++) {
+                    if (((Label)(comboBox.getItems().get(i))).getText().equals(version)) {
+                        comboBox.getSelectionModel().select(i);
+                    }
+                }
             }
         }else {
             loadNormalVersions();
         }
 
-        ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            ramField.setText((Math.round(observable.getValue().doubleValue())) + " MB");
-        });
+        ramSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+                ramField.setText((Math.round(observable.getValue().doubleValue())) + " MB"));
         playerName.requestFocus();
 
         long memorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory
                 .getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
-        ramSlider.setMax(Double.valueOf(memorySize / 1000000));
+        ramSlider.setMax((double) (memorySize / 1000000));
 
         long freeMemorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory
                 .getOperatingSystemMXBean()).getFreePhysicalMemorySize();
-        double rounded = Math.round(freeMemorySize / 1000000) * 0.6;
+        double rounded = Math.round((double) freeMemorySize / 1000000) * 0.6;
         ramSlider.setValue(Math.round(rounded / 10) * 10);
     }
 
@@ -211,7 +224,7 @@ public class HomeParentController implements Initializable {
         infoScreenDescription.setTextFill(Paint.valueOf("dcddde"));
         FadeTransition fade = Animation.fadeIn(Duration.seconds(0.3), exitScene);
         fade.play();
-        FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);;
+        FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);
         fade3.play();
         Animation.salla(exitPane);
     }
@@ -260,7 +273,11 @@ public class HomeParentController implements Initializable {
         Minecraft.image = null;
         Minecraft.playerName = null;
         try {
-            InfumiaLauncher.parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/FakeParent.fxml"), null, new JavaFXBuilderFactory());
+            InfumiaLauncher.parent = FXMLLoader.load(
+                    getClass().getResource("/parents/FakeParent.fxml")
+                    ,
+                    null
+                    , new JavaFXBuilderFactory());
             Scene scene = InfumiaLauncher.stage.getScene();
             if (scene == null) {
                 scene = new Scene(InfumiaLauncher.parent, 1100, 620);
@@ -269,23 +286,20 @@ public class HomeParentController implements Initializable {
                 InfumiaLauncher.stage.getScene().setRoot(InfumiaLauncher.parent);
             }
 
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir);
-                        writer.write("");
-                        Parent secondParent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaLauncherParent.fxml"));
-                        Scene secondScene = new Scene(secondParent);
+            Platform.runLater(() -> {
+                try {
+                    FileWriter writer = new FileWriter(InfumiaLauncher.cacheDir);
+                    writer.write("");
+                    Parent secondParent = FXMLLoader.load(getClass().getResource("/parents/InfumiaLauncherParent.fxml"));
+                    Scene secondScene = new Scene(secondParent);
 
-                        InfumiaLauncher.stage.setScene(secondScene);
+                    InfumiaLauncher.stage.setScene(secondScene);
 
-                        FadeInSceneTransition sceneTransition = new FadeInSceneTransition(InfumiaLauncher.stage, secondScene, Duration.seconds(0.3));
-                        sceneTransition.play();
-                        sceneTransition.makeStageDrageable();
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    FadeInSceneTransition sceneTransition = new FadeInSceneTransition(InfumiaLauncher.stage, secondScene, Duration.seconds(0.3));
+                    sceneTransition.play();
+                    sceneTransition.makeStageDrageable();
+                }catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
         }catch (Exception ex) {
@@ -432,9 +446,11 @@ public class HomeParentController implements Initializable {
         comboBox.getItems().clear();
         List<String> sorted = new ArrayList<>(versionList.keySet());
 
-        Collections.sort(sorted, (a, b)-> {
+        sorted.sort((a, b) -> {
             if (a.isEmpty() || b.isEmpty()) return 0;
             if (a.equals(b)) return 0;
+            if (a.matches(".*[A-Z]+.*")) return -1;
+            if (b.matches(".*[A-Z]+.*")) return 1;
             String[] splittedA = a.replace(".", " ").split(" ");
             String[] splittedB = b.replace(".", " ").split(" ");
             if (splittedA[1].equals(splittedB[1])) {
@@ -445,9 +461,7 @@ public class HomeParentController implements Initializable {
                 if (splittedA.length > splittedB.length) return -1;
                 if (splittedA.length < splittedB.length) return 1;
             }
-            if (Integer.parseInt(splittedA[1]) > Integer.parseInt(splittedB[1])) return -1;
-            if (Integer.parseInt(splittedA[1]) < Integer.parseInt(splittedB[1])) return 1;
-            return 0;
+            return Integer.compare(Integer.parseInt(splittedB[1]), Integer.parseInt(splittedA[1]));
         });
 
         for (String str : sorted) {
@@ -515,7 +529,7 @@ public class HomeParentController implements Initializable {
         exitPaneBox.setVisible(true);
         FadeTransition fade = Animation.fadeIn(Duration.seconds(0.3), exitScene);
         fade.play();
-        FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);;
+        FadeTransition fade3 = Animation.fadeIn(Duration.seconds(0.17), exitPane);
         fade3.play();
         Animation.salla(exitPane);
     }
@@ -583,6 +597,6 @@ public class HomeParentController implements Initializable {
         try {
             InfumiaLauncher.getInfumiaLauncher().stop();
             System.exit(0);
-        }catch (Exception e) {}
+        }catch (Exception ignored) {}
     }
 }

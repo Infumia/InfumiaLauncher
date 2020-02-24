@@ -7,6 +7,7 @@ import com.sun.javafx.PlatformUtil;
 import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
@@ -58,14 +59,43 @@ public class MinecraftAssetsDownloader implements Runnable {
                 try {
                     JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
                     JSONArray versions = manifest.getJSONArray("versions");
+                    String assetVersion = "";
+                    if (version.matches(".*[A-Z]+.*")) {
+                        InfumiaLauncher.logger.info("Resmi olmayan sürüm algılandı.");
+                        JSONParser jsonParser = new JSONParser();
+                        try
+                        {
+                            FileReader fileInputStream = new FileReader(indexes);
+                            BufferedReader reader = new BufferedReader(fileInputStream);
+
+                            StringBuilder builder = new StringBuilder();
+
+                            while (reader.ready()) {
+                                builder.append(reader.readLine());
+                            }
+
+                            JSONObject json = new JSONObject(builder.toString());
+
+
+                            assetVersion = json.getString("assets");
+                            storage.setIllegalVersion(true);
+                            storage.setAssetVersion(assetVersion);
+                            storage.setLibraries(json.getJSONArray("libraries"));
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            errorCallback.response(ex.toString());
+                            return;
+                        }
+                    }
                     for (int i = 0; i < versions.length(); i++) {
-                        if (versions.getJSONObject(i).getString("id").equals(version)) {
+                        if (versions.getJSONObject(i).getString("id").equals((assetVersion.isEmpty() ? version : assetVersion))) {
                             versionUrl = versions.getJSONObject(i).getString("url");
                             versionObject = JSONUrl.readURL(versionUrl);
-                            storage.setVersionObject(versionObject);
+                            if (!storage.isIllegalVersion()) storage.setVersionObject(versionObject);
                             JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
                             objects = readedUrl.getJSONObject("objects");
                             storage.setAssets(objects);
+                            storage.setRemoteHash(versionObject.getJSONObject("downloads").getJSONObject("client").getString("sha1"));
                             try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
                                 file.write(readedUrl.toString());
                                 file.flush();
@@ -134,12 +164,24 @@ public class MinecraftAssetsDownloader implements Runnable {
                 storage.setClientUrl(versionObject.getJSONObject("downloads").getJSONObject("client").getString("url"));
 
                 Thread thread = new Thread(() -> {
-                    new MinecraftClientDownloader(storage, errorCallback).run();
+                    if (!storage.isIllegalVersion()) new MinecraftClientDownloader(storage, errorCallback).run();
+                    else {
+                        try {
+                            InfumiaLauncher.step++;
+                            InfumiaLauncher.logger.info("Client var sanılıyor.");
+                            InfumiaLauncher.logger.info("Natives indirme islemi başlatılıyor.");
+                            storage.setClientDownloadPercent(100.0d);
+                            new MinecraftLibrariesDownloader(storage, errorCallback).run();
+                        }catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 });
                 InfumiaLauncher.executor.schedule(thread, 1, TimeUnit.MILLISECONDS);
                 return;
             }
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
             errorCallback.response(e.toString());
         }
@@ -210,7 +252,7 @@ public class MinecraftAssetsDownloader implements Runnable {
     }
 
     private void assetsToResources() throws IOException {
-        File resourcesDir = new File(getMineCraftLocation() + File.separator + "com/infumia/launcher/resources");
+        File resourcesDir = new File(getMineCraftLocation() + File.separator + "parents");
         if (!resourcesDir.exists()) resourcesDir.mkdir();
         for (int i = 0; i < objects.length(); i++) {
             File resourceFile = new File((String) objects.names().get(i));

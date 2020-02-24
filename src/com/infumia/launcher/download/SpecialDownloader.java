@@ -212,7 +212,7 @@ public class SpecialDownloader implements Runnable {
     }
 
     private void assetsToResources() throws IOException {
-        File resourcesDir = new File(getMineCraftLocation() + File.separator + "com/infumia/launcher/resources");
+        File resourcesDir = new File(getMineCraftLocation() + File.separator + "parents");
         if (!resourcesDir.exists()) resourcesDir.mkdir();
         for (int i = 0; i < objects.length(); i++) {
             File resourceFile = new File((String) objects.names().get(i));

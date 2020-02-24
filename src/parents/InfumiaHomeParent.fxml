@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXProgressBar?>
+<?import com.jfoenix.controls.JFXSlider?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchorpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: #091F50;" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.infumia.launcher.screens.HomeParentController">
+   <children>
+      <ImageView fitHeight="620.0" fitWidth="1100.0">
+         <image>
+            <Image url="@../assets/wallpaper.png" />
+         </image>
+      </ImageView>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="620.0" opacity="0.88" width="1100.0">
+         <fill>
+            <LinearGradient endY="1.0" startX="0.0" startY="0.0">
+               <stops>
+                  <Stop color="#020918" />
+                  <Stop color="#091f50" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </fill>
+      </Rectangle>
+      <Pane fx:id="progressBarPane" layoutY="620.0" prefHeight="14.0" prefWidth="1100.0">
+         <children>
+            <JFXProgressBar fx:id="progressbar" prefHeight="14.0" prefWidth="1100.0" progress="0.0" stylesheets="@stylesheet.css" />
+            <HBox alignment="TOP_CENTER" layoutY="-2.0" prefHeight="14.0" prefWidth="1100.0">
+               <children>
+                  <Label id="percent" fx:id="percent" textFill="#1548C4">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </Pane>
+      <HBox alignment="CENTER" prefHeight="620.0" prefWidth="1100.0">
+         <children>
+            <VBox alignment="CENTER">
+               <children>
+                  <Pane style="-fx-background-color: rgba(6, 12, 32, 0.7); -fx-background-radius: 10px;">
+                     <children>
+                        <VBox prefHeight="164.0" prefWidth="266.0">
+                           <children>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label text="RAM" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="27.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Pane prefHeight="0.0" prefWidth="120.0">
+                                       <children>
+                                          <HBox alignment="CENTER" prefWidth="120.0" style="-fx-background-color: #040B20; -fx-background-radius: 10px;">
+                                             <children>
+                                                <TextField fx:id="ramField" alignment="CENTER" focusTraversable="false" onAction="#syncSlider" style="-fx-background-color: transparent;" styleClass="textfields" text="1024 MB">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                   <HBox.margin>
+                                                      <Insets left="5" top="0" />
+                                                   </HBox.margin>
+                                                </TextField>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="49.0" />
+                                       </padding>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </Pane>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="12.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <JFXSlider fx:id="ramSlider" blockIncrement="0.0" indicatorPosition="RIGHT" majorTickUnit="1.0" max="8196.0" min="128.0" minorTickCount="1" nodeOrientation="LEFT_TO_RIGHT" styleClass="jfx-slider" value="1024.0" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="620.0" prefWidth="400.0">
+               <children>
+                  <ImageView fx:id="logo" fitHeight="187.0" fitWidth="191.0">
+                     <image>
+                        <Image url="@../assets/infumia-logo-2x.png" />
+                     </image>
+                     <VBox.margin>
+                        <Insets top="-10.0" />
+                     </VBox.margin>
+                  </ImageView>
+                  <ImageView scaleX="0.8" scaleY="0.8">
+                     <image>
+                        <Image url="@../assets/launcher.png" />
+                     </image>
+                     <VBox.margin>
+                        <Insets top="-10.0" />
+                     </VBox.margin>
+                  </ImageView>
+                  <ImageView fx:id="avatar" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <VBox.margin>
+                        <Insets top="40.0" />
+                     </VBox.margin>
+                  </ImageView>
+                  <Line endX="40.0" startX="-40.0" stroke="#1b5bf5" strokeLineCap="ROUND" strokeWidth="3.0">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Line>
+                  <Label fx:id="playerName" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" textFill="#a3bdfb">
+                     <font>
+                        <Font size="21.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <JFXButton fx:id="playButton" focusTraversable="false" onMouseClicked="#launch" prefHeight="66.0" prefWidth="216.0" ripplerFill="#463204" style="-fx-background-color: #C49015; -fx-background-radius: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.53), 8, 0, 0, 3);" text="Oyna" textFill="WHITE">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <VBox.margin>
+                        <Insets top="35.0" />
+                     </VBox.margin>
+                  </JFXButton>
+                  <Label fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#goExitScene" text="Çıkış Yap" textAlignment="CENTER" textFill="#a3bdfb">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER">
+               <children>
+                  <Pane style="-fx-background-color: rgba(6, 12, 32, 0.7); -fx-background-radius: 10px;">
+                     <children>
+                        <VBox prefWidth="266.0">
+                           <children>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label text="SÜRÜM" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="27.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <JFXComboBox fx:id="comboBox" focusColor="#e1a517" focusTraversable="false" nodeOrientation="LEFT_TO_RIGHT" prefWidth="190.0" promptText="Sürüm seçin" styleClass="mycombobox">
+
+                                    </JFXComboBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <JFXCheckBox fx:id="clientMode" checkedColor="#f5b51b" focusTraversable="false" text="Sponsorlu Sürümler" onAction="#onClientModeChange" textFill="#AEAEAE" unCheckedColor="#AEAEAE">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </JFXCheckBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="25.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="15.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <Pane fx:id="exitScene" prefHeight="620.0" prefWidth="1100.0" style="-fx-background-color: rgba(0,0,0,0.6);" visible="false" />
+      <HBox fx:id="exitPaneBox" alignment="CENTER" prefHeight="620.0" prefWidth="1100.0" visible="false">
+         <children>
+            <VBox alignment="CENTER" prefHeight="620.0" prefWidth="406.0">
+               <children>
+                  <Pane fx:id="exitPane" prefWidth="400.0" style="-fx-background-color: #0D1A33; -fx-background-radius: 12px;" visible="false">
+                     <children>
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label fx:id="infoScreenTitle" text="ÇIKIŞ YAP" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="22.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="20.0" top="27.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label fx:id="infoScreenDescription" alignment="TOP_LEFT" prefWidth="350.0" text="Çıkış yapmak istediğinize emin misiniz" textFill="#ebebeb" wrapText="true">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="20.0" right="20.0" top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Pane prefHeight="50.0" prefWidth="406.0" style="-fx-background-color: #0A1529; -fx-background-radius: 0px 0px 12px 12px;">
+                                       <children>
+                                          <Label fx:id="cancelLabel" layoutX="250.0" layoutY="16.0" onMouseClicked="#cancelExit" text="İptal" textFill="WHITE">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </Label>
+                                          <JFXButton fx:id="verifyExitButton" layoutX="290.0" layoutY="10.0" onMouseClicked="#goBack" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #FF4D4D;" text="Çıkış Yap" textFill="WHITE">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </JFXButton>
+                                          <JFXButton fx:id="okButton" layoutX="290.0" layoutY="10.0" onMouseClicked="#cancelExit" prefHeight="30.0" prefWidth="93.0" style="-fx-background-color: #103693;" text="Tamam" textFill="WHITE" visible="false">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </JFXButton>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </Pane>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <FontAwesomeIcon id="closebtn" fill="#94b3ff" iconName="CLOSE" layoutX="1076.0" layoutY="22.0" onMouseClicked="#closeApp" size="1.2em" styleClass="closebtn" text="" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></FontAwesomeIcon>
+      <FontAwesomeIcon id="minbtn" fill="#94b3ff" iconName="MINUS" layoutX="1053.0" layoutY="26.0" onMouseClicked="#minApp" size="1.2em" styleClass="minbtn" text="" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="12.0">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></FontAwesomeIcon>
+   </children>
+</AnchorPane>

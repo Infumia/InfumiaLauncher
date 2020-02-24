@@ -254,12 +254,57 @@ public class Local {
                 if (os.toLowerCase().equals("windows")) {
                     if (name_.get("rules") != null) {
                         JSONArray rulesArray = (JSONArray) name_.get("rules");
-                        for (int i = 0; i < rulesArray.size(); i++) {
-                            JSONObject rule = (JSONObject) rulesArray.get(i);
-                            if (rule.get("os") != null) {
-                                String action = (String) rule.get("action");
-                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
-                                if (action.equals("allow") && osname.equals("osx")) {
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("windows")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("windows")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (os.toLowerCase().equals("linux")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (os.toLowerCase().equals("mac")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("osx")) {
                                     continue outer;
                                 }
                             }
@@ -282,23 +327,68 @@ public class Local {
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = msg.iterator();
             outer: while (iterator.hasNext()) {
-                JSONObject lib = (JSONObject) iterator.next();
+                JSONObject name_ = (JSONObject) iterator.next();
                 if (os.toLowerCase().equals("windows")) {
-                    if (lib.get("rules") != null) {
-                        JSONArray rulesArray = (JSONArray) lib.get("rules");
-                        for (int i = 0; i < rulesArray.size(); i++) {
-                            JSONObject rule = (JSONObject) rulesArray.get(i);
-                            if (rule.get("os") != null) {
-                                String action = (String) rule.get("action");
-                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
-                                if (action.equals("allow") && osname.equals("osx")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("windows")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("windows")) {
                                     continue outer;
                                 }
                             }
                         }
                     }
                 }
-                JSONObject downloads = (JSONObject) lib.get("downloads");
+                if (os.toLowerCase().equals("linux")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (os.toLowerCase().equals("mac")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                JSONObject downloads = (JSONObject) name_.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
                     if (artifact.get("size") != null) {
@@ -322,23 +412,68 @@ public class Local {
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = msg.iterator();
             outer: while (iterator.hasNext()) {
-                JSONObject lib = (JSONObject) iterator.next();
+                JSONObject name_ = iterator.next();
                 if (os.toLowerCase().equals("windows")) {
-                    if (lib.get("rules") != null) {
-                        JSONArray rulesArray = (JSONArray) lib.get("rules");
-                        for (int i = 0; i < rulesArray.size(); i++) {
-                            JSONObject rule = (JSONObject) rulesArray.get(i);
-                            if (rule.get("os") != null) {
-                                String action = (String) rule.get("action");
-                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
-                                if (action.equals("allow") && osname.equals("osx")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("windows")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("windows")) {
                                     continue outer;
                                 }
                             }
                         }
                     }
                 }
-                JSONObject downloads = (JSONObject) lib.get("downloads");
+                if (os.toLowerCase().equals("linux")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (os.toLowerCase().equals("mac")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                JSONObject downloads = (JSONObject) name_.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
                     if (artifact.get("sha1") != null) {
@@ -362,23 +497,68 @@ public class Local {
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = msg.iterator();
             outer: while (iterator.hasNext()) {
-                JSONObject lib = (JSONObject) iterator.next();
+                JSONObject name_ = (JSONObject) iterator.next();
                 if (os.toLowerCase().equals("windows")) {
-                    if (lib.get("rules") != null) {
-                        JSONArray rulesArray = (JSONArray) lib.get("rules");
-                        for (int i = 0; i < rulesArray.size(); i++) {
-                            JSONObject rule = (JSONObject) rulesArray.get(i);
-                            if (rule.get("os") != null) {
-                                String action = (String) rule.get("action");
-                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
-                                if (action.equals("allow") && osname.equals("osx")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("windows")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("windows")) {
                                     continue outer;
                                 }
                             }
                         }
                     }
                 }
-                JSONObject downloads = (JSONObject) lib.get("downloads");
+                if (os.toLowerCase().equals("linux")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (os.toLowerCase().equals("mac")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                JSONObject downloads = (JSONObject) name_.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
                     if (artifact.get("url") != null) {
@@ -402,23 +582,68 @@ public class Local {
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             Iterator<JSONObject> iterator = msg.iterator();
             outer: while (iterator.hasNext()) {
-                JSONObject lib = (JSONObject) iterator.next();
+                JSONObject name_ = iterator.next();
                 if (os.toLowerCase().equals("windows")) {
-                    if (lib.get("rules") != null) {
-                        JSONArray rulesArray = (JSONArray) lib.get("rules");
-                        for (int i = 0; i < rulesArray.size(); i++) {
-                            JSONObject rule = (JSONObject) rulesArray.get(i);
-                            if (rule.get("os") != null) {
-                                String action = (String) rule.get("action");
-                                String osname = (String) ((JSONObject) rule.get("os")).get("name");
-                                if (action.equals("allow") && osname.equals("osx")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("windows")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("windows")) {
                                     continue outer;
                                 }
                             }
                         }
                     }
                 }
-                JSONObject downloads = (JSONObject) lib.get("downloads");
+                if (os.toLowerCase().equals("linux")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("linux")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (os.toLowerCase().equals("mac")) {
+                    if (name_.get("rules") != null) {
+                        JSONArray rulesArray = (JSONArray) name_.get("rules");
+                        for (Object o : rulesArray) {
+                            JSONObject rule = (JSONObject) o;
+                            String action = (String) rule.get("action");
+                            String osName = "empty";
+                            if (rule.get("os") != null) osName = (String) ((JSONObject) rule.get("os")).get("name");
+                            if (action.equals("allow")) {
+                                if (!osName.equals("empty") && !osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            } else {
+                                if (osName.equals("osx")) {
+                                    continue outer;
+                                }
+                            }
+                        }
+                    }
+                }
+                JSONObject downloads = (JSONObject) name_.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
                     if (artifact.get("path") != null) {
@@ -538,7 +763,6 @@ public class Local {
                 //I DON'T KNOW THIS OS!
             }
             String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
-            //System.out.println(content);
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 

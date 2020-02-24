@@ -1,7 +1,5 @@
 package com.infumia.launcher.util;
 
-import com.infumia.launcher.InfumiaLauncher;
-
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileWriter;

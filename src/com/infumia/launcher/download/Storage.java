@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class Storage {
 
     private String version = "1.15";
+    private String assetVersion = "1.15";
     private JSONObject versionObject = new JSONObject();
     private String clientUrl = "";
     private Utils utils = new Utils();
@@ -25,6 +26,7 @@ public class Storage {
     private HashMap<String, String> versionsList = new HashMap<>();
     private int prefRAM = 1024;
     private String remoteHash = "";
+    private boolean illegalVersion = false;
 
     public String getVersion() {
         return version;
@@ -145,4 +147,21 @@ public class Storage {
     public void setRemoteHash(String remoteHash) {
         this.remoteHash = remoteHash;
     }
+
+    public void setIllegalVersion(boolean illegalVersion) {
+        this.illegalVersion = illegalVersion;
+    }
+
+    public boolean isIllegalVersion() {
+        return illegalVersion;
+    }
+
+    public String getAssetVersion() {
+        return assetVersion;
+    }
+
+    public void setAssetVersion(String assetVersion) {
+        this.assetVersion = assetVersion;
+    }
 }
+

@@ -3,6 +3,7 @@ package com.infumia.launcher;
 import com.infumia.launcher.animations.FadeInSceneTransition;
 import com.infumia.launcher.download.Minecraft;
 import com.infumia.launcher.objects.AuthThread;
+import com.infumia.launcher.util.Metrics;
 import com.sun.javafx.PlatformUtil;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
@@ -50,13 +51,16 @@ public class InfumiaLauncher extends Application {
     public void start(Stage stage) throws Exception {
         logger.info("Launcher başlatılıyor...");
 
+        Metrics metrics = new Metrics(6573);
+
         InfumiaLauncher.stage = stage;
 
-        stage.setTitle("Infumia Launcher v1.0-ALPHA");
+        stage.setTitle("Infumia Launcher");
 
         File cacheFile = new File(cacheDir);
         InfumiaLauncher.logger.info("Çerezler okunuyor");
         if (!cacheFile.exists()) {
+            logger.info("Çerez bulunamadı. Infumia Launcher başlatılıyor.");
             loadLauncherParent();
             logger.info("Infumia Launcher başlatıldı.");
             return;
@@ -149,15 +153,13 @@ public class InfumiaLauncher extends Application {
         Platform.runLater(() -> {
             try {
                 InfumiaLauncher.logger.info("Ana sayfa yükleniyor");
-
-                parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaHomeParent.fxml"));
-
+                parent = FXMLLoader.load(getClass().getResource("/parents/InfumiaHomeParent.fxml"));
                 Scene scene = new Scene(parent);
                 stage.setScene(scene);
 
                 stage.initStyle(StageStyle.TRANSPARENT);
                 stage.getIcons().add(new Image("assets/infumia-logo.png"));
-
+                logger.info("OK!");
                 stage.show();
                 stage.requestFocus();
 
@@ -187,7 +189,7 @@ public class InfumiaLauncher extends Application {
 
     void loadLauncherParent() {
         try {
-            parent = FXMLLoader.load(InfumiaLauncher.class.getResource("resources/InfumiaLauncherParent.fxml"));
+            parent = FXMLLoader.load(getClass().getResource("/parents/InfumiaLauncherParent.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -196,7 +198,7 @@ public class InfumiaLauncher extends Application {
 
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.getIcons().add(new Image("assets/infumia-logo.png"));
-
+        logger.info("OK!");
         stage.show();
         stage.requestFocus();
 

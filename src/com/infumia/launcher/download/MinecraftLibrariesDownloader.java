@@ -31,7 +31,7 @@ public class MinecraftLibrariesDownloader {
     public MinecraftLibrariesDownloader(Storage storage, Callback errorCallback) {
         this.errorCallback = errorCallback;
         this.storage = storage;
-        this.version = storage.getVersion();
+        this.version = storage.isIllegalVersion() ? storage.getAssetVersion() : storage.getVersion();
         this.versionObject = storage.getVersionObject();
 
         //version_url_list_natives
@@ -82,10 +82,15 @@ public class MinecraftLibrariesDownloader {
 
     public void run() {
         if (objects == null) {
-            objects = versionObject.getJSONArray("libraries");
-            storage.setLibraries(objects);
-            totalFile = storage.getLocal().version_url_list.size() + storage.getLocal().version_url_list_natives.size();
-            storage.setTotalLibraries(totalFile);
+            if (!storage.isIllegalVersion()) {
+                objects = versionObject.getJSONArray("libraries");
+                storage.setLibraries(objects);
+                totalFile = storage.getLocal().version_url_list.size() + storage.getLocal().version_url_list_natives.size();
+                storage.setTotalLibraries(totalFile);
+            }else {
+                totalFile = storage.getLocal().version_url_list.size() + storage.getLocal().version_url_list_natives.size();
+                storage.setTotalLibraries(totalFile);
+            }
         }
 
         if (libsDownloaded && nativesDownloaded) {
@@ -383,6 +388,7 @@ public class MinecraftLibrariesDownloader {
                 java.util.jar.JarEntry file = (java.util.jar.JarEntry) enumEntries.nextElement();
                 java.io.File f = new java.io.File(destDir + java.io.File.separator + file.getName());
                 if (file.getName().endsWith(".MF")) continue;
+                if (f.getPath().contains("META-INF")) continue;
                 if (file.isDirectory()) { // if its a directory, don't create it
                     continue;
                 }
@@ -510,8 +516,13 @@ public class MinecraftLibrariesDownloader {
                     digest));
         }
     }
-
-
-
+//        https://libraries.minecraft.net/com/mojang/netty/1.6/netty-1.6.jar.sha1
+//        URL url = new URL("https://libraries.minecraft.net/com/mojang/netty/1.6/netty-1.6.jar.sha1");
+//        BufferedReader read = new BufferedReader(
+//                new InputStreamReader(url.openStream()));
+//        String i;
+//        while ((i = read.readLine()) != null)
+//            System.out.println(i);
+//        read.close();
 
 }

@@ -60,7 +60,8 @@ public class Minecraft {
         String assetsIndexId = local.readJson_assets(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
 
         String VersionType = this.getVersionData();
-        String GameAssets = utils.getMineCraftLocation(OperatingSystemToUse) + File.separator + (storage.getVersionObject().get("assets").toString().equals("pre-1.6") || storage.getVersionObject().get("assets").toString().equals("legacy") ? "com/infumia/launcher/resources" : "assets");
+        String assetsVersion = storage.isIllegalVersion() ? storage.getAssetVersion() : storage.getVersionObject().get("assets").toString();
+        String GameAssets = utils.getMineCraftLocation(OperatingSystemToUse) + File.separator + (assetsVersion.equals("pre-1.6") || assetsVersion.equals("legacy") ? "parents" : "assets");
         String AuthSession = "OFFLINE";
 
         String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, playerName, versionName, gameDirectory, AssetsRoot, assetsIndexId, uuid, accessToken, "{}", "mojang", VersionType, GameAssets, AuthSession);
@@ -87,7 +88,6 @@ public class Minecraft {
         for (String str : finalArgs) {
             builder.append(str + " ");
         }
-        System.out.println(builder.toString());
 
         try {
             proc = Runtime.getRuntime().exec(finalArgs);
@@ -140,14 +140,23 @@ public class Minecraft {
     private String getJVMArgument() {
         return jvmArgument;
     }
-
-    private String javaPath = getMineCraftLocation() + "\\runtime\\jre1.8.0_221\\bin\\java";
+    private String javaPath = getMineCraftLocation() + File.separator + "runtime"+ File.separator +"jre1.8.0_221"+ File.separator + "bin"+ File.separator;
     public void setJavaPath(String javaPath_) {
         javaPath = javaPath_;
     }
 
     private String getJavaPath() {
-        return javaPath;
+        String appended = "";
+        if (utils.getOS().equals("Windows")) {
+            appended += javaPath + "java";
+        }
+        if (utils.getOS().equals("Linux")) {
+            appended += javaPath + "./java";
+        }
+        if (utils.getOS().equals("Mac")) {
+            appended += javaPath + "./java";
+        }
+        return appended;
     }
 
     private int height = 480;
