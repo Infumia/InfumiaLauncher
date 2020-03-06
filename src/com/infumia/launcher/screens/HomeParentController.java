@@ -5,6 +5,7 @@ import com.infumia.launcher.animations.Animation;
 import com.infumia.launcher.animations.FadeInSceneTransition;
 import com.infumia.launcher.animations.MoveYAnimation;
 import com.infumia.launcher.download.*;
+import com.infumia.launcher.objects.MinecraftVersion;
 import com.infumia.launcher.util.JSONUrl;
 import com.jfoenix.controls.*;
 import com.sun.javafx.PlatformUtil;
@@ -19,10 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -37,6 +35,9 @@ import org.json.simple.parser.JSONParser;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -45,15 +46,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public class HomeParentController implements Initializable {
 
     private HashMap<String, String> versionList = new HashMap<>();
-    private HashMap<String, String> specialVersionList = new HashMap<>();
+    private HashMap<String, MinecraftVersion> specialVersionList = new HashMap<>();
 
-    private File gamedir = new File(getMineCraftLocation() + "/");
-    private File assestdir = new File(getMineCraftLocation() + "/assets/");
-    private File objectsdir = new File(getMineCraftLocation() + "/assets/objects");
-    private File librarydir = new File(getMineCraftLocation() + "/libraries/");
-    private File versionsdir = new File(getMineCraftLocation() + "/versions/");
-    private File indexesDir = new File(getMineCraftLocation() + "/assets/indexes/");
-    private File logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
+    private File gamedir = new File(InfumiaLauncher.getMineCraftLocation() + "/");
+    private File assestdir = new File(InfumiaLauncher.getMineCraftLocation() + "/assets/");
+    private File objectsdir = new File(InfumiaLauncher.getMineCraftLocation() + "/assets/objects");
+    private File librarydir = new File(InfumiaLauncher.getMineCraftLocation() + "/libraries/");
+    private File versionsdir = new File(InfumiaLauncher.getMineCraftLocation() + "/versions/");
+    private File indexesDir = new File(InfumiaLauncher.getMineCraftLocation() + "/assets/indexes/");
+    private File logconfigsDir = new File(InfumiaLauncher.getMineCraftLocation() + "/assets/log_configs/");
 
     @FXML
     Label percent;
@@ -100,7 +101,13 @@ public class HomeParentController implements Initializable {
             JSONArray specialVersions = specialManifest.getJSONArray("clients");
             for (int i = 0; i < specialVersions.length(); i++) {
                 JSONObject versionObject = specialVersions.getJSONObject(i);
-                specialVersionList.put(versionObject.getString("clientName"), versionObject.getString("clientUrl"));
+                specialVersionList.put(
+                        versionObject.getString("clientName"),
+                        new MinecraftVersion(
+                                versionObject.getString("clientName"),
+                                versionObject.getString("clientUrl"),
+                                versionObject.getString("clientSha1"),
+                                versionObject.getString("assetsUrl")));
             }
         } catch (IOException ex) {
             InfumiaLauncher.logger.warn("Sunucuya bağlanılamadı. Yerel sürümler okunuyor.");
@@ -143,6 +150,8 @@ public class HomeParentController implements Initializable {
                         comboBox.getSelectionModel().select(i);
                     }
                 }
+            } else {
+                loadNormalVersions();
             }
         }else {
             loadNormalVersions();
@@ -332,6 +341,21 @@ public class HomeParentController implements Initializable {
         storage.setVersion(((Label)comboBox.getValue()).getText());
         storage.setPrefRAM((int) Math.round(ramSlider.getValue()));
 
+
+        Thread receiveThread = new Thread(() -> {
+            if (clientMode.isSelected()) {
+                try {
+                    URLConnection openConnection = new URL(specialVersionList.get(storage.getVersion()).getAssetsUrl()).openConnection();
+                    InputStream is = openConnection.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                    JSONObject data = new JSONObject(readAll(rd));
+                    storage.setVersionObject(data);
+                }catch (Exception e) {
+                    error( "Hata", "İnternet bağlantınızı kontrol edin, sıkıntı yoksa yetkiliyle iletişime geçin.");
+                }
+            }
+        });
+
         MoveYAnimation animation = new MoveYAnimation(progressBarPane, progressBarPane.getLayoutY(), 606, Duration.seconds(0.3));
         animation.play();
         AtomicReference<Timeline> animation2 = new AtomicReference<>();
@@ -413,6 +437,7 @@ public class HomeParentController implements Initializable {
                     clientMode.setDisable(false);
                 })));
 
+                InfumiaLauncher.executor.schedule(receiveThread, 0, TimeUnit.MILLISECONDS);
                 InfumiaLauncher.executor.schedule(thread, 50, TimeUnit.MILLISECONDS);
             }
         });
@@ -573,17 +598,13 @@ public class HomeParentController implements Initializable {
         }
     }
 
-    public String getMineCraftLocation() {
-        if (PlatformUtil.isWindows()) {
-            return (System.getenv("APPDATA") + "/.infumia");
+    private String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
         }
-        if (PlatformUtil.isLinux()) {
-            return (System.getProperty("user.home") + "/.infumia");
-        }
-        if (PlatformUtil.isMac()) {
-            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
-        }
-        return "N/A";
+        return sb.toString();
     }
 
     @FXML

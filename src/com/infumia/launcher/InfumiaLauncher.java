@@ -21,13 +21,20 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class InfumiaLauncher extends Application {
+
+
+    public static final String launcherFolderName = "infumia";
 
     public static Stage stage;
     public static Parent parent;
@@ -54,6 +61,15 @@ public class InfumiaLauncher extends Application {
         Metrics metrics = new Metrics(6573);
 
         InfumiaLauncher.stage = stage;
+
+        File minecraftDir = new File(getMineCraftLocation());
+        if (!minecraftDir.exists()) {
+            try {
+                minecraftDir.mkdir();
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         stage.setTitle("Infumia Launcher");
 
@@ -174,19 +190,6 @@ public class InfumiaLauncher extends Application {
         });
     }
 
-    private static String getMineCraftLocation() {
-        if (PlatformUtil.isWindows()) {
-            return (System.getenv("APPDATA") + "/.infumia");
-        }
-        if (PlatformUtil.isLinux()) {
-            return (System.getProperty("user.home") + "/.infumia");
-        }
-        if (PlatformUtil.isMac()) {
-            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
-        }
-        return "N/A";
-    }
-
     void loadLauncherParent() {
         try {
             parent = FXMLLoader.load(getClass().getResource("/parents/InfumiaLauncherParent.fxml"));
@@ -212,13 +215,63 @@ public class InfumiaLauncher extends Application {
         return infumiaLauncher;
     }
 
+    public static String getMineCraftLocation() {
+        if (PlatformUtil.isWindows()) {
+            return (System.getenv("APPDATA") + File.separator + "." + launcherFolderName);
+        }
+        if (PlatformUtil.isLinux()) {
+            return (System.getProperty("user.home") + File.separator + "." + launcherFolderName);
+        }
+        if (PlatformUtil.isMac()) {
+            return (System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support"+ File.separator + launcherFolderName);
+        }
+        return "N/A";
+    }
+
     public void main(String[] args) {
+        String a = "-YnUgxZ9pZnJleWkgw6fDtnplYmlsZW5lIGhlbGFsIG9sc3VuLiBBeXLEsWNhIGFubmVuaXppIHMqa2VyIGhheWF0xLFuxLF6ZGEgYmHFn2FyxLFsYXIgZGlsZXJpbS4gU2lrZXJsZXIgOik=.dW51dG1hZGFu.aGVsYWwgxZ9pZnJleWkgYnVsZHVuIChuYWgpIGtuaw==";
+
         try {
             String[] fake = {};
-            if (args.length > 0 && args[0].equals("-6672925679282131965467343395945397370476369279894627999939614659217371136582730618069762179071"))
+            if (args.length == 0) return;
+            String sha1 = calcSHA1(new File(getMineCraftLocation() + File.separator + "launcher.jar"));
+            if (args[0].equals(a.substring(0,16) + md5(sha1).toLowerCase() + a.substring(16)))  {
+                System.setProperty("http.agent", "Mozilla/5.0");
                 LauncherImpl.launchApplication(this.getClass(), fake);
+            }
         }catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private String md5(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(input.getBytes());
+        byte[] digest = md.digest();
+        String myChecksum = DatatypeConverter
+                .printHexBinary(digest).toUpperCase();
+        return myChecksum;
+    }
+
+    private String calcSHA1(File file) throws IOException, NoSuchAlgorithmException {
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+
+        if (!file.exists()) return "";
+
+        try (InputStream input = new FileInputStream(file)) {
+
+            byte[] buffer = new byte[8192];
+            int len = input.read(buffer);
+
+            while (len != -1) {
+                sha1.update(buffer, 0, len);
+                len = input.read(buffer);
+            }
+
+            byte[] digest = sha1.digest();
+
+            return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,
+                    digest));
         }
     }
 

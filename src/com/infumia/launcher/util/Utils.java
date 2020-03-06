@@ -338,7 +338,7 @@ public class Utils {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 

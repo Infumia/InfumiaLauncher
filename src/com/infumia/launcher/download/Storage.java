@@ -163,5 +163,6 @@ public class Storage {
     public void setAssetVersion(String assetVersion) {
         this.assetVersion = assetVersion;
     }
+
 }
 

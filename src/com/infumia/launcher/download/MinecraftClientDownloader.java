@@ -28,21 +28,21 @@ public class MinecraftClientDownloader implements Runnable{
         this.storage = storage;
         this.version = storage.getVersion();
         this.clientUrl = storage.getClientUrl();
-        versionsDir = new File(getMineCraftLocation() + "/versions/" + version + "/");
-        clientFile = new File(versionsDir, version + ".jar");
+        this.versionsDir = new File(InfumiaLauncher.getMineCraftLocation() + File.separator + "versions" + File.separator + version + File.separator);
+        this.clientFile = new File(versionsDir, version + ".jar");
     }
 
     double downloadPercent = 0;
 
 
     public void run() {
-
         if (!versionsDir.exists()) versionsDir.mkdir();
 
         if (clientFile.exists()) {
             try {
                 String localHash = calcSHA1(clientFile);
                 String remoteHash = storage.getRemoteHash();
+
                 if (localHash.equals(remoteHash)) {
                     downloadPercent = 100.0d;
                     storage.setClientDownloadPercent(downloadPercent);
@@ -64,6 +64,7 @@ public class MinecraftClientDownloader implements Runnable{
         }
 
         DirectDownloader dd = new DirectDownloader();
+        dd.setConnectionTimeout(25);
 
         try {
 
@@ -114,19 +115,6 @@ public class MinecraftClientDownloader implements Runnable{
             ex.printStackTrace();
             errorCallback.response(ex.toString());
         }
-    }
-
-    public String getMineCraftLocation() {
-        if (PlatformUtil.isWindows()) {
-            return (System.getenv("APPDATA") + "/.infumia");
-        }
-        if (PlatformUtil.isLinux()) {
-            return (System.getProperty("user.home") + "/.infumia");
-        }
-        if (PlatformUtil.isMac()) {
-            return (System.getProperty("user.home") + "/Library/Application Support/infumia");
-        }
-        return "N/A";
     }
 
     private static String calcSHA1(File file) throws FileNotFoundException,

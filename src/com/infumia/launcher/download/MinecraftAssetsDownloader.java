@@ -24,7 +24,6 @@ import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 public class MinecraftAssetsDownloader implements Runnable {
-
     private Callback errorCallback;
     private String version;
     private File objectsDir;
@@ -39,18 +38,17 @@ public class MinecraftAssetsDownloader implements Runnable {
         this.storage = storage;
         this.version = storage.getVersion();
         storage.setOperationgSystem(storage.getUtils().getOS());
-        objectsDir = new File(getMineCraftLocation() + "/assets/objects/");
-        indexesDir = new File(getMineCraftLocation() + "/versions/" + version + "/");
-        logconfigsDir = new File(getMineCraftLocation() + "/assets/log_configs/");
+        objectsDir = new File(InfumiaLauncher.getMineCraftLocation() + File.separator + "assets" + File.separator + "objects" + File.separator);
+        indexesDir = new File(InfumiaLauncher.getMineCraftLocation() + File.separator + "versions" + File.separator + version + File.separator);
+        logconfigsDir = new File(InfumiaLauncher.getMineCraftLocation() + File.separator + "assets" + File.separator + "log_configs" + File.separator);
         indexes = new File(indexesDir, version + ".json");
-        xmlFile = new File(logconfigsDir + "/" + "client-" + version + ".xml");
+        xmlFile = new File(logconfigsDir + File.separator + "client-" + version + ".xml");
     }
 
     int currentfile = 0;
 
     private JSONObject objects = null;
 
-    private String versionUrl;
     private JSONObject versionObject;
 
     public void run() {
@@ -60,53 +58,75 @@ public class MinecraftAssetsDownloader implements Runnable {
                     JSONObject manifest = JSONUrl.readURL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
                     JSONArray versions = manifest.getJSONArray("versions");
                     String assetVersion = "";
+                    boolean set = !storage.getVersionObject().isEmpty();
                     if (version.matches(".*[A-Z]+.*")) {
-                        InfumiaLauncher.logger.info("Resmi olmayan sürüm algılandı.");
-                        JSONParser jsonParser = new JSONParser();
                         try
                         {
-                            FileReader fileInputStream = new FileReader(indexes);
-                            BufferedReader reader = new BufferedReader(fileInputStream);
+                            if (!set) {
+                                FileReader fileInputStream = new FileReader(indexes);
+                                BufferedReader reader = new BufferedReader(fileInputStream);
 
-                            StringBuilder builder = new StringBuilder();
+                                StringBuilder builder = new StringBuilder();
 
-                            while (reader.ready()) {
-                                builder.append(reader.readLine());
+                                while (reader.ready()) {
+                                    builder.append(reader.readLine());
+                                }
+
+                                JSONObject json = new JSONObject(builder.toString());
+
+                                assetVersion = (json.isNull("assets") ? json.getString("inheritsFrom") : json.getString("assets"));
+                                storage.setVersionObject(json);
+                                storage.setIllegalVersion(true);
+                                storage.setAssetVersion(assetVersion);
                             }
-
-                            JSONObject json = new JSONObject(builder.toString());
-
-
-                            assetVersion = json.getString("assets");
-                            storage.setIllegalVersion(true);
-                            storage.setAssetVersion(assetVersion);
-                            storage.setLibraries(json.getJSONArray("libraries"));
                         } catch (Exception ex) {
                             ex.printStackTrace();
                             errorCallback.response(ex.toString());
                             return;
                         }
                     }
-                    for (int i = 0; i < versions.length(); i++) {
-                        if (versions.getJSONObject(i).getString("id").equals((assetVersion.isEmpty() ? version : assetVersion))) {
-                            versionUrl = versions.getJSONObject(i).getString("url");
-                            versionObject = JSONUrl.readURL(versionUrl);
-                            if (!storage.isIllegalVersion()) storage.setVersionObject(versionObject);
-                            JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
-                            objects = readedUrl.getJSONObject("objects");
-                            storage.setAssets(objects);
-                            storage.setRemoteHash(versionObject.getJSONObject("downloads").getJSONObject("client").getString("sha1"));
-                            try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
-                                file.write(readedUrl.toString());
-                                file.flush();
+
+                    if (!set) {
+                        for (int i = 0; i < versions.length(); i++) {
+                            if (versions.getJSONObject(i).getString("id").equals((assetVersion.isEmpty() ? version : assetVersion))) {
+                                String versionUrl = versions.getJSONObject(i).getString("url");
+                                versionObject = JSONUrl.readURL(versionUrl);
+                                if (!storage.isIllegalVersion()) storage.setVersionObject(versionObject);
+                                JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
+                                objects = readedUrl.getJSONObject("objects");
+                                storage.setAssets(objects);
+                                storage.setRemoteHash(versionObject.getJSONObject("downloads").getJSONObject("client").getString("sha1"));
+                                File indexesLocation = new File(storage.getUtils().getMineCraftAssetsIndexesLocation(storage.getOperationgSystem()));
+                                if (!indexesLocation.exists()) {
+                                    indexesLocation.mkdirs();
+                                }
+                                try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
+                                    file.write(readedUrl.toString());
+                                    file.flush();
+                                }
+                                break;
                             }
-                            break;
+                        }
+                    }else {
+                        versionObject = storage.getVersionObject();
+                        JSONObject readedUrl = JSONUrl.readURL(versionObject.getJSONObject("assetIndex").getString("url"));
+                        objects = readedUrl.getJSONObject("objects");
+                        storage.setAssets(objects);
+                        storage.setRemoteHash(versionObject.getJSONObject("downloads").getJSONObject("client").getString("sha1"));
+                        File indexesLocation = new File(storage.getUtils().getMineCraftAssetsIndexesLocation(storage.getOperationgSystem()));
+                        if (!indexesLocation.exists()) {
+                            indexesLocation.mkdirs();
+                        }
+                        try (FileWriter file = new FileWriter(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")))) {
+                            file.write(readedUrl.toString());
+                            file.flush();
                         }
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     try {
                         versionObject = new JSONObject(new String(Files.readAllBytes(Paths.get(indexes.getPath()))));
-                        storage.setVersionObject(versionObject);
+                        if (!storage.isIllegalVersion()) storage.setVersionObject(versionObject);
                         String assetsIndexId = storage.getLocal().readJson_assets(storage.getUtils().getMineCraft_Versions_X_X_json(storage.getOperationgSystem(), versionObject.getJSONObject("assetIndex").getString("id")));
                         File file = new File(storage.getUtils().getMineCraftAssetsIndexes_X_json(storage.getOperationgSystem(), assetsIndexId));
                         if (!file.exists()) {
@@ -128,14 +148,15 @@ public class MinecraftAssetsDownloader implements Runnable {
                 if (!indexesDir.exists()) indexesDir.mkdir();
                 indexes.createNewFile();
                 try (FileWriter file = new FileWriter(indexes)) {
-                    file.write(JSONUrl.readURL(versionUrl).toString());
+                    file.write(versionObject.toString());
                     file.flush();
                 } catch (IOException e) {
                     errorCallback.response("İnternet bağlantısı gerekiyor.");
                 }
             }
 
-            if (!xmlFile.exists() && !versionObject.isNull("logging")) {
+
+            if (xmlFile != null && !xmlFile.exists() && !versionObject.isNull("logging")) {
                 try {
                     String url = versionObject.getJSONObject("logging").getJSONObject("client").getJSONObject("file").getString("url");
                     URL oracle = new URL(url);
@@ -161,7 +182,7 @@ public class MinecraftAssetsDownloader implements Runnable {
                 InfumiaLauncher.logger.info("Client indirme islemi baslatiliyor");
                 InfumiaLauncher.step++;
 
-                storage.setClientUrl(versionObject.getJSONObject("downloads").getJSONObject("client").getString("url"));
+                if (storage.getClientUrl().isEmpty()) storage.setClientUrl(versionObject.getJSONObject("downloads").getJSONObject("client").getString("url"));
 
                 Thread thread = new Thread(() -> {
                     if (!storage.isIllegalVersion()) new MinecraftClientDownloader(storage, errorCallback).run();
@@ -252,48 +273,19 @@ public class MinecraftAssetsDownloader implements Runnable {
     }
 
     private void assetsToResources() throws IOException {
-        File resourcesDir = new File(getMineCraftLocation() + File.separator + "parents");
+        File resourcesDir = new File(InfumiaLauncher.getMineCraftLocation() + File.separator+"resources");
         if (!resourcesDir.exists()) resourcesDir.mkdir();
         for (int i = 0; i < objects.length(); i++) {
             File resourceFile = new File((String) objects.names().get(i));
             String name = resourceFile.getName();
             String hash = getHash(i);
-            File assetFile = new File(getMineCraftLocation() + File.separator + "assets" + File.separator + "objects" + File.separator + hash.substring(0, 2) + File.separator + hash);
+            File assetFile = new File(InfumiaLauncher.getMineCraftLocation() + File.separator + "assets" + File.separator + "objects" + File.separator + hash.substring(0, 2) + File.separator + hash);
             File finalDir = new File(resourcesDir.getPath() + File.separator + resourceFile.getPath().replace(name, ""));
 
             finalDir.mkdirs();
 
             FileUtils.copyFile(assetFile, new File(finalDir, name));
         }
-    }
-
-    private String getMineCraftLocation() {
-        if (PlatformUtil.isWindows()) {
-            return (System.getenv("APPDATA") + File.separator + ".infumia");
-        }
-        if (PlatformUtil.isLinux()) {
-            return (System.getProperty("user.home") + File.separator + ".infumia");
-        }
-        if (PlatformUtil.isMac()) {
-            return (System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + File.separator + "infumia");
-        }
-        return "N/A";
-    }
-
-    private static byte[] readFileToByteArray(File file) {
-        FileInputStream fis = null;
-        // Creating a byte array using the length of the file
-        // file.length returns long which is cast to int
-        byte[] bArray = new byte[(int) file.length()];
-        try {
-            fis = new FileInputStream(file);
-            fis.read(bArray);
-            fis.close();
-
-        } catch (IOException ioExp) {
-            ioExp.printStackTrace();
-        }
-        return bArray;
     }
 
     private String getHash(int size) {
@@ -323,6 +315,15 @@ public class MinecraftAssetsDownloader implements Runnable {
             return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,
                     digest));
         }
+    }
+
+    private JSONArray mergeArrays(JSONArray array1, JSONArray array2) {
+        int i = 0;
+        for (Object object : array1.toList()) {
+            array2.put(array1.getJSONObject(i));
+            i++;
+        }
+        return array2;
     }
 
 }

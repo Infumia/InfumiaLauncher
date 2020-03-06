@@ -113,10 +113,8 @@ public class Local {
                 String fileName = (String) a.next();
                 profiles_KEY.add(fileName);
             }
-        } catch (FileNotFoundException exception) {
-            System.out.println(exception);
-        } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+        } catch (IOException | ParseException exception) {
+            exception.printStackTrace();
         }
 
     }
@@ -143,7 +141,7 @@ public class Local {
         } catch (FileNotFoundException exception) {
             System.out.println(exception);
         } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
 
     }
@@ -186,7 +184,7 @@ public class Local {
             file.close();
 
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -203,7 +201,7 @@ public class Local {
                 //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -220,7 +218,7 @@ public class Local {
                 //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -237,7 +235,7 @@ public class Local {
                 //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -314,7 +312,7 @@ public class Local {
                 version_name_list.add(name_.get("name"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -398,7 +396,7 @@ public class Local {
                 }
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
 
     }
@@ -483,7 +481,7 @@ public class Local {
                 }
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
 
     }
@@ -568,7 +566,7 @@ public class Local {
                 }
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
 
     }
@@ -653,7 +651,7 @@ public class Local {
                 }
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            e.printStackTrace();
         }
 
     }
@@ -699,7 +697,7 @@ public class Local {
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -744,7 +742,7 @@ public class Local {
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -789,7 +787,7 @@ public class Local {
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -833,7 +831,7 @@ public class Local {
                 version_path_list_natives.add(retval);
             }
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -868,7 +866,7 @@ public class Local {
                 version_name_list_natives.add(retval);
             }
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -903,7 +901,7 @@ public class Local {
                 if (!retval.isEmpty()) version_path_list_natives.add(retval);
             }
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -940,7 +938,7 @@ public class Local {
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -977,7 +975,7 @@ public class Local {
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -1014,7 +1012,7 @@ public class Local {
             }
             new File("./.script.js").delete();
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -1035,10 +1033,8 @@ public class Local {
                 String fileName = (String) a.next();
                 objects_KEY.add(fileName);
             }
-        } catch (FileNotFoundException exception) {
-            System.out.println(exception);
-        } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+        } catch (IOException | ParseException exception) {
+            exception.printStackTrace();
         }
 
     }
@@ -1062,10 +1058,8 @@ public class Local {
                 String fileHash = (String) fileNameObject.get("hash");
                 objects_hash.add(fileHash);
             }
-        } catch (FileNotFoundException exception) {
-            System.out.println(exception);
-        } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+        } catch (IOException | ParseException exception) {
+            exception.printStackTrace();
         }
 
     }
@@ -1083,7 +1077,7 @@ public class Local {
         } catch (FileNotFoundException exception) {
             System.out.println(exception);
         } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
         return "N/A";
     }
@@ -1098,7 +1092,7 @@ public class Local {
             return (String) (structure.get("url"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1112,7 +1106,7 @@ public class Local {
             return (String) (structure.get("id"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1129,7 +1123,7 @@ public class Local {
             return (argsF[0]);
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1142,7 +1136,7 @@ public class Local {
             return (String) (jsonObject.get("minecraftArguments"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1155,7 +1149,7 @@ public class Local {
             return (String) (jsonObject.get("assets"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1168,7 +1162,7 @@ public class Local {
             return (String) (jsonObject.get("id"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1181,7 +1175,7 @@ public class Local {
             return (String) (jsonObject.get("mainClass"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1251,6 +1245,7 @@ public class Local {
             return false;
         }
     }
+
 
     public String generateLibrariesArguments(String OS) {
         String cp = "";
@@ -1337,7 +1332,7 @@ public class Local {
 
     }
 
-    public String generateLibrariesPath(String _OS, String _name) {
+    public String generateLibrariesPath(String _name) {
         try {
             String fileName = _name;
             String[] colonSplit = fileName.split("\\:", 3);
@@ -1379,7 +1374,7 @@ public class Local {
                 //I DON'T KNOW THIS OS!
             }
         }catch (Exception ex) {
-            System.out.println(ex.toString());
+            ex.printStackTrace();
             return "N/A";
         }
     }
@@ -1413,7 +1408,7 @@ public class Local {
             return (compileSplit);
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1436,7 +1431,7 @@ public class Local {
             return (String) (jsonObject.get("inheritsFrom"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
@@ -1449,7 +1444,7 @@ public class Local {
             return (String) (jsonObject.get("jar"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
