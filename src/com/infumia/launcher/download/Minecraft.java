@@ -70,6 +70,8 @@ public class Minecraft {
             String mainClass = local.readJson_mainClass(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, version));
             String NativesDir = utils.getMineCraft_Versions_X_Natives(OperatingSystemToUse, version);
 
+            System.out.println(NativesDir);
+
             String cmds[] = {"-Xmx" + Xmx + "M", "-XX:+UseConcMarkSweepGC", "-XX:+CMSIncrementalMode", "-XX:-UseAdaptiveSizePolicy", "-Xmn128M", "-Djava.library.path=" + NativesDir, "-cp", FullLibraryArgument, mainClass};
             //put jvm arguments here
             String[] JVMArguments = JVMArgument.split(" ");
@@ -83,6 +85,12 @@ public class Minecraft {
             cmds = Stream.concat(Arrays.stream(javaPathArr), Arrays.stream(cmds)).toArray(String[]::new);
 
             String[] finalArgs = Stream.concat(Arrays.stream(cmds), Arrays.stream(HalfArgument)).toArray(String[]::new);
+
+            StringBuilder builder = new StringBuilder();
+            for (String arg : finalArgs) {
+                builder.append(arg + " ");
+            }
+            System.out.println(builder.toString());
 
             try {
                 proc = Runtime.getRuntime().exec(finalArgs);

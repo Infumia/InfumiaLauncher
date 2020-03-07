@@ -235,10 +235,12 @@ public class InfumiaLauncher extends Application {
             String[] fake = {};
             if (args.length == 0) return;
             String sha1 = calcSHA1(new File(getMineCraftLocation() + File.separator + "launcher.jar"));
-            if (args[0].equals(a.substring(0,16) + md5(sha1).toLowerCase() + a.substring(16)))  {
-                System.setProperty("http.agent", "Mozilla/5.0");
-                LauncherImpl.launchApplication(this.getClass(), fake);
-            }
+//            if (args[0].equals(a.substring(0,16) + md5(sha1).toLowerCase() + a.substring(16)))  {
+//                System.setProperty("http.agent", "Mozilla/5.0");
+//                LauncherImpl.launchApplication(this.getClass(), fake);
+//            }
+            System.setProperty("http.agent", "Mozilla/5.0");
+            LauncherImpl.launchApplication(this.getClass(), fake);
         }catch (Exception e) {
             e.printStackTrace();
         }

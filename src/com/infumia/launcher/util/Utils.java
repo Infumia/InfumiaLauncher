@@ -219,7 +219,6 @@ public class Utils {
 
     public String getMineCraft_Versions_X_Natives(String OS, String VersionNumber) {
         return (getMineCraftVersionsLocation(OS) + File.separator + VersionNumber + File.separator + "natives");
-
     }
 
     public String getMineCraftAssetsIndexes_X_json(String OS, String VersionNumber) {
