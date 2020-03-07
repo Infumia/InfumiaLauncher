@@ -1,5 +1,3 @@
-package com.infumia.launcher.download;
-
 /**
  *    Copyright 2019-2020 Infumia
  *
@@ -15,10 +13,10 @@ package com.infumia.launcher.download;
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+package com.infumia.launcher.download;
 
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.objects.Callback;
-import com.sun.javafx.PlatformUtil;
 import org.kamranzafar.jddl.DirectDownloader;
 import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;

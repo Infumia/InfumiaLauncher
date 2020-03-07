@@ -1,5 +1,3 @@
-package com.infumia.launcher.objects;
-
 /**
  *    Copyright 2019-2020 Infumia
  *
@@ -15,6 +13,7 @@ package com.infumia.launcher.objects;
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+package com.infumia.launcher.objects;
 
 public interface Callback {
 

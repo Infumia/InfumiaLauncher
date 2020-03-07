@@ -1,5 +1,3 @@
-package com.infumia.launcher.screens;
-
 /**
  *    Copyright 2019-2020 Infumia
  *
@@ -15,6 +13,7 @@ package com.infumia.launcher.screens;
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+package com.infumia.launcher.screens;
 
 import com.infumia.launcher.InfumiaLauncher;
 import com.infumia.launcher.animations.Animation;
