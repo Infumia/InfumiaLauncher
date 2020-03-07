@@ -35,10 +35,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-/**
- *
- * @author Ammar Ahmad
- */
 public class Local {
 
     List versions_json_path_list = new ArrayList(); //gets the path of all json files
