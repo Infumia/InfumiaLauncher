@@ -5,4 +5,4 @@ out
 META-INF
 .script.js
 *.log.gz
-*.log
+*.log 
