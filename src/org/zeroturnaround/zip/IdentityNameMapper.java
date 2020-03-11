@@ -1,5 +1,5 @@
 /**
- *    Copyright 2019-2020 Infumia
+ *    Copyright (C) 2012 ZeroTurnaround LLC <support@zeroturnaround.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,12 +13,23 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.infumia.launcher;
+package org.zeroturnaround.zip;
 
-public class Main {
+/**
+ * NOP implementation of the name mapper.
+ * 
+ * @author Rein Raudjärv
+ * 
+ * @see NameMapper
+ */
+final class IdentityNameMapper implements NameMapper {
+  
+  public static final NameMapper INSTANCE = new IdentityNameMapper();
 
-    public static void main(String[] args) {
-        InfumiaLauncher launcher = new InfumiaLauncher();
-        launcher.main(args);
-    }
+  private IdentityNameMapper() {}
+  
+  public String map(String name) {
+    return name;
+  }
+
 }

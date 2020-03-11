@@ -1,5 +1,5 @@
 /**
- *    Copyright 2019-2020 Infumia
+ *    Copyright (C) 2012 ZeroTurnaround LLC <support@zeroturnaround.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,12 +13,22 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.infumia.launcher;
+package org.zeroturnaround.zip;
 
-public class Main {
-
-    public static void main(String[] args) {
-        InfumiaLauncher launcher = new InfumiaLauncher();
-        launcher.main(args);
-    }
+/**
+ * Call-back for filtering and renaming ZIP entries while packing or unpacking.
+ *  
+ * @author Rein Raudjärv
+ * 
+ * @see ZipUtil
+ */
+public interface NameMapper {
+  
+  /**
+   * @param name original name.
+   * @return name to be stored in the ZIP file or the destination directory,
+   *    <code>null</code> means that the entry will be skipped.
+   */
+  String map(String name);
+  
 }

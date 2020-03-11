@@ -1,5 +1,6 @@
+package org.zeroturnaround.zip.timestamps;
 /**
- *    Copyright 2019-2020 Infumia
+ *    Copyright (C) 2012 ZeroTurnaround LLC <support@zeroturnaround.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,12 +14,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.infumia.launcher;
+import java.util.zip.ZipEntry;
 
-public class Main {
+/**
+ * Strategy that we use to differentiate between JDK8 and older JDK
+ * ZipEntry method calls. 
+ * 
+ * @since 1.9
+ */
+public interface TimestampStrategy {
 
-    public static void main(String[] args) {
-        InfumiaLauncher launcher = new InfumiaLauncher();
-        launcher.main(args);
-    }
+  void setTime(ZipEntry newInstance, ZipEntry oldInstance);
+
 }

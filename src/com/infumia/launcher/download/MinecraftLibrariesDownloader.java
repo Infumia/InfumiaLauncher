@@ -23,6 +23,7 @@ import org.kamranzafar.jddl.DownloadListener;
 import org.kamranzafar.jddl.DownloadTask;
 import com.infumia.launcher.InfumiaLauncher;
 import org.json.JSONObject;
+import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -394,39 +395,26 @@ public class MinecraftLibrariesDownloader {
 
 
     public void jarExtract(String _jarFile, String destDir) {
-        try {
-            _jarFile = storage.getUtils().setMineCraft_Versions_X_NativesLocation(storage.getOperationgSystem(),_jarFile);
-            File dir = new File(destDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            File jarFile = new File(_jarFile);
-
-
-            java.util.jar.JarFile jar = new java.util.jar.JarFile(jarFile);
-            java.util.Enumeration enumEntries = jar.entries();
-            while (enumEntries.hasMoreElements()) {
-                java.util.jar.JarEntry file = (java.util.jar.JarEntry) enumEntries.nextElement();
-                java.io.File f = new java.io.File(destDir + java.io.File.separator + file.getName());
-                if (file.getName().endsWith(".MF")) continue;
-                if (f.getPath().contains("META-INF")) continue;
-                if (file.isDirectory()) { // if its a directory, don't create it
-                    continue;
-                }
-                if (!f.exists()) {
-                    java.io.InputStream is = jar.getInputStream(file); // get the input stream
-                    java.io.FileOutputStream fos = new java.io.FileOutputStream(f);
-                    while (is.available() > 0) {  // write contents of 'is' to 'fos'
-                        fos.write(is.read());
-                    }
-                    fos.close();
-                    is.close();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        _jarFile = storage.getUtils().setMineCraft_Versions_X_NativesLocation(storage.getOperationgSystem(), _jarFile);
+        File dir = new File(destDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
+
+        File jarFile = new File(_jarFile);
+        File dest = new File(destDir + java.io.File.separator);
+
+        ZipUtil.unpack(jarFile, dest, name -> {
+            if (new File(dest, name).exists()) {
+                return null;
+            }
+            if (name.endsWith(".dll")) {
+                return name;
+            }
+            else {
+                return null;
+            }
+        });
     }
 
     private String getURL(int size){

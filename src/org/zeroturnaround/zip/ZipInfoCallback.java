@@ -1,5 +1,5 @@
 /**
- *    Copyright 2019-2020 Infumia
+ *    Copyright (C) 2012 ZeroTurnaround LLC <support@zeroturnaround.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,12 +13,27 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.infumia.launcher;
+package org.zeroturnaround.zip;
 
-public class Main {
+import java.io.IOException;
+import java.util.zip.ZipEntry;
 
-    public static void main(String[] args) {
-        InfumiaLauncher launcher = new InfumiaLauncher();
-        launcher.main(args);
-    }
+/**
+ * Call-back for traversing ZIP entries without their contents.
+ *  
+ * @author Rein Raudjärv
+ * 
+ * @see ZipEntryCallback
+ */
+public interface ZipInfoCallback {
+  
+  /**
+   * Invoked for each entry in a ZIP file.
+   * 
+   * @param zipEntry ZIP entry.
+   *
+   * @throws java.io.IOException when any processing exception occurs
+   */
+  void process(ZipEntry zipEntry) throws IOException;
+  
 }
